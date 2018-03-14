@@ -13,13 +13,11 @@ final class WidgetGallery extends Widget
     function __construct()
     {
         parent::__construct(__('Gallery', 'wptheme'), __("Add images from Media Library"));
-        add_action(WPActions::ENQUEUE_SCRIPTS_THEME, [$this, 'enqueueScriptsTheme']);
-        add_action(WPActions::ENQUEUE_SCRIPTS_ADMIN, [$this, 'enqueueScriptsAdmin']);
     }
 
     function enqueueScriptsTheme()
     {
-        $uriToDirLibs = get_template_directory_uri() . '/vendor/lvis/wpwidgets/src/libs';
+        $uriToDirLibs = WPUtils::getUriToLibsDir();
         // Royal Slider
         wp_enqueue_style('royalslider', "{$uriToDirLibs}/royalslider/royalslider.min.css");
         wp_enqueue_style('royalslider-skin', "{$uriToDirLibs}/royalslider/skins/minimal-white/rs-minimal-white.min.css");

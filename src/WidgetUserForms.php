@@ -27,23 +27,22 @@ final class WidgetUserForms extends WidgetDialogBase
         parent::__construct(__('Login Form', 'wptheme'), __('This widget displays a Login Form.', 'wptheme'));
         /** Enable the user with no privileges to request */
         //TODO Set this handler in concordance with Widget Configuration
-        WPActions::addAjaxHandler([
-            $this,
-            self::AJAX_LOGIN
-        ]);
+        WPActions::addAjaxHandler([$this, self::AJAX_LOGIN]);
         /** Ajax Login */
-        WPActions::addAjaxHandler([
-            $this,
-            self::AJAX_REGISTER
-        ]);
+        WPActions::addAjaxHandler([$this, self::AJAX_REGISTER]);
         /** Ajax Register */
-        WPActions::addAjaxHandler([
-            $this,
-            self::AJAX_FORGOT
-        ]);
+        WPActions::addAjaxHandler([$this, self::AJAX_FORGOT]);
         /** Ajax Password Reset */
         $this->iconModalToggle = "fa-sign-in";
     }
+
+    function enqueueScriptsTheme()
+    {
+        $uriToDirLibs = WPUtils::getUriToLibsDir();
+        wp_enqueue_script('jquery-validate', "{$uriToDirLibs}/WidgetUserForms.js", ['jquery-validate'], false, true);
+        parent::enqueueScriptsTheme();
+    }
+
 
     function getResultContent($message, $valid = false, $redirectLink = "")
     {
