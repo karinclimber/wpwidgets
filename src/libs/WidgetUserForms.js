@@ -6,6 +6,7 @@
     $(document).ready(function () {
         //Register Form
         if (jQuery().validate && jQuery().ajaxSubmit) {
+            console.log('Init Register Form');
             /** User Forms */
             var closeAlert = function ($form) {
                 $('.alert', $form).alert('close');
@@ -23,6 +24,7 @@
                     btnLogin.enable();
                     $formLogin.ajaxSubmit({
                         beforeSubmit: function () {
+                            console.log('Before Submit Form Login');
                             closeAlert($formLogin);
                             btnLogin.attr('disabled', 'disabled');
                         },
