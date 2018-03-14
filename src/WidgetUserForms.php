@@ -39,7 +39,7 @@ final class WidgetUserForms extends WidgetDialogBase
     function enqueueScriptsTheme()
     {
         $uriToDirLibs = WPUtils::getUriToLibsDir(__FILE__);
-        wp_enqueue_script('jquery-validate', "{$uriToDirLibs}/WidgetUserForms.js", ['jquery-validate'], false, true);
+        wp_enqueue_script('WidgetUserForms', "{$uriToDirLibs}/WidgetUserForms.js", ['jquery-validate'], false, true);
         parent::enqueueScriptsTheme();
     }
 
