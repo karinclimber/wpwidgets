@@ -1,0 +1,63 @@
+<?php
+/**
+ * Author: Vitali Lupu <vitaliix@gmail.com>
+ * Date: 3/5/18
+ * Time: 6:32 PM
+ */
+
+namespace wp;
+final class WidgetGallery extends Widget
+{
+    const GALLERY_IMAGES = "gallery";
+
+    function __construct()
+    {
+        parent::__construct(__('Gallery', 'wptheme'), __("Add images from Media Library"));
+        add_action(WPActions::ENQUEUE_SCRIPTS_THEME, [$this, 'enqueueScriptsTheme']);
+        add_action(WPActions::ENQUEUE_SCRIPTS_ADMIN, [$this, 'enqueueScriptsAdmin']);
+    }
+
+    function enqueueScriptsTheme()
+    {
+        $uriToDirLibs = get_template_directory_uri() . '/vendor/lvis/wpwidgets/src/libs';
+        // Royal Slider
+        wp_enqueue_style('royalslider', "{$uriToDirLibs}/royalslider/royalslider.min.css");
+        wp_enqueue_style('royalslider-skin', "{$uriToDirLibs}/royalslider/skins/minimal-white/rs-minimal-white.min.css");
+        wp_enqueue_script('royalslider', "{$uriToDirLibs}/royalslider/jquery.royalslider.min.js", ['jquery'], null, true);
+    }
+    function enqueueScriptsAdmin()
+    {
+        wp_enqueue_script('media-upload');
+        wp_enqueue_media();
+    }
+
+    function initFields()
+    {
+        $this->addField(new WidgetField(WidgetField::IMAGES_WITH_URL, self::GALLERY_IMAGES, Widget::addIconToLabel("picture-o", __("Images"))));
+        parent::initFields();
+    }
+
+    function widget($args, $instance)
+    {
+        $content = "";
+        $galleryValue = self::getInstanceValue($instance, self::GALLERY_IMAGES, $this);
+        if (isset($galleryValue)) {
+            $attachmentIds = (array)$galleryValue;
+            if (is_array($attachmentIds)) {
+                //TODO Export slide change delay to configuration for slide switching and for switching effect
+                foreach ($attachmentIds as $attachmentId => $attachmentLink) {
+                    $attachmentUrl = wp_get_attachment_image_url($attachmentId, WPImages::FULL);
+                    $content .= "<div class='rsContent'><a class='rsImg' href='$attachmentUrl' data-href='$attachmentLink'></a>";
+                    if ($attachmentLink) {
+                        $content .= "<a class='rsLink' href='$attachmentLink'></a>";
+                    }
+                    $content .= "</div>";
+                }
+            }
+            $content = "<div class='royalSlider rsMinW'>$content</div>";
+        }
+
+        $args[WPSidebar::CONTENT] = $content;
+        parent::widget($args, $instance);
+    }
+}
