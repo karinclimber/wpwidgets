@@ -17,7 +17,7 @@ final class WidgetGallery extends Widget
 
     function enqueueScriptsTheme()
     {
-        $uriToDirLibs = WPUtils::getUriToLibsDir();
+        $uriToDirLibs = WPUtils::getUriToLibsDir(__FILE__);
         // Royal Slider
         wp_enqueue_style('royalslider', "{$uriToDirLibs}/royalslider/royalslider.min.css");
         wp_enqueue_style('royalslider-skin', "{$uriToDirLibs}/royalslider/skins/minimal-white/rs-minimal-white.min.css");
