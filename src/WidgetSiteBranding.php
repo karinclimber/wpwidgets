@@ -33,8 +33,8 @@ final class WidgetSiteBranding extends Widget
             $siteName = "";
         }
         $markup = '<a href="%1$s" class="custom-logo-link" rel="home">%2$s
-                   <h1 class="site-title">%3$s</h1>
-                   <p><small class="site-description hidden-xs">%4$s</small></p></a>';
+                   <h1 class="site-title">%3$s</h1><br>
+                   <small class="site-description hidden-xs">%4$s</small></a>';
         $imageMarkup = wp_get_attachment_image($logoId, WPImages::FULL, false, [
             'class' => 'custom-logo',
             'alt' => get_bloginfo('name', 'display'),
