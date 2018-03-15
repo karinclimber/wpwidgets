@@ -22,7 +22,7 @@ final class WidgetGallery extends Widget
         wp_enqueue_style('royalslider', "{$uriToDirLibs}/royalslider/royalslider.min.css");
         wp_enqueue_style('royalslider-skin', "{$uriToDirLibs}/royalslider/skins/minimal-white/rs-minimal-white.min.css");
         wp_enqueue_script('royalslider', "{$uriToDirLibs}/royalslider/jquery.royalslider.min.js", ['jquery'], null, true);
-        wp_enqueue_script('WidgetGallery', "{$uriToDirLibs}/WidgetGallery", ['royalslider'], null, true);
+        wp_enqueue_script('WidgetGallery', "{$uriToDirLibs}/WidgetGallery.js", ['royalslider'], null, true);
     }
     function enqueueScriptsAdmin()
     {
