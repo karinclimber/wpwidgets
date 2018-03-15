@@ -8,15 +8,17 @@
         if (jQuery().royalSlider) {
             $('.royalSlider').royalSlider({
                 autoScaleSlider: true,
+                autoScaleSliderWidth: 1170,
+                autoScaleSliderHeight: 425,
                 fadeinLoadedSlide: true,
-                loop: false,
+                loop: true,
                 arrowsNav: true,
                 arrowsNavAutoHide: true,
                 arrowsNavHideOnTouch: true,
                 navigateByClick: true,
                 keyboardNavEnabled: true,
                 numImagesToPreload: 2,
-                imageScaleMode: 'fill',
+                imageScaleMode: 'fill'
             });
             /*$gallerySlider = $(".WidgetGallery > .royalSlider.rsMinW");
             $gallerySlider.css('background-color','transparent');
