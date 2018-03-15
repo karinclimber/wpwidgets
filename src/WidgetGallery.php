@@ -12,7 +12,7 @@ final class WidgetGallery extends Widget
 
     function __construct()
     {
-        parent::__construct(__('Gallery', 'wptheme'), __("Add images from Media Library"));
+        parent::__construct(__('Media Slider', 'wptheme'), __("Add images from Media Library"));
     }
 
     function enqueueScriptsTheme()
