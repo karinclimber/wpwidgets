@@ -22,7 +22,7 @@ final class WidgetGallery extends Widget
         wp_enqueue_style('royalslider', "{$uriToDirLibs}/royalslider/royalslider.css");
         wp_enqueue_style('royalslider-skin', "{$uriToDirLibs}/royalslider/skins/minimal-white/rs-minimal-white.css");
         wp_enqueue_script('royalslider', "{$uriToDirLibs}/royalslider/jquery.royalslider.min.js", ['jquery'], null, true);
-        wp_enqueue_script('widget-gallery', "{$uriToDirLibs}/WidgetGallery.js", ['royalslider'], null, true);
+//        wp_enqueue_script('widget-gallery', "{$uriToDirLibs}/WidgetGallery.js", ['royalslider'], null, true);
     }
     function enqueueScriptsAdmin()
     {
@@ -53,7 +53,26 @@ final class WidgetGallery extends Widget
                     $content .= "</div>";
                 }
             }
-            $content = "<div class='royalSlider rsMinW'>$content</div>";
+            $galleryId = uniqid("widgetGallery");
+            $content = "<div id='#{$galleryId}' class='royalSlider rsMinW'>{$content}</div>";
+            $content .= "<script>(function ($) {
+            if (jQuery().royalSlider) {
+                $('#{$galleryId}').royalSlider({
+                    autoScaleSlider: true,
+                    autoScaleSliderWidth: 1170,
+                    autoScaleSliderHeight: 425,
+                    fadeinLoadedSlide: true,
+                    loop: true,
+                    arrowsNav: true,
+                    arrowsNavAutoHide: true,
+                    arrowsNavHideOnTouch: true,
+                    navigateByClick: true,
+                    keyboardNavEnabled: true,
+                    numImagesToPreload: 2,
+                    imageScaleMode: 'fill'
+                });
+            }
+            })(jQuery);</script>";
         }
 
         $args[WPSidebar::CONTENT] = $content;
