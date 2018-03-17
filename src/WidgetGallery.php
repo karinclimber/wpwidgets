@@ -54,7 +54,7 @@ final class WidgetGallery extends Widget
                 }
             }
             $galleryId = uniqid("widgetGallery");
-            $content = "<div id='#{$galleryId}' class='royalSlider rsMinW'>{$content}</div>";
+            $content = "<div id='{$galleryId}' class='royalSlider rsMinW'>{$content}</div>";
             $content .= "<script type='text/javascript'>(function ($) {
             $(document).ready(function () {
             if ($().royalSlider) {
