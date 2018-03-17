@@ -56,6 +56,7 @@ final class WidgetGallery extends Widget
             $galleryId = uniqid("widgetGallery");
             $content = "<div id='#{$galleryId}' class='royalSlider rsMinW'>{$content}</div>";
             $content .= "<script type='text/javascript'>(function ($) {
+            $(document).ready(function () {
             if ($().royalSlider) {
                 $('#{$galleryId}').royalSlider({
                     autoScaleSlider: true,
@@ -71,7 +72,7 @@ final class WidgetGallery extends Widget
                     numImagesToPreload: 2,
                     imageScaleMode: 'fill'
                 });
-            }
+            }});
             })(jQuery);</script>";
         }
 
