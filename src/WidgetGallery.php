@@ -55,8 +55,8 @@ final class WidgetGallery extends Widget
             }
             $galleryId = uniqid("widgetGallery");
             $content = "<div id='#{$galleryId}' class='royalSlider rsMinW'>{$content}</div>";
-            $content .= "<script>(function ($) {
-            if (jQuery().royalSlider) {
+            $content .= "<script type='text/javascript'>(function ($) {
+            if ($().royalSlider) {
                 $('#{$galleryId}').royalSlider({
                     autoScaleSlider: true,
                     autoScaleSliderWidth: 1170,
