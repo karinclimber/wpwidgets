@@ -9,6 +9,8 @@ namespace wp;
 final class WidgetGallery extends Widget
 {
     const GALLERY_IMAGES = "gallery";
+    const GALLERY_OPTIONS_ENABLED = "galleryOptionsEnabled";
+    const GALLERY_NAVIGATE_BY_CLICK = "galleryNavigateByClick";
 
     function __construct()
     {
@@ -22,7 +24,6 @@ final class WidgetGallery extends Widget
         wp_enqueue_style('royalslider', "{$uriToDirLibs}/royalslider/royalslider.css");
         wp_enqueue_style('royalslider-skin', "{$uriToDirLibs}/royalslider/skins/minimal-white/rs-minimal-white.css");
         wp_enqueue_script('royalslider', "{$uriToDirLibs}/royalslider/jquery.royalslider.min.js", ['jquery'], null, true);
-//        wp_enqueue_script('widget-gallery', "{$uriToDirLibs}/WidgetGallery.js", ['royalslider'], null, true);
     }
     function enqueueScriptsAdmin()
     {
@@ -33,6 +34,10 @@ final class WidgetGallery extends Widget
     function initFields()
     {
         $this->addField(new WidgetField(WidgetField::IMAGES_WITH_URL, self::GALLERY_IMAGES, Widget::addIconToLabel("picture-o", __("Images"))));
+        $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::GALLERY_OPTIONS_ENABLED, __("Gallery Options Eabled"),[
+            self::GALLERY_SHOW_ARROWS_NAV => __("Show Navigation Arrows"),
+            self::GALLERY_NAVIGATE_BY_CLICK => __("Navigate By Click")
+        ]));
         parent::initFields();
     }
 
