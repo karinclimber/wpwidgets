@@ -9,9 +9,15 @@ namespace wp;
 final class WidgetGallery extends Widget
 {
     const GALLERY_IMAGES = "gallery";
-    const GALLERY_OPTIONS_ENABLED = "galleryOptionsEnabled";
-    const GALLERY_SHOW_ARROWS_NAV = "galleryShowArrowsNav";
+    const GALLERY_BOOL_OPTIONS = "galleryBoolOptions";
+    const GALLERY_NAV_ARROWS_SHOW = "galleryNavArrowsShow";
+    const GALLERY_NAV_ARROWS_AUTO_HIDE = "galleryNavArrowsAutoHide";
+    const GALLERY_NAV_ARROWS_HIDE_ON_TOUCH = "galleryNavArrowsHideOnTouch";
+    const GALLERY_NAV_WITH_KEYBOARD = "galleryNavWithKeyboard";
     const GALLERY_NAVIGATE_BY_CLICK = "galleryNavigateByClick";
+    const GALLERY_SLIDES_LOOP = "gallerySlidesLoop";
+    const GALLERY_SLIDE_AUTO_SCALE = "gallerySlideAutoScale";
+    const GALLERY_SLIDE_FADEIN_LOADED = "gallerySlideFadeIdLoaded";
 
     function __construct()
     {
@@ -35,9 +41,15 @@ final class WidgetGallery extends Widget
     function initFields()
     {
         $this->addField(new WidgetField(WidgetField::IMAGES_WITH_URL, self::GALLERY_IMAGES, Widget::addIconToLabel("picture-o", __("Images"))));
-        $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::GALLERY_OPTIONS_ENABLED, __("Gallery Options Eabled"),[
-            self::GALLERY_SHOW_ARROWS_NAV => __("Show Navigation Arrows"),
-            self::GALLERY_NAVIGATE_BY_CLICK => __("Navigate By Click")
+        $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::GALLERY_BOOL_OPTIONS, __("Gallery Options"),[
+            self::GALLERY_NAVIGATE_BY_CLICK => __("Navigate by Click"),
+            self::GALLERY_NAV_ARROWS_SHOW => __("Navigation Arrows Show"),
+            self::GALLERY_NAV_ARROWS_AUTO_HIDE => __("Navigation Arrows Auto hide"),
+            self::GALLERY_NAV_ARROWS_HIDE_ON_TOUCH => __("Navigation Arrows Hide on touch"),
+            self::GALLERY_NAV_WITH_KEYBOARD => __("Navigation with keyboard"),
+            self::GALLERY_SLIDES_LOOP => __("Loop Slides"),
+            self::GALLERY_SLIDE_AUTO_SCALE => __("Auto Scale"),
+            self::GALLERY_SLIDE_FADEIN_LOADED => __("Fade in loaded Slide")
         ]));
         parent::initFields();
     }
@@ -60,6 +72,7 @@ final class WidgetGallery extends Widget
                 }
             }
             $galleryId = uniqid("widgetGallery");
+            $galleryBoolOptions = self::getInstanceValue($instance, self::GALLERY_BOOL_OPTIONS);
             $content = "<div id='{$galleryId}' class='royalSlider rsMinW'>{$content}</div>";
             $content .= "<script type='text/javascript'>(function ($) {
             $(document).ready(function () {
@@ -70,7 +83,7 @@ final class WidgetGallery extends Widget
                     autoScaleSliderHeight: 425,
                     fadeinLoadedSlide: true,
                     loop: true,
-                    arrowsNav: true,
+                    arrowsNav: {$galleryBoolOptions[self::GALLERY_NAV_ARROWS_SHOW]},
                     arrowsNavAutoHide: true,
                     arrowsNavHideOnTouch: true,
                     navigateByClick: true,
