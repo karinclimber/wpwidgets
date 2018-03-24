@@ -10,6 +10,7 @@ final class WidgetGallery extends Widget
 {
     const GALLERY_IMAGES = "gallery";
     const GALLERY_OPTIONS_ENABLED = "galleryOptionsEnabled";
+    const GALLERY_SHOW_ARROWS_NAV = "galleryShowArrowsNav";
     const GALLERY_NAVIGATE_BY_CLICK = "galleryNavigateByClick";
 
     function __construct()
