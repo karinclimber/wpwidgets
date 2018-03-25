@@ -61,7 +61,7 @@ final class WidgetMediaSlider extends Widget
 
     function initFields()
     {
-        $this->addField(new WidgetField(WidgetField::IMAGES_WITH_URL, self::IMAGES, Widget::addIconToLabel("picture-o", __("Images"))));
+        $this->addField(new WidgetField(WidgetField::IMAGES_WITH_URL, self::IMAGES, __("Images")));
         $this->addField(new WidgetField(WidgetField::SELECT, self::IMAGE_SCALE, __('Image Scale'), [
             self::IMAGE_SCALE_FIT_IF_SMALLER => __('Fit if Smaller'),
             self::IMAGE_SCALE_FIT => __('Fit'),
