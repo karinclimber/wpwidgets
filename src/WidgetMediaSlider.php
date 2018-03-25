@@ -62,24 +62,24 @@ final class WidgetMediaSlider extends Widget
     {
         $this->addField(new WidgetField(WidgetField::IMAGES_WITH_URL, self::IMAGES, Widget::addIconToLabel("picture-o", __("Images"))));
         $this->addField(new WidgetField(WidgetField::SELECT, self::IMAGE_SCALE, __('Image Scale'),[
-            self::IMAGE_SCALE_FIT_IF_SMALLER,
-            self::IMAGE_SCALE_FIT,
-            self::IMAGE_SCALE_FILL,
-            self::IMAGE_SCALE_NONE
+            self::IMAGE_SCALE_FIT_IF_SMALLER => __('Fit if Smaller'),
+            self::IMAGE_SCALE_FIT => __('Fit'),
+            self::IMAGE_SCALE_FILL=> __('Fill'),
+            self::IMAGE_SCALE_NONE=> __('Node')
         ], self::IMAGE_SCALE_FIT_IF_SMALLER));
         $this->addField(new WidgetField(WidgetField::SELECT, self::NAVIGATION, __('Navigation'),[
-            self::NAVIGATION_BULLETS,
-            self::NAVIGATION_THUMBNAILS,
-            self::NAVIGATION_TABS,
-            self::NAVIGATION_NONE
+            self::NAVIGATION_BULLETS => __('Bullets'),
+            self::NAVIGATION_THUMBNAILS => __('Thumbnails'),
+            self::NAVIGATION_TABS => __('Tabs'),
+            self::NAVIGATION_NONE => __('Node')
         ], self::NAVIGATION_BULLETS));
         $this->addField(new WidgetField(WidgetField::RADIO, self::ORIENTATION, __('Orientation'),[
-            self::ORIENTATION_HORIZONTAL,
-            self::ORIENTATION_VERTICAL
+            self::ORIENTATION_HORIZONTAL => __('Horizontal'),
+            self::ORIENTATION_VERTICAL => __('Vertical')
         ], self::ORIENTATION_HORIZONTAL));
         $this->addField(new WidgetField(WidgetField::RADIO, self::TRANSITION, __('Transition'),[
-            self::TRANSITION_MOVE,
-            self::TRANSITION_FADE
+            self::TRANSITION_MOVE => __('Move'),
+            self::TRANSITION_FADE => __('Fade')
         ], self::TRANSITION_MOVE));
         $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::BOOL_OPTIONS, __("Gallery Options"),[
             self::NAVIGATE_BY_CLICK => __("Navigate by Click"),
@@ -112,12 +112,13 @@ final class WidgetMediaSlider extends Widget
                 }
             }
             $galleryId = uniqid("widgetGallery");
+            $imageScaleMode = self::getInstanceValue($instance, self::IMAGE_SCALE, $this);
             $content = "<div id='{$galleryId}' class='royalSlider rsMinW'>{$content}</div>
             <script type='text/javascript'>(function ($) {
             $(document).ready(function () {
             if ($().royalSlider) {
                 $('#{$galleryId}').royalSlider({                   
-                    imageScaleMode: {${self::getInstanceValue($instance, self::IMAGE_SCALE, $this)}},
+                    imageScaleMode: $imageScaleMode,
                     controlNavigation: 'bullets',
                     slidesOrientation: 'horizontal',
                     transitionType: 'move',
