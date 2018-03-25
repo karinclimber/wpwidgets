@@ -16,28 +16,28 @@ final class WidgetMediaSlider extends Widget
     const NAV_WITH_KEYBOARD = 'sliderNavWithKeyboard';
     const NAVIGATE_BY_CLICK = 'sliderNavigateByClick';
     const LOOP = 'sliderLoop';
-    const AUTO_SCALE = 'sliderAutoScale';
+    const AUTO_SCALE_HEIGHT = 'sliderAutoScaleHeight';
     const FADEIN_LOADED = 'sliderFadeIdLoaded';
 
     const ORIENTATION = 'sliderOrientation';
-    const ORIENTATION_HORIZONTAL = 'sliderOrientationHorizontal';
-    const ORIENTATION_VERTICAL = 'sliderOrientationVertical';
+    const ORIENTATION_HORIZONTAL = 'horizontal';
+    const ORIENTATION_VERTICAL = 'vertical';
 
     const TRANSITION = 'sliderTransition';
-    const TRANSITION_MOVE = 'sliderTransitionMove';
-    const TRANSITION_FADE = 'sliderTransitionFade';
+    const TRANSITION_MOVE = 'move';
+    const TRANSITION_FADE = 'fade';
 
     const NAVIGATION = 'sliderNavigation';
-    const NAVIGATION_NONE = 'sliderNavigationNone';
-    const NAVIGATION_BULLETS = 'sliderNavigationBullets';
-    const NAVIGATION_TABS = 'sliderNavigationTabs';
-    const NAVIGATION_THUMBNAILS = 'sliderNavigationThumbnails';
+    const NAVIGATION_BULLETS = 'bullets';
+    const NAVIGATION_THUMBNAILS = 'thumbnails';
+    const NAVIGATION_TABS = 'tabs';
+    const NAVIGATION_NONE = 'none';
 
     const IMAGE_SCALE = 'sliderImageScale';
-    const IMAGE_SCALE_FILL = 'sliderImageScaleFill';
-    const IMAGE_SCALE_FIT = 'sliderImageScaleFit';
-    const IMAGE_SCALE_FIT_IF_SMALLER = 'sliderImageScaleFitIfSmaller';
-    const IMAGE_SCALE_NONE = 'sliderImageScaleNode';
+    const IMAGE_SCALE_FIT_IF_SMALLER = 'fit-if-smaller';
+    const IMAGE_SCALE_FIT = 'fit';
+    const IMAGE_SCALE_FILL = 'fill';
+    const IMAGE_SCALE_NONE = 'none';
 
     function __construct()
     {
@@ -52,6 +52,7 @@ final class WidgetMediaSlider extends Widget
         wp_enqueue_style('royalslider-skin', "{$uriToDirLibs}/royalslider/skins/minimal-white/rs-minimal-white.css");
         wp_enqueue_script('royalslider', "{$uriToDirLibs}/royalslider/jquery.royalslider.min.js", ['jquery'], null, true);
     }
+
     function enqueueScriptsAdmin()
     {
         wp_enqueue_script('media-upload');
@@ -61,35 +62,41 @@ final class WidgetMediaSlider extends Widget
     function initFields()
     {
         $this->addField(new WidgetField(WidgetField::IMAGES_WITH_URL, self::IMAGES, Widget::addIconToLabel("picture-o", __("Images"))));
-        $this->addField(new WidgetField(WidgetField::SELECT, self::IMAGE_SCALE, __('Image Scale'),[
+        $this->addField(new WidgetField(WidgetField::SELECT, self::IMAGE_SCALE, __('Image Scale'), [
             self::IMAGE_SCALE_FIT_IF_SMALLER => __('Fit if Smaller'),
             self::IMAGE_SCALE_FIT => __('Fit'),
-            self::IMAGE_SCALE_FILL=> __('Fill'),
-            self::IMAGE_SCALE_NONE=> __('Node')
+            self::IMAGE_SCALE_FILL => __('Fill'),
+            self::IMAGE_SCALE_NONE => __('Node')
         ], self::IMAGE_SCALE_FIT_IF_SMALLER));
-        $this->addField(new WidgetField(WidgetField::SELECT, self::NAVIGATION, __('Navigation'),[
+        $this->addField(new WidgetField(WidgetField::SELECT, self::NAVIGATION, __('Navigation'), [
             self::NAVIGATION_BULLETS => __('Bullets'),
             self::NAVIGATION_THUMBNAILS => __('Thumbnails'),
             self::NAVIGATION_TABS => __('Tabs'),
             self::NAVIGATION_NONE => __('Node')
         ], self::NAVIGATION_BULLETS));
-        $this->addField(new WidgetField(WidgetField::RADIO, self::ORIENTATION, __('Orientation'),[
+        $this->addField(new WidgetField(WidgetField::RADIO, self::ORIENTATION, __('Orientation'), [
             self::ORIENTATION_HORIZONTAL => __('Horizontal'),
             self::ORIENTATION_VERTICAL => __('Vertical')
         ], self::ORIENTATION_HORIZONTAL));
-        $this->addField(new WidgetField(WidgetField::RADIO, self::TRANSITION, __('Transition'),[
+        $this->addField(new WidgetField(WidgetField::RADIO, self::TRANSITION, __('Transition'), [
             self::TRANSITION_MOVE => __('Move'),
             self::TRANSITION_FADE => __('Fade')
         ], self::TRANSITION_MOVE));
-        $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::BOOL_OPTIONS, __("Gallery Options"),[
+        $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::BOOL_OPTIONS, __("Gallery Options"), [
             self::NAVIGATE_BY_CLICK => __("Navigate by Click"),
             self::NAV_ARROWS_SHOW => __("Navigation Arrows Show"),
             self::NAV_ARROWS_AUTO_HIDE => __("Navigation Arrows Auto hide"),
             self::NAV_ARROWS_HIDE_ON_TOUCH => __("Navigation Arrows Hide on touch"),
             self::NAV_WITH_KEYBOARD => __("Navigation with keyboard"),
             self::LOOP => __("Loop Slides"),
-            self::AUTO_SCALE => __("Auto Scale"),
+            self::AUTO_SCALE_HEIGHT => __("Auto Scale"),
             self::FADEIN_LOADED => __("Fade in loaded Slide")
+        ], [
+            self::NAVIGATE_BY_CLICK,
+            self::NAV_ARROWS_SHOW,
+            self::NAV_ARROWS_AUTO_HIDE,
+            self::AUTO_SCALE_HEIGHT,
+            self::FADEIN_LOADED
         ]));
         parent::initFields();
     }
@@ -127,12 +134,12 @@ final class WidgetMediaSlider extends Widget
                     autoScaleSlider: false,
                     autoScaleHeight: true,
                     autoHeight: false,
+                    navigateByClick: true,
                     arrowsNav: true,
                     arrowsNavAutoHide: true,
                     arrowsNavHideOnTouch: false,
                     controlsInside: true,
                     keyboardNavEnabled: false,
-                    navigateByClick: true,
                     loop: false,
                     loopRewind: false,
                     fadeinLoadedSlide: true,
