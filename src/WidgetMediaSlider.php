@@ -120,15 +120,18 @@ final class WidgetMediaSlider extends Widget
             }
             $galleryId = uniqid("widgetGallery");
             $imageScaleMode = self::getInstanceValue($instance, self::IMAGE_SCALE, $this);
+            $controlNavigation = self::getInstanceValue($instance, self::NAVIGATION, $this);
+            $slidesOrientation = self::getInstanceValue($instance, self::ORIENTATION, $this);
+            $transitionType = self::getInstanceValue($instance, self::TRANSITION, $this);
             $content = "<div id='{$galleryId}' class='royalSlider rsMinW'>{$content}</div>
             <script type='text/javascript'>(function ($) {
             $(document).ready(function () {
             if ($().royalSlider) {
                 $('#{$galleryId}').royalSlider({                   
-                    imageScaleMode: $imageScaleMode,
-                    controlNavigation: 'bullets',
-                    slidesOrientation: 'horizontal',
-                    transitionType: 'move',
+                    imageScaleMode: '$imageScaleMode',
+                    controlNavigation: '$controlNavigation',
+                    slidesOrientation: '$slidesOrientation',
+                    transitionType: '$transitionType',
                     autoScaleSliderWidth: 1170,
                     autoScaleSliderHeight: 425,
                     autoScaleSlider: false,
