@@ -126,8 +126,8 @@ final class WidgetMediaSlider extends Widget
             $slidesOrientation = self::getInstanceValue($instance, self::ORIENTATION, $this);
             $transitionType = self::getInstanceValue($instance, self::TRANSITION, $this);
             $boolOptions = self::getInstanceValue($instance, self::BOOL_OPTIONS, $this);
-            $autoScaleSlider = isset($boolOptions[self::AUTO_SCALE_SLIDER]);
-            $sliderLoop = isset($boolOptions[self::LOOP]);
+            $autoScaleSlider = isset($boolOptions[self::AUTO_SCALE_SLIDER]) ? true : false;
+            $sliderLoop = isset($boolOptions[self::LOOP]) ? true : false;
             $content = "<div id='{$galleryId}' class='royalSlider rsMinW'>{$content}</div>
             <script type='text/javascript'>(function ($) {
             $(document).ready(function () {
