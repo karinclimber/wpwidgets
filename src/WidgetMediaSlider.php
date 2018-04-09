@@ -17,6 +17,7 @@ final class WidgetMediaSlider extends Widget
     const NAVIGATE_BY_CLICK = 'sliderNavigateByClick';
     const LOOP = 'sliderLoop';
     const AUTO_SCALE_HEIGHT = 'sliderAutoScaleHeight';
+    const AUTO_SCALE_SLIDER = 'sliderAutoScaleSlider';
     const FADEIN_LOADED = 'sliderFadeIdLoaded';
 
     const ORIENTATION = 'sliderOrientation';
@@ -89,7 +90,8 @@ final class WidgetMediaSlider extends Widget
             self::NAV_ARROWS_HIDE_ON_TOUCH => __("Navigation Arrows Hide on touch"),
             self::NAV_WITH_KEYBOARD => __("Navigation with keyboard"),
             self::LOOP => __("Loop Slides"),
-            self::AUTO_SCALE_HEIGHT => __("Auto Scale"),
+            self::AUTO_SCALE_HEIGHT => __("Auto Scale Height"),
+            self::AUTO_SCALE_SLIDER => __("Auto Scale Slider"),
             self::FADEIN_LOADED => __("Fade in loaded Slide")
         ], [
             self::NAVIGATE_BY_CLICK,
@@ -123,6 +125,9 @@ final class WidgetMediaSlider extends Widget
             $controlNavigation = self::getInstanceValue($instance, self::NAVIGATION, $this);
             $slidesOrientation = self::getInstanceValue($instance, self::ORIENTATION, $this);
             $transitionType = self::getInstanceValue($instance, self::TRANSITION, $this);
+            $boolOptions = self::getInstanceValue($instance, self::BOOL_OPTIONS, $this);
+            $autoScaleSlider = $boolOptions[self::AUTO_SCALE_SLIDER];
+            $sliderLoop = $boolOptions[self::LOOP];
             $content = "<div id='{$galleryId}' class='royalSlider rsMinW'>{$content}</div>
             <script type='text/javascript'>(function ($) {
             $(document).ready(function () {
@@ -134,7 +139,7 @@ final class WidgetMediaSlider extends Widget
                     transitionType: '$transitionType',
                     autoScaleSliderWidth: 1170,
                     autoScaleSliderHeight: 425,
-                    autoScaleSlider: false,
+                    autoScaleSlider: $autoScaleSlider,
                     autoScaleHeight: true,
                     autoHeight: false,
                     navigateByClick: true,
@@ -143,7 +148,7 @@ final class WidgetMediaSlider extends Widget
                     arrowsNavHideOnTouch: false,
                     controlsInside: true,
                     keyboardNavEnabled: false,
-                    loop: false,
+                    loop: $sliderLoop,
                     loopRewind: false,
                     fadeinLoadedSlide: true,
                     fadeInAfterLoaded: true,
