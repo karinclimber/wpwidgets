@@ -66,13 +66,13 @@ final class WidgetMediaSlider extends Widget
             self::IMAGE_SCALE_FIT_IF_SMALLER => __('Fit if Smaller'),
             self::IMAGE_SCALE_FIT => __('Fit'),
             self::IMAGE_SCALE_FILL => __('Fill'),
-            self::IMAGE_SCALE_NONE => __('Node')
+            self::IMAGE_SCALE_NONE => __('None')
         ], self::IMAGE_SCALE_FIT_IF_SMALLER));
         $this->addField(new WidgetField(WidgetField::SELECT, self::NAVIGATION, __('Navigation'), [
             self::NAVIGATION_BULLETS => __('Bullets'),
             self::NAVIGATION_THUMBNAILS => __('Thumbnails'),
             self::NAVIGATION_TABS => __('Tabs'),
-            self::NAVIGATION_NONE => __('Node')
+            self::NAVIGATION_NONE => __('None')
         ], self::NAVIGATION_BULLETS));
         $this->addField(new WidgetField(WidgetField::RADIO, self::ORIENTATION, __('Orientation'), [
             self::ORIENTATION_HORIZONTAL => __('Horizontal'),
