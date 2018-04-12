@@ -279,14 +279,14 @@ final class WidgetMediaSlider extends Widget
                     usePreloader: $usePreloader,
                     globalCaption: $globalCaption,
                     
-                    autoScaleSliderWidth: '$autoScaleSliderWidth',
-                    autoScaleSliderHeight: '$autoScaleSliderHeight',
-                    startSlideId: '$startSlideId',
-                    numImagesToPreload: '$numImagesToPreload',
-                    slidesSpacing: '$slidesSpacing',
-                    minSlideOffset: '$minSlideOffset',
-                    transitionSpeed: '$transitionSpeed',
-                    imageScalePadding: '$imageScalePadding',
+                    autoScaleSliderWidth: $autoScaleSliderWidth,
+                    autoScaleSliderHeight: $autoScaleSliderHeight,
+                    startSlideId: $startSlideId,
+                    numImagesToPreload: $numImagesToPreload,
+                    slidesSpacing: $slidesSpacing,
+                    minSlideOffset: $minSlideOffset,
+                    transitionSpeed: $transitionSpeed,
+                    imageScalePadding: $imageScalePadding,
                     slidesDiff: 2
                 });
             }});
