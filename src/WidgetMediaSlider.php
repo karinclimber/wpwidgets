@@ -217,24 +217,24 @@ final class WidgetMediaSlider extends Widget
             $autoScaleHeight = isset($autoScaleOptions[self::AUTO_SCALE_HEIGHT]) ? 'true' : 'false';
             //Arrows
             $arrowsOptions = self::getInstanceValue($instance, self::ARROWS_OPTIONS, $this);
-            $arrowsNav = isset($arrowsOptions[self::NAV_ARROWS_SHOW]) ? 'true' : 'false';
-            $arrowsNavAutoHide = isset($arrowsOptions[self::NAV_ARROWS_AUTO_HIDE]) ? 'true' : 'false';
-            $arrowsNavHideOnTouch = isset($arrowsOptions[self::NAV_ARROWS_HIDE_ON_TOUCH]) ? 'true' : 'false';
+            $arrowsNav = in_array(self::NAV_ARROWS_SHOW, $arrowsOptions) ? 'true' : 'false';
+            $arrowsNavAutoHide = in_array(self::NAV_ARROWS_AUTO_HIDE, $arrowsOptions) ? 'true' : 'false';
+            $arrowsNavHideOnTouch = in_array(self::NAV_ARROWS_HIDE_ON_TOUCH, $arrowsOptions) ? 'true' : 'false';
             //Navigation
             $navigateOptions = self::getInstanceValue($instance, self::NAVIGATE_OPTIONS, $this);
-            $navigateByClick = isset($navigateOptions[self::NAVIGATE_BY_CLICK]) ? 'true' : 'false';
-            $keyboardNavEnabled = isset($navigateOptions[self::NAV_WITH_KEYBOARD]) ? 'true' : 'false';
-            $sliderDrag = isset($navigateOptions[self::NAVIGATE_BY_DRAG]) ? 'true' : 'false';
-            $sliderTouch = isset($navigateOptions[self::NAVIGATE_BY_TOUCH]) ? 'true' : 'false';
+            $navigateByClick = in_array(self::NAVIGATE_BY_CLICK, $navigateOptions) ? 'true' : 'false';
+            $keyboardNavEnabled = in_array(self::NAV_WITH_KEYBOARD, $navigateOptions) ? 'true' : 'false';
+            $sliderDrag = in_array(self::NAVIGATE_BY_DRAG, $navigateOptions) ? 'true' : 'false';
+            $sliderTouch = in_array(self::NAVIGATE_BY_TOUCH, $navigateOptions) ? 'true' : 'false';
             //Options
             $slideOptions = self::getInstanceValue($instance, self::SLIDE_OPTIONS, $this);
-            $sliderLoop = isset($slideOptions[self::LOOP]) ? 'true' : 'false';
-            $randomizeSlides = isset($slideOptions[self::RANDOMIZE_SLIDES]) ? 'true' : 'false';
-            $globalCaption = isset($slideOptions[self::GLOBAL_CAPTION]) ? 'true' : 'false';
-            $usePreloader = isset($slideOptions[self::USE_PRELOADER]) ? 'true' : 'false';
-            $fadeinLoadedSlide = isset($slideOptions[self::FADEIN_LOADED]) ? 'true' : 'false';
-            $controlsInside = isset($slideOptions[self::CONTROLS_INSIDE]) ? 'true' : 'false';
-            $imageAlignCenter = isset($slideOptions[self::IMAGE_ALIGN_CENTER]) ? 'true' : 'false';
+            $sliderLoop = in_array(self::LOOP, $slideOptions) ? 'true' : 'false';
+            $randomizeSlides = in_array(self::RANDOMIZE_SLIDES, $slideOptions) ? 'true' : 'false';
+            $globalCaption = in_array(self::GLOBAL_CAPTION, $slideOptions) ? 'true' : 'false';
+            $usePreloader = in_array(self::USE_PRELOADER, $slideOptions) ? 'true' : 'false';
+            $fadeinLoadedSlide = in_array(self::FADEIN_LOADED, $slideOptions) ? 'true' : 'false';
+            $controlsInside = in_array(self::CONTROLS_INSIDE, $slideOptions) ? 'true' : 'false';
+            $imageAlignCenter = in_array(self::IMAGE_ALIGN_CENTER, $slideOptions) ? 'true' : 'false';
 
             $autoScaleSliderWidth = self::getInstanceValue($instance, self::AUTO_SCALE_VALUE_WIDTH, $this);
             $autoScaleSliderHeight = self::getInstanceValue($instance, self::AUTO_SCALE_VALUE_HEIGHT, $this);
