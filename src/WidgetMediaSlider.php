@@ -135,13 +135,13 @@ final class WidgetMediaSlider extends Widget
             self::AUTO_SCALE_SLIDER => __("Auto Height based on Width"),
             self::AUTO_SCALE_HEIGHT => __("Auto Height based on Width and Image"),
 
-            self::NAVIGATE_BY_CLICK => __("Navigate by Click"),
-            self::NAVIGATE_BY_DRAG => __("Navigate by Drag"),
-            self::NAVIGATE_BY_TOUCH => __("Navigate by Touch"),
-            self::NAV_WITH_KEYBOARD => __("Navigation with keyboard"),
+            self::NAVIGATE_BY_CLICK => __("Change slide with Click"),
+            self::NAVIGATE_BY_DRAG => __("Change slide with Drag"),
+            self::NAVIGATE_BY_TOUCH => __("Change slide with Touch"),
+            self::NAV_WITH_KEYBOARD => __("Change slide with Keyboard"),
             self::LOOP => __("Cycle slides"),
-            self::FADEIN_LOADED => __("Fade in loaded Slide"),
-            self::CONTROLS_INSIDE => __("Controls inside Slider")
+            self::FADEIN_LOADED => __("Fade in the loaded slide"),
+            self::CONTROLS_INSIDE => __("Put controls inside")
         ], [
             self::NAVIGATE_BY_CLICK,
             self::NAVIGATE_BY_DRAG,
