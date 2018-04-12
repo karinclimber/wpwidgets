@@ -10,12 +10,12 @@ final class WidgetMediaSlider extends Widget
 {
     const IMAGES = 'sliderImages';
 
-    const AUTO_SCALE = 'sliderAutoScale';
+    const AUTO_SCALE_OPTIONS = 'sliderAutoScaleOptions';
     /** @const Automatically updates slider height based on base width. */
     const AUTO_SCALE_SLIDER = 'sliderAutoScaleSlider';
     /** @const Automatically updates slider height based on base width and Image height. */
     const AUTO_SCALE_HEIGHT = 'sliderAutoScaleHeight';
-
+    //Arrows
     const ARROWS_OPTIONS = 'sliderArrowsOptions';
     /** @const Show direction arrows navigation. */
     const NAV_ARROWS_SHOW = 'sliderNavArrowsShow';
@@ -23,7 +23,7 @@ final class WidgetMediaSlider extends Widget
     const NAV_ARROWS_AUTO_HIDE = 'sliderNavArrowsAutoHide';
     /** @const Hides arrows on touch devices. */
     const NAV_ARROWS_HIDE_ON_TOUCH = 'sliderNavArrowsHideOnTouch';
-
+    //Navigation
     const NAVIGATE_OPTIONS = 'sliderNavigateOptions';
     /** @const Navigates forward by clicking on slide. */
     const NAVIGATE_BY_CLICK = 'sliderNavigateByClick';
@@ -33,7 +33,7 @@ final class WidgetMediaSlider extends Widget
     const NAVIGATE_BY_TOUCH = 'sliderNavigateByTouch';
     /** @const Navigate slider with keyboard left and right arrows. */
     const NAV_WITH_KEYBOARD = 'sliderNavWithKeyboard';
-
+    //Slide
     const SLIDE_OPTIONS = 'sliderSlideOptions';
     /** @const Makes slider to go from last slide to first. */
     const LOOP = 'sliderLoop';
@@ -48,15 +48,10 @@ final class WidgetMediaSlider extends Widget
     const USE_PRELOADER = 'sliderUsePreloader';
     /** @const Adds global caption element to slider. Grab an image caption from alt or element with (class rsCaption) */
     const GLOBAL_CAPTION = 'sliderGlobalCaption';
-
-    /*imageAlignCenter: true,
-    randomizeSlides: false,
-    usePreloader: true,
-    globalCaption: false,*/
-
     /** @const Fades in slide after it's loaded. */
     const FADEIN_LOADED = 'sliderFadeIdLoaded';
-    /** @const Base slider width. Slider will autocalculate the ratio based on these values. */
+    //Values
+    /** @const Base slider width. Slider will auto-calculate the ratio based on these values. */
     const AUTO_SCALE_VALUE_WIDTH = 'sliderAutoScaleWidthValue';
     /** @const Base slider height */
     const AUTO_SCALE_VALUE_HEIGHT = 'sliderAutoScaleHeightValue';
@@ -153,7 +148,7 @@ final class WidgetMediaSlider extends Widget
                 self::IMAGE_ALIGN_CENTER => __("Image aligned to center"),
 
             ], [self::USE_PRELOADER, self::FADEIN_LOADED, self::CONTROLS_INSIDE, self::IMAGE_ALIGN_CENTER]));
-        $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::AUTO_SCALE,
+        $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::AUTO_SCALE_OPTIONS,
             __("Change height based on:"), [
                 self::AUTO_SCALE_SLIDER => __("Auto scale width and height"),
                 self::AUTO_SCALE_HEIGHT => __("Image width and height")
@@ -217,7 +212,7 @@ final class WidgetMediaSlider extends Widget
             $slidesOrientation = self::getInstanceValue($instance, self::ORIENTATION, $this);
             $transitionType = self::getInstanceValue($instance, self::TRANSITION, $this);
             //AutoScale
-            $autoScaleOptions = self::getInstanceValue($instance, self::AUTO_SCALE, $this);
+            $autoScaleOptions = self::getInstanceValue($instance, self::AUTO_SCALE_OPTIONS, $this);
             $autoScaleSlider = isset($autoScaleOptions[self::AUTO_SCALE_SLIDER]) ? 'true' : 'false';
             $autoScaleHeight = isset($autoScaleOptions[self::AUTO_SCALE_HEIGHT]) ? 'true' : 'false';
             //Arrows
