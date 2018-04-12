@@ -105,18 +105,6 @@ final class WidgetMediaSlider extends Widget
             __("Auto scale width"), [], 1170));
         $this->addField(new WidgetField(WidgetField::NUMBER, self::AUTO_SCALE_VALUE_HEIGHT,
             __("Auto scale height"), [], 450));
-        $this->addField(new WidgetField(WidgetField::NUMBER, self::IMAGES_TO_PRELOAD,
-            __("Images to preload"), [], 4));
-        $this->addField(new WidgetField(WidgetField::NUMBER, self::SLIDES_SPACING,
-            __("Spacing between slides"), [], 8));
-        $this->addField(new WidgetField(WidgetField::NUMBER, self::MIN_SLIDES_OFFSET,
-            __("Drag offset"), [], 10));
-        $this->addField(new WidgetField(WidgetField::NUMBER, self::TRANSITION_SPEED,
-            __("Transition speed"), [], 600));
-        $this->addField(new WidgetField(WidgetField::NUMBER, self::IMAGE_SCALE_PADDING,
-            __("Image padding"), [], 4));
-        $this->addField(new WidgetField(WidgetField::NUMBER, self::START_SLIDE_ID,
-            __("First slide index"), [], 0));
         $this->addField(new WidgetField(WidgetField::IMAGES_WITH_URL, self::IMAGES, __("Images")));
         $this->addField(new WidgetField(WidgetField::SELECT, self::IMAGE_SCALE, __('Image Scale'), [
             self::IMAGE_SCALE_FIT_IF_SMALLER => __('Fit if Smaller'),
@@ -164,6 +152,18 @@ final class WidgetMediaSlider extends Widget
             self::FADEIN_LOADED,
             self::CONTROLS_INSIDE
         ]));
+        $this->addField(new WidgetField(WidgetField::NUMBER, self::IMAGES_TO_PRELOAD,
+            __("Images to preload"), [], 4));
+        $this->addField(new WidgetField(WidgetField::NUMBER, self::SLIDES_SPACING,
+            __("Spacing between slides"), [], 8));
+        $this->addField(new WidgetField(WidgetField::NUMBER, self::MIN_SLIDES_OFFSET,
+            __("Drag offset"), [], 10));
+        $this->addField(new WidgetField(WidgetField::NUMBER, self::TRANSITION_SPEED,
+            __("Transition speed"), [], 600));
+        $this->addField(new WidgetField(WidgetField::NUMBER, self::IMAGE_SCALE_PADDING,
+            __("Image padding"), [], 4));
+        $this->addField(new WidgetField(WidgetField::NUMBER, self::START_SLIDE_ID,
+            __("First slide index"), [], 0));
         parent::initFields();
     }
 
