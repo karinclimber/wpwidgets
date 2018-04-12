@@ -34,12 +34,25 @@ final class WidgetMediaSlider extends Widget
     /** @const Navigate slider with keyboard left and right arrows. */
     const NAV_WITH_KEYBOARD = 'sliderNavWithKeyboard';
 
-    const BOOL_OPTIONS = 'sliderBoolOptions';
+    const SLIDE_OPTIONS = 'sliderSlideOptions';
     /** @const Makes slider to go from last slide to first. */
     const LOOP = 'sliderLoop';
     /** @const If set to true adds arrows and FullScreen button inside rsOverflow container,
      * otherwise inside root slider container. */
     const CONTROLS_INSIDE = 'sliderControlsInside';
+    /** @const Aligns image to center of slide. Can be function with one argument - slide object that is being resized. */
+    const IMAGE_ALIGN_CENTER = 'sliderImageAlignCenter';
+    /** @const Randomizes all slides at start. */
+    const RANDOMIZE_SLIDES = 'sliderRandomizeSlides';
+    /** @const Enables spinning pre-loader, you may style it via CSS (class rsPreloader). */
+    const USE_PRELOADER = 'sliderUsePreloader';
+    /** @const Adds global caption element to slider. Grab an image caption from alt or element with (class rsCaption) */
+    const GLOBAL_CAPTION = 'sliderGlobalCaption';
+
+    /*imageAlignCenter: true,
+    randomizeSlides: false,
+    usePreloader: true,
+    globalCaption: false,*/
 
     /** @const Fades in slide after it's loaded. */
     const FADEIN_LOADED = 'sliderFadeIdLoaded';
@@ -129,30 +142,24 @@ final class WidgetMediaSlider extends Widget
             self::TRANSITION_MOVE => __('Move'),
             self::TRANSITION_FADE => __('Fade')
         ], self::TRANSITION_MOVE));
-        $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::BOOL_OPTIONS, __("Gallery Options"), [
-            self::LOOP => __("Cycle slides"),
-            self::FADEIN_LOADED => __("Fade in the loaded slide"),
-            self::CONTROLS_INSIDE => __("Put controls inside")
-        ], [
-            self::FADEIN_LOADED,
-            self::CONTROLS_INSIDE
-        ]));
+        $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::SLIDE_OPTIONS,
+            __("Show slides with:"), [
+                self::LOOP => __("Cycle"),
+                self::RANDOMIZE_SLIDES => __("Random order"),
+                self::GLOBAL_CAPTION => __("Caption"),
+                self::USE_PRELOADER => __("Preloader"),
+                self::FADEIN_LOADED => __("Fade in"),
+                self::CONTROLS_INSIDE => __("Controls inside"),
+                self::IMAGE_ALIGN_CENTER => __("Image aligned to center"),
+
+            ], [self::USE_PRELOADER, self::FADEIN_LOADED, self::CONTROLS_INSIDE, self::IMAGE_ALIGN_CENTER]));
         $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::AUTO_SCALE,
             __("Change height based on:"), [
                 self::AUTO_SCALE_SLIDER => __("Auto scale width and height"),
                 self::AUTO_SCALE_HEIGHT => __("Image width and height")
             ], [self::AUTO_SCALE_SLIDER]));
-        $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::ARROWS_OPTIONS,
-            __("Arrows for slide change:"), [
-                self::NAV_ARROWS_SHOW => __("Show"),
-                self::NAV_ARROWS_AUTO_HIDE => __("Auto-hide"),
-                self::NAV_ARROWS_HIDE_ON_TOUCH => __("Hide on Touch"),
-            ], [
-                self::NAV_ARROWS_SHOW,
-                self::NAV_ARROWS_AUTO_HIDE
-            ]));
         $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::NAVIGATE_OPTIONS,
-            __("Can change slide with:"), [
+            __("Change slide with:"), [
                 self::NAVIGATE_BY_CLICK => __("Click"),
                 self::NAVIGATE_BY_DRAG => __("Drag"),
                 self::NAVIGATE_BY_TOUCH => __("Touch"),
@@ -161,6 +168,15 @@ final class WidgetMediaSlider extends Widget
                 self::NAVIGATE_BY_CLICK,
                 self::NAVIGATE_BY_DRAG,
                 self::NAVIGATE_BY_TOUCH
+            ]));
+        $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::ARROWS_OPTIONS,
+            __("Arrows for slide change:"), [
+                self::NAV_ARROWS_SHOW => __("Show"),
+                self::NAV_ARROWS_AUTO_HIDE => __("Auto-hide"),
+                self::NAV_ARROWS_HIDE_ON_TOUCH => __("Hide on Touch"),
+            ], [
+                self::NAV_ARROWS_SHOW,
+                self::NAV_ARROWS_AUTO_HIDE
             ]));
         //NAVIGATE_OPTIONS
         $this->addField(new WidgetField(WidgetField::NUMBER, self::IMAGES_TO_PRELOAD,
@@ -215,11 +231,15 @@ final class WidgetMediaSlider extends Widget
             $keyboardNavEnabled = isset($navigateOptions[self::NAV_WITH_KEYBOARD]) ? 'true' : 'false';
             $sliderDrag = isset($navigateOptions[self::NAVIGATE_BY_DRAG]) ? 'true' : 'false';
             $sliderTouch = isset($navigateOptions[self::NAVIGATE_BY_TOUCH]) ? 'true' : 'false';
-
-            $boolOptions = self::getInstanceValue($instance, self::BOOL_OPTIONS, $this);
-            $controlsInside = isset($boolOptions[self::CONTROLS_INSIDE]) ? 'true' : 'false';
-            $fadeinLoadedSlide = isset($boolOptions[self::FADEIN_LOADED]) ? 'true' : 'false';
-            $sliderLoop = isset($boolOptions[self::LOOP]) ? 'true' : 'false';
+            //Options
+            $slideOptions = self::getInstanceValue($instance, self::SLIDE_OPTIONS, $this);
+            $sliderLoop = isset($slideOptions[self::LOOP]) ? 'true' : 'false';
+            $randomizeSlides = isset($slideOptions[self::RANDOMIZE_SLIDES]) ? 'true' : 'false';
+            $globalCaption = isset($slideOptions[self::GLOBAL_CAPTION]) ? 'true' : 'false';
+            $usePreloader = isset($slideOptions[self::USE_PRELOADER]) ? 'true' : 'false';
+            $fadeinLoadedSlide = isset($slideOptions[self::FADEIN_LOADED]) ? 'true' : 'false';
+            $controlsInside = isset($slideOptions[self::CONTROLS_INSIDE]) ? 'true' : 'false';
+            $imageAlignCenter = isset($slideOptions[self::IMAGE_ALIGN_CENTER]) ? 'true' : 'false';
 
             $autoScaleSliderWidth = self::getInstanceValue($instance, self::AUTO_SCALE_VALUE_WIDTH, $this);
             $autoScaleSliderHeight = self::getInstanceValue($instance, self::AUTO_SCALE_VALUE_HEIGHT, $this);
@@ -259,10 +279,10 @@ final class WidgetMediaSlider extends Widget
                     fadeinLoadedSlide: $fadeinLoadedSlide,
                     fadeInAfterLoaded: $fadeinLoadedSlide,
                     
-                    imageAlignCenter: true,
-                    randomizeSlides: false,
-                    usePreloader: true,
-                    globalCaption: false,
+                    imageAlignCenter: $imageAlignCenter,
+                    randomizeSlides: $randomizeSlides,
+                    usePreloader: $usePreloader,
+                    globalCaption: $globalCaption,
                     
                     autoScaleSliderWidth: '$autoScaleSliderWidth',
                     autoScaleSliderHeight: '$autoScaleSliderHeight',
