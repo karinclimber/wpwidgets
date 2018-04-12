@@ -9,54 +9,56 @@ namespace wp;
 final class WidgetMediaSlider extends Widget
 {
     const IMAGES = 'sliderImages';
-    const BOOL_OPTIONS = 'sliderBoolOptions';
+
+    const AUTO_SCALE = 'sliderAutoScale';
+    /** @const Automatically updates slider height based on base width. */
+    const AUTO_SCALE_SLIDER = 'sliderAutoScaleSlider';
+    /** @const Automatically updates slider height based on base width and Image height. */
+    const AUTO_SCALE_HEIGHT = 'sliderAutoScaleHeight';
+
+    const ARROWS_OPTIONS = 'sliderArrowsOptions';
     /** @const Show direction arrows navigation. */
     const NAV_ARROWS_SHOW = 'sliderNavArrowsShow';
     /** @const Auto hide showed arrows navigation. */
     const NAV_ARROWS_AUTO_HIDE = 'sliderNavArrowsAutoHide';
     /** @const Hides arrows on touch devices. */
     const NAV_ARROWS_HIDE_ON_TOUCH = 'sliderNavArrowsHideOnTouch';
-    /** @const Navigate slider with keyboard left and right arrows. */
-    const NAV_WITH_KEYBOARD = 'sliderNavWithKeyboard';
+
+    const NAVIGATE_OPTIONS = 'sliderNavigateOptions';
     /** @const Navigates forward by clicking on slide. */
     const NAVIGATE_BY_CLICK = 'sliderNavigateByClick';
     /** @const Mouse drag navigation over slider. */
     const NAVIGATE_BY_DRAG = 'sliderNavigateByDrag';
     /** @const Touch navigation of slider. */
     const NAVIGATE_BY_TOUCH = 'sliderNavigateByTouch';
+    /** @const Navigate slider with keyboard left and right arrows. */
+    const NAV_WITH_KEYBOARD = 'sliderNavWithKeyboard';
+
+    const BOOL_OPTIONS = 'sliderBoolOptions';
     /** @const Makes slider to go from last slide to first. */
     const LOOP = 'sliderLoop';
     /** @const If set to true adds arrows and FullScreen button inside rsOverflow container,
      * otherwise inside root slider container. */
     const CONTROLS_INSIDE = 'sliderControlsInside';
-    /** @const Automatically updates slider height based on base width. */
-    const AUTO_SCALE_SLIDER = 'sliderAutoScaleSlider';
-    /** @const Automatically updates slider height based on base width and Image height. */
-    const AUTO_SCALE_HEIGHT = 'sliderAutoScaleHeight';
-    /** Scales and animates height based on current slide.
-     *  Please note: if you have images in slide that don't have rsImg class or don't have fixed size,
-     *  use $(window).load() instead of $(document).ready() before initializing slider.
-     *  AutoHeight doesn't work with properties like autoScaleSlider, imageScaleMode and imageAlignCenter.
-     */
-    const AUTO_HEIGHT = 'sliderAutoHeight';
+
     /** @const Fades in slide after it's loaded. */
     const FADEIN_LOADED = 'sliderFadeIdLoaded';
     /** @const Base slider width. Slider will autocalculate the ratio based on these values. */
     const AUTO_SCALE_VALUE_WIDTH = 'sliderAutoScaleWidthValue';
     /** @const Base slider height */
     const AUTO_SCALE_VALUE_HEIGHT = 'sliderAutoScaleHeightValue';
-    /** @const Start slide index*/
+    /** @const Start slide index */
     const START_SLIDE_ID = 'sliderStartSlideId';
     /** @const Number of slides to preload on sides.
      * If you set it to 0, only one slide will be kept in the display list at once.*/
     const IMAGES_TO_PRELOAD = 'sliderImagesToPreload';
-    /** @const Spacing between slides in pixels.*/
+    /** @const Spacing between slides in pixels. */
     const SLIDES_SPACING = 'sliderSlidesSpacing';
-    /** @const Minimum distance in pixels to show next slide while dragging.*/
+    /** @const Minimum distance in pixels to show next slide while dragging. */
     const MIN_SLIDES_OFFSET = 'sliderMinSlidesOffset';
-    /** @const Slider transition speed, in ms.*/
+    /** @const Slider transition speed, in ms. */
     const TRANSITION_SPEED = 'sliderTransitionSpeed';
-    /** @const Distance between image and edge of slide (doesn't work with 'fill' scale mode).*/
+    /** @const Distance between image and edge of slide (doesn't work with 'fill' scale mode). */
     const IMAGE_SCALE_PADDING = 'sliderImageScalePadding';
 
     const ORIENTATION = 'sliderOrientation';
@@ -89,8 +91,9 @@ final class WidgetMediaSlider extends Widget
         $uriToDirLibs = WPUtils::getUriToLibsDir(__FILE__);
         // Royal Slider
         wp_enqueue_style('royalslider', "{$uriToDirLibs}/royalslider/royalslider.css");
-        wp_enqueue_style('royalslider-skin', "{$uriToDirLibs}/royalslider/skins/minimal-white/rs-minimal-white.css");
-        wp_enqueue_script('royalslider', "{$uriToDirLibs}/royalslider/jquery.royalslider.min.js", ['jquery'], null, true);
+        wp_enqueue_style('royalslider-skin', "{$uriToDirLibs}/royalslider/rs-minimal-white.css");
+        wp_enqueue_script('royalslider', "{$uriToDirLibs}/royalslider/jquery.royalslider.min.js", ['jquery'],
+            null, true);
     }
 
     function enqueueScriptsAdmin()
@@ -127,31 +130,39 @@ final class WidgetMediaSlider extends Widget
             self::TRANSITION_FADE => __('Fade')
         ], self::TRANSITION_MOVE));
         $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::BOOL_OPTIONS, __("Gallery Options"), [
-            self::NAV_ARROWS_SHOW => __("Navigation Arrows Show"),
-            self::NAV_ARROWS_AUTO_HIDE => __("Navigation Arrows Auto hide"),
-            self::NAV_ARROWS_HIDE_ON_TOUCH => __("Navigation Arrows Hide on touch"),
-
-            self::AUTO_HEIGHT => __("Auto Height based on Image"),
-            self::AUTO_SCALE_SLIDER => __("Auto Height based on Width"),
-            self::AUTO_SCALE_HEIGHT => __("Auto Height based on Width and Image"),
-
-            self::NAVIGATE_BY_CLICK => __("Change slide with Click"),
-            self::NAVIGATE_BY_DRAG => __("Change slide with Drag"),
-            self::NAVIGATE_BY_TOUCH => __("Change slide with Touch"),
-            self::NAV_WITH_KEYBOARD => __("Change slide with Keyboard"),
             self::LOOP => __("Cycle slides"),
             self::FADEIN_LOADED => __("Fade in the loaded slide"),
             self::CONTROLS_INSIDE => __("Put controls inside")
         ], [
-            self::NAVIGATE_BY_CLICK,
-            self::NAVIGATE_BY_DRAG,
-            self::NAVIGATE_BY_TOUCH,
-            self::NAV_ARROWS_SHOW,
-            self::NAV_ARROWS_AUTO_HIDE,
-            self::AUTO_SCALE_HEIGHT,
             self::FADEIN_LOADED,
             self::CONTROLS_INSIDE
         ]));
+        $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::AUTO_SCALE,
+            __("Change height based on:"), [
+                self::AUTO_SCALE_SLIDER => __("Auto scale width and height"),
+                self::AUTO_SCALE_HEIGHT => __("Image width and height")
+            ], [self::AUTO_SCALE_SLIDER]));
+        $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::ARROWS_OPTIONS,
+            __("Arrows for slide change:"), [
+                self::NAV_ARROWS_SHOW => __("Show"),
+                self::NAV_ARROWS_AUTO_HIDE => __("Auto-hide"),
+                self::NAV_ARROWS_HIDE_ON_TOUCH => __("Hide on Touch"),
+            ], [
+                self::NAV_ARROWS_SHOW,
+                self::NAV_ARROWS_AUTO_HIDE
+            ]));
+        $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::NAVIGATE_OPTIONS,
+            __("Can change slide with:"), [
+                self::NAVIGATE_BY_CLICK => __("Click"),
+                self::NAVIGATE_BY_DRAG => __("Drag"),
+                self::NAVIGATE_BY_TOUCH => __("Touch"),
+                self::NAV_WITH_KEYBOARD => __("Keyboard left and right arrow"),
+            ], [
+                self::NAVIGATE_BY_CLICK,
+                self::NAVIGATE_BY_DRAG,
+                self::NAVIGATE_BY_TOUCH
+            ]));
+        //NAVIGATE_OPTIONS
         $this->addField(new WidgetField(WidgetField::NUMBER, self::IMAGES_TO_PRELOAD,
             __("Images to preload"), [], 4));
         $this->addField(new WidgetField(WidgetField::NUMBER, self::SLIDES_SPACING,
@@ -189,25 +200,25 @@ final class WidgetMediaSlider extends Widget
             $controlNavigation = self::getInstanceValue($instance, self::NAVIGATION, $this);
             $slidesOrientation = self::getInstanceValue($instance, self::ORIENTATION, $this);
             $transitionType = self::getInstanceValue($instance, self::TRANSITION, $this);
+            //AutoScale
+            $autoScaleOptions = self::getInstanceValue($instance, self::AUTO_SCALE, $this);
+            $autoScaleSlider = isset($autoScaleOptions[self::AUTO_SCALE_SLIDER]) ? 'true' : 'false';
+            $autoScaleHeight = isset($autoScaleOptions[self::AUTO_SCALE_HEIGHT]) ? 'true' : 'false';
+            //Arrows
+            $arrowsOptions = self::getInstanceValue($instance, self::ARROWS_OPTIONS, $this);
+            $arrowsNav = isset($arrowsOptions[self::NAV_ARROWS_SHOW]) ? 'true' : 'false';
+            $arrowsNavAutoHide = isset($arrowsOptions[self::NAV_ARROWS_AUTO_HIDE]) ? 'true' : 'false';
+            $arrowsNavHideOnTouch = isset($arrowsOptions[self::NAV_ARROWS_HIDE_ON_TOUCH]) ? 'true' : 'false';
+            //Navigation
+            $navigateOptions = self::getInstanceValue($instance, self::NAVIGATE_OPTIONS, $this);
+            $navigateByClick = isset($navigateOptions[self::NAVIGATE_BY_CLICK]) ? 'true' : 'false';
+            $keyboardNavEnabled = isset($navigateOptions[self::NAV_WITH_KEYBOARD]) ? 'true' : 'false';
+            $sliderDrag = isset($navigateOptions[self::NAVIGATE_BY_DRAG]) ? 'true' : 'false';
+            $sliderTouch = isset($navigateOptions[self::NAVIGATE_BY_TOUCH]) ? 'true' : 'false';
+
             $boolOptions = self::getInstanceValue($instance, self::BOOL_OPTIONS, $this);
-
-
-            $autoScaleSlider = isset($boolOptions[self::AUTO_SCALE_SLIDER]) ? 'true' : 'false';
-            $autoScaleHeight = isset($boolOptions[self::AUTO_SCALE_HEIGHT]) ? 'true' : 'false';
-            $autoHeight = isset($boolOptions[self::AUTO_HEIGHT]) ? 'true' : 'false';
-
-            $arrowsNav = isset($boolOptions[self::NAV_ARROWS_SHOW]) ? 'true' : 'false';
-            $arrowsNavAutoHide = isset($boolOptions[self::NAV_ARROWS_AUTO_HIDE]) ? 'true' : 'false';
-            $arrowsNavHideOnTouch = isset($boolOptions[self::NAV_ARROWS_HIDE_ON_TOUCH]) ? 'true' : 'false';
-
-            $navigateByClick = isset($boolOptions[self::NAVIGATE_BY_CLICK]) ? 'true' : 'false';
-            $keyboardNavEnabled = isset($boolOptions[self::NAV_WITH_KEYBOARD]) ? 'true' : 'false';
-            $sliderDrag = isset($boolOptions[self::NAVIGATE_BY_DRAG]) ? 'true' : 'false';
-            $sliderTouch = isset($boolOptions[self::NAVIGATE_BY_TOUCH]) ? 'true' : 'false';
-
             $controlsInside = isset($boolOptions[self::CONTROLS_INSIDE]) ? 'true' : 'false';
             $fadeinLoadedSlide = isset($boolOptions[self::FADEIN_LOADED]) ? 'true' : 'false';
-
             $sliderLoop = isset($boolOptions[self::LOOP]) ? 'true' : 'false';
 
             $autoScaleSliderWidth = self::getInstanceValue($instance, self::AUTO_SCALE_VALUE_WIDTH, $this);
@@ -231,22 +242,23 @@ final class WidgetMediaSlider extends Widget
                     
                     autoScaleSlider: $autoScaleSlider,
                     autoScaleHeight: $autoScaleHeight,
-                    autoHeight: $autoHeight,
+                    autoHeight: false,
                     
                     arrowsNav: $arrowsNav,
                     arrowsNavAutoHide: $arrowsNavAutoHide,
                     arrowsNavHideOnTouch: $arrowsNavHideOnTouch,
                     
                     navigateByClick: $navigateByClick,
-                    keyboardNavEnabled: $keyboardNavEnabled,
-                    sliderDrag: $sliderDrag,
                     sliderTouch: $sliderTouch,
+                    sliderDrag: $sliderDrag,
+                    keyboardNavEnabled: $keyboardNavEnabled,
+                    
                     controlsInside: $controlsInside,
                     loop: $sliderLoop,
-                    loopRewind: $sliderLoop,
-                    
+                    loopRewind: $sliderLoop,                    
                     fadeinLoadedSlide: $fadeinLoadedSlide,
                     fadeInAfterLoaded: $fadeinLoadedSlide,
+                    
                     imageAlignCenter: true,
                     randomizeSlides: false,
                     usePreloader: true,
