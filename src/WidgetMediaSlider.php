@@ -92,11 +92,9 @@ final class WidgetMediaSlider extends Widget
     function enqueueScriptsTheme()
     {
         $uriToDirLibs = WPUtils::getUriToLibsDir(__FILE__);
-        // Royal Slider
-        wp_enqueue_style('royalslider', "{$uriToDirLibs}/royalslider/royalslider.css");
-        wp_enqueue_style('royalslider-skin', "{$uriToDirLibs}/royalslider/rs-minimal-white.css");
-        wp_enqueue_script('royalslider', "{$uriToDirLibs}/royalslider/jquery.royalslider.js", ['jquery'],
-            null, true);
+        wp_enqueue_style('rslider', "{$uriToDirLibs}/rslider/rslider.css");
+        wp_enqueue_style('rslider-skin', "{$uriToDirLibs}/rslider/rs-minimal.css");
+        wp_enqueue_script('rslider', "{$uriToDirLibs}/rslider/rslider.js", ['jquery'], null, true);
     }
 
     function enqueueScriptsAdmin()
