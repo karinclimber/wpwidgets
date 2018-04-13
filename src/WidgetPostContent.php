@@ -17,7 +17,6 @@ final class WidgetPostContent extends Widget
     {
         $content = "";
         $instance[Widget::CUSTOM_TITLE] = get_the_title();
-        $instance[Widget::SHOW_DEFAULT_TITLE] = false;
         $dateTitle = sprintf('<small class="text-center">%s %s %s %s</small>',
             __('Posted on', 'wptheme'),
             get_the_time('d M Y'),
