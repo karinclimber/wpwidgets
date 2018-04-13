@@ -280,8 +280,9 @@ final class WidgetMediaSlider extends Widget
             $navigateOptions = self::getInstanceValue($instance, self::NAVIGATE_OPTIONS, $this);
             //Options
             $slideOptions = self::getInstanceValue($instance, self::SLIDE_OPTIONS, $this);
-            wp_register_script("rsInit{$galleryId}", "{$this->uriToDirLibs}/rslider/rsinit.js", ['rslider'], false, true);
-            wp_localize_script("rsInit{$galleryId}", 'slider', ['id'=>"#{$galleryId}", 'options' =>[
+            $scriptName = 'rsInit'.$galleryId;
+            wp_register_script($scriptName, "{$this->uriToDirLibs}/rslider/rsinit.js", ['rslider'], false, true);
+            wp_localize_script($scriptName, 'slider', ['id'=>"#{$galleryId}", 'options' =>[
                 'imageScaleMode' => self::getInstanceValue($instance, self::IMAGE_SCALE, $this),
                 'controlNavigation' => self::getInstanceValue($instance, self::NAVIGATION, $this),
                 'slidesOrientation' => self::getInstanceValue($instance, self::ORIENTATION, $this),
@@ -311,6 +312,7 @@ final class WidgetMediaSlider extends Widget
                 'transitionSpeed' => self::getInstanceValue($instance, self::TRANSITION_SPEED, $this),
                 'imageScalePadding' => self::getInstanceValue($instance, self::IMAGE_SCALE_PADDING, $this)
             ]]);
+            wp_enqueue_script($scriptName);
         }
         $args[WPSidebar::CONTENT] = $content;
         parent::widget($args, $instance);
