@@ -93,6 +93,7 @@ final class WidgetMediaSlider extends Widget
     {
         $uriToDirLibs = WPUtils::getUriToLibsDir(__FILE__);
         wp_enqueue_style('rslider', "{$uriToDirLibs}/rslider/rslider.css");
+        wp_enqueue_style('rslider-caption', "{$uriToDirLibs}/rslider/rslider-caption.css");
         wp_enqueue_style('rslider-skin', "{$uriToDirLibs}/rslider/rs-minimal.css");
         wp_enqueue_script('rslider', "{$uriToDirLibs}/rslider/rslider.js", ['jquery'], null, true);
     }
