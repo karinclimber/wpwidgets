@@ -509,6 +509,13 @@
         }, updateSliderSize: function (b) {
             var f, c;
             if (this.slider) {
+                /*if (this.st.autoScaleHeight){
+                    f = this.slider.width(),
+                    f != this.width && (this.slider.css("height", e / a * f), f = this.slider.width()), c = this.slider.height()
+                } else {
+                    c = this.slider.height(),
+                    c != this.height && (this.slider.css("width", a / e * c), c = this.slider.height()), f = this.slider.width()
+                }*/
                 f = this.slider.width(), c = this.slider.height();
                 if (b || f != this.width || c != this.height) {
                     this.width = f;
@@ -779,6 +786,7 @@
         usePreloader: !0,
         arrowsNavHideOnTouch: !1,
         globalCaption: !1,
+        autoScaleHeight: !1,
         slidesDiff: 2
     };
     n.rsCSS3Easing = {

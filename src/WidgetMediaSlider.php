@@ -230,7 +230,8 @@ final class WidgetMediaSlider extends Widget
             $transitionSpeed = self::getInstanceValue($instance, self::TRANSITION_SPEED, $this);
             $imageScalePadding = self::getInstanceValue($instance, self::IMAGE_SCALE_PADDING, $this);
             //Content
-            $content = "<div id='{$galleryId}' class='royalSlider rsMinW' style='width:$sliderWidth;height:$sliderHeight;'>{$content}</div>
+            $content = "<div id='{$galleryId}' class='royalSlider rsMinW'>{$content}</div>
+            <style type='text/css' scoped>#{$galleryId}.royalSlider{width:$sliderWidth;height:$sliderHeight;}</style>
             <script type='text/javascript'>(function ($) {
             $(document).ready(function () {
             if ($().royalSlider) {
