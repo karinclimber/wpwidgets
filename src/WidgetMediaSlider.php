@@ -84,6 +84,7 @@ final class WidgetMediaSlider extends Widget
     const IMAGE_SCALE_FILL = 'fill';
     const IMAGE_SCALE_NONE = 'none';
     private $uriToDirLibs = '';
+    private $inlineJsContent;
 
     function __construct()
     {
@@ -97,6 +98,9 @@ final class WidgetMediaSlider extends Widget
         wp_enqueue_style('rslider-caption', "{$this->uriToDirLibs}/rslider/rslider-caption.css");
         wp_enqueue_style('rslider-skin', "{$this->uriToDirLibs}/rslider/rs-minimal.css");
         wp_enqueue_script('rslider', "{$this->uriToDirLibs}/rslider/rslider.js", ['jquery'], null, true);
+        if ($this->inlineJsContent){
+            wp_add_inline_script($this->inlineJsContent->id,$this->inlineJsContent->data);
+        }
     }
 
     function enqueueScriptsAdmin()
@@ -197,7 +201,7 @@ final class WidgetMediaSlider extends Widget
                 }
             }
             $galleryId = uniqid("widgetGallery");
-            /*$imageScaleMode = self::getInstanceValue($instance, self::IMAGE_SCALE, $this);
+            $imageScaleMode = self::getInstanceValue($instance, self::IMAGE_SCALE, $this);
             $controlNavigation = self::getInstanceValue($instance, self::NAVIGATION, $this);
             $slidesOrientation = self::getInstanceValue($instance, self::ORIENTATION, $this);
             $transitionType = self::getInstanceValue($instance, self::TRANSITION, $this);
@@ -231,7 +235,7 @@ final class WidgetMediaSlider extends Widget
             $transitionSpeed = self::getInstanceValue($instance, self::TRANSITION_SPEED, $this);
             $imageScalePadding = self::getInstanceValue($instance, self::IMAGE_SCALE_PADDING, $this);
             //Content
-            $content = "<style type='text/css'>#{$galleryId}.royalSlider{width:$sliderWidth;height:$sliderHeight;}</style>
+            /*$content = "<style type='text/css'>#{$galleryId}.royalSlider{width:$sliderWidth;height:$sliderHeight;}</style>
             <div id='{$galleryId}' class='royalSlider rsMinW'>{$content}</div>
             <script type='text/javascript'>(function ($) {
             $(document).ready(function () {
@@ -270,49 +274,43 @@ final class WidgetMediaSlider extends Widget
                 });
             }});
             })(jQuery);</script>";*/
-            $sliderWidth = self::getInstanceValue($instance, self::WIDTH, $this);
-            $sliderHeight = self::getInstanceValue($instance, self::HEIGHT, $this);
             $content = "<style type='text/css'>#{$galleryId}.royalSlider{width:$sliderWidth;height:$sliderHeight;}</style>
             <div id='{$galleryId}' class='royalSlider rsMinW'>{$content}</div>";
-            //Arrows
-            $arrowsOptions = self::getInstanceValue($instance, self::ARROWS_OPTIONS, $this);
-            //Navigation
-            $navigateOptions = self::getInstanceValue($instance, self::NAVIGATE_OPTIONS, $this);
-            //Options
-            $slideOptions = self::getInstanceValue($instance, self::SLIDE_OPTIONS, $this);
-            $scriptName = 'rsInit'.$galleryId;
-            wp_register_script($scriptName, "{$this->uriToDirLibs}/rslider/rsinit.js", ['rslider'], false, true);
-            wp_localize_script($scriptName, 'slider', ['id'=>"#{$galleryId}", 'options' =>[
-                'imageScaleMode' => self::getInstanceValue($instance, self::IMAGE_SCALE, $this),
-                'controlNavigation' => self::getInstanceValue($instance, self::NAVIGATION, $this),
-                'slidesOrientation' => self::getInstanceValue($instance, self::ORIENTATION, $this),
-                'transitionType' => self::getInstanceValue($instance, self::TRANSITION, $this),
-                //Arrows
-                'arrowsNav' => in_array(self::NAV_ARROWS_SHOW, $arrowsOptions) ? 'true' : 'false',
-                'arrowsNavAutoHide' => in_array(self::NAV_ARROWS_AUTO_HIDE, $arrowsOptions) ? 'true' : 'false',
-                'arrowsNavHideOnTouch' => in_array(self::NAV_ARROWS_HIDE_ON_TOUCH, $arrowsOptions) ? 'true' : 'false',
-                //Navigation
-                'navigateByClick' => in_array(self::NAVIGATE_BY_CLICK, $navigateOptions) ? 'true' : 'false',
-                'keyboardNavEnabled' => in_array(self::NAV_WITH_KEYBOARD, $navigateOptions) ? 'true' : 'false',
-                'sliderDrag' => in_array(self::NAVIGATE_BY_DRAG, $navigateOptions) ? 'true' : 'false',
-                'sliderTouch' => in_array(self::NAVIGATE_BY_TOUCH, $navigateOptions) ? 'true' : 'false',
-                //Options
-                'sliderLoop' => in_array(self::LOOP, $slideOptions) ? 'true' : 'false',
-                'randomizeSlides' => in_array(self::RANDOMIZE_SLIDES, $slideOptions) ? 'true' : 'false',
-                'globalCaption' => in_array(self::GLOBAL_CAPTION, $slideOptions) ? 'true' : 'false',
-                'usePreloader' => in_array(self::USE_PRELOADER, $slideOptions) ? 'true' : 'false',
-                'fadeinLoadedSlide' => in_array(self::FADEIN_LOADED, $slideOptions) ? 'true' : 'false',
-                'controlsInside' => in_array(self::CONTROLS_INSIDE, $slideOptions) ? 'true' : 'false',
-                'imageAlignCenter' => in_array(self::IMAGE_ALIGN_CENTER, $slideOptions) ? 'true' : 'false',
-                //Values
-                'startSlideId' => self::getInstanceValue($instance, self::START_SLIDE_ID, $this),
-                'numImagesToPreload' => self::getInstanceValue($instance, self::IMAGES_TO_PRELOAD, $this),
-                'slidesSpacing' => self::getInstanceValue($instance, self::SLIDES_SPACING, $this),
-                'minSlideOffset' => self::getInstanceValue($instance, self::MIN_SLIDES_OFFSET, $this),
-                'transitionSpeed' => self::getInstanceValue($instance, self::TRANSITION_SPEED, $this),
-                'imageScalePadding' => self::getInstanceValue($instance, self::IMAGE_SCALE_PADDING, $this)
-            ]]);
-            wp_enqueue_script($scriptName);
+            $this->inlineJsContent = [
+                'id' => "rsInit{$galleryId}",
+                'data' => "$('#{$galleryId}').royalSlider({                   
+                    imageScaleMode: '$imageScaleMode',
+                    controlNavigation: '$controlNavigation',
+                    slidesOrientation: '$slidesOrientation',
+                    transitionType: '$transitionType',
+                    
+                    arrowsNav: $arrowsNav,
+                    arrowsNavAutoHide: $arrowsNavAutoHide,
+                    arrowsNavHideOnTouch: $arrowsNavHideOnTouch,
+                    
+                    navigateByClick: $navigateByClick,
+                    sliderTouch: $sliderTouch,
+                    sliderDrag: $sliderDrag,
+                    keyboardNavEnabled: $keyboardNavEnabled,
+                    
+                    controlsInside: $controlsInside,
+                    loop: $sliderLoop,
+                    loopRewind: $sliderLoop,                    
+                    fadeinLoadedSlide: $fadeinLoadedSlide,
+                    fadeInAfterLoaded: $fadeinLoadedSlide,
+                    imageAlignCenter: $imageAlignCenter,
+                    randomizeSlides: $randomizeSlides,
+                    usePreloader: $usePreloader,
+                    globalCaption: $globalCaption,
+                    
+                    startSlideId: $startSlideId,
+                    numImagesToPreload: $numImagesToPreload,
+                    slidesSpacing: $slidesSpacing,
+                    minSlideOffset: $minSlideOffset,
+                    transitionSpeed: $transitionSpeed,
+                    imageScalePadding: $imageScalePadding,
+                });"
+            ];
         }
         $args[WPSidebar::CONTENT] = $content;
         parent::widget($args, $instance);
