@@ -270,6 +270,10 @@ final class WidgetMediaSlider extends Widget
                 });
             }});
             })(jQuery);</script>";*/
+            $sliderWidth = self::getInstanceValue($instance, self::WIDTH, $this);
+            $sliderHeight = self::getInstanceValue($instance, self::HEIGHT, $this);
+            $content = "<style type='text/css'>#{$galleryId}.royalSlider{width:$sliderWidth;height:$sliderHeight;}</style>
+            <div id='{$galleryId}' class='royalSlider rsMinW'>{$content}</div>";
             //Arrows
             $arrowsOptions = self::getInstanceValue($instance, self::ARROWS_OPTIONS, $this);
             //Navigation
@@ -300,8 +304,6 @@ final class WidgetMediaSlider extends Widget
                 'controlsInside' => in_array(self::CONTROLS_INSIDE, $slideOptions) ? 'true' : 'false',
                 'imageAlignCenter' => in_array(self::IMAGE_ALIGN_CENTER, $slideOptions) ? 'true' : 'false',
                 //Values
-                'sliderWidth' => self::getInstanceValue($instance, self::WIDTH, $this),
-                'sliderHeight' => self::getInstanceValue($instance, self::HEIGHT, $this),
                 'startSlideId' => self::getInstanceValue($instance, self::START_SLIDE_ID, $this),
                 'numImagesToPreload' => self::getInstanceValue($instance, self::IMAGES_TO_PRELOAD, $this),
                 'slidesSpacing' => self::getInstanceValue($instance, self::SLIDES_SPACING, $this),
