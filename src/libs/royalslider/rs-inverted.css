@@ -11,7 +11,7 @@
 *    7. Preloader
 *    8. Caption
 *    
-*  Sprite: 'rs-default-inverted.png'
+*  Sprite: 'rs-inverted.png'
 *  Feel free to edit anything
 *  If you don't some part - just delete it
 * 
@@ -64,7 +64,7 @@
 
 	position: absolute;	
 	cursor: pointer;	
-	background: url('rs-default-inverted.png');
+	background: url('rs-inverted.png');
 
 	background-color: #FFF;
 	background-color: rgba(255,255,255, .75);
@@ -227,7 +227,7 @@
 	margin-left: -8px;
 	position: absolute;	
 	cursor: pointer;	
-	background: url('rs-default-inverted.png');
+	background: url('rs-inverted.png');
 }
 
 .rsDefaultInv.rsWithThumbsHor .rsThumbsArrowLeft .rsThumbsArrowIcn { background-position: -128px -32px; }
@@ -349,7 +349,7 @@
 	width: 32px;
 	height: 32px;
 
-	background: url('rs-default-inverted.png') 0 0;
+	background: url('rs-inverted.png') 0 0;
 	background-color: #FFF;
 	background-color: rgba(255,255,255,0.75);
 	*background-color: #FFF;
@@ -392,7 +392,7 @@
 	-moz-transition: .3s;
 	transition: .3s;
 
-	background:url(rs-default-inverted.png) no-repeat 0 -32px;
+	background:url(rs-inverted.png) no-repeat 0 -32px;
 	background-color: #FFF;
 	background-color: rgba(255,255,255,0.75);
 	*background-color: #FFF;
@@ -428,7 +428,7 @@
 	margin: 6px;
 	width: 32px;
 	height: 32px;
-	background: url('rs-default-inverted.png') -64px 0;
+	background: url('rs-inverted.png') -64px 0;
 	background-color: #FFF;
 	background-color: rgba(255,255,255,0.75);
 	*background-color: #FFF;

@@ -509,11 +509,7 @@
         }, updateSliderSize: function (b) {
             var f, c;
             if (this.slider) {
-                if (this.st.autoScaleSlider) {
-                    var a = this.st.autoScaleSliderWidth, e = this.st.autoScaleSliderHeight;
-                    this.st.autoScaleHeight ? (f = this.slider.width(), f != this.width && (this.slider.css("height", e / a * f), f = this.slider.width()), c = this.slider.height()) : (c = this.slider.height(), c != this.height && (this.slider.css("width", a / e * c), c = this.slider.height()), f = this.slider.width())
-                } else f = this.slider.width(),
-                    c = this.slider.height();
+                f = this.slider.width(), c = this.slider.height();
                 if (b || f != this.width || c != this.height) {
                     this.width = f;
                     this.height = c;
@@ -774,7 +770,6 @@
         allowCSS3: !0,
         allowCSS3OnWebkit: !0,
         addActiveClass: !1,
-        autoHeight: !1,
         easeOut: "easeOutSine",
         easeInOut: "easeInOutSine",
         minSlideOffset: 10,
@@ -782,10 +777,6 @@
         imageAlignCenter: !0,
         imageScalePadding: 4,
         usePreloader: !0,
-        autoScaleSlider: !1,
-        autoScaleSliderWidth: 800,
-        autoScaleSliderHeight: 400,
-        autoScaleHeight: !0,
         arrowsNavHideOnTouch: !1,
         globalCaption: !1,
         slidesDiff: 2
@@ -1425,47 +1416,6 @@
         }
     });
     l.rsModules.animatedBlocks = l.rsProto._p4
-})(jQuery);
-// jquery.rs.auto-height v1.0.3
-(function (b) {
-    b.extend(b.rsProto, {
-        _w4: function () {
-            var a = this;
-            if (a.st.autoHeight) {
-                var b, c, e, f = !0, d = function (d) {
-                    e = a.slides[a.currSlideId];
-                    (b = e.holder) && (c = b.height()) && void 0 !== c && c > (a.st.minAutoHeight || 30) && (a._c4 = c, a._e || !d ? a._e1.css("height", c) : a._e1.stop(!0, !0).animate({height: c}, a.st.transitionSpeed), a.ev.trigger("rsAutoHeightChange", c), f && (a._e && setTimeout(function () {
-                        a._e1.css(a._g + "transition", "height " + a.st.transitionSpeed + "ms ease-in-out")
-                    }, 16), f = !1))
-                };
-                a.ev.on("rsMaybeSizeReady.rsAutoHeight",
-                    function (a, b) {
-                        e === b && d()
-                    });
-                a.ev.on("rsAfterContentSet.rsAutoHeight", function (a, b) {
-                    e === b && d()
-                });
-                a.slider.addClass("rsAutoHeight");
-                a.ev.one("rsAfterInit", function () {
-                    setTimeout(function () {
-                        d(!1);
-                        setTimeout(function () {
-                            a.slider.append('<div style="clear:both; float: none;"></div>')
-                        }, 16)
-                    }, 16)
-                });
-                a.ev.on("rsBeforeAnimStart", function () {
-                    d(!0)
-                });
-                a.ev.on("rsBeforeSizeSet", function () {
-                    setTimeout(function () {
-                        d(!1)
-                    }, 16)
-                })
-            }
-        }
-    });
-    b.rsModules.autoHeight = b.rsProto._w4
 })(jQuery);
 // jquery.rs.global-caption v1.0
 (function (b) {

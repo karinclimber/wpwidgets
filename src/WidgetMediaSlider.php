@@ -10,11 +10,6 @@ final class WidgetMediaSlider extends Widget
 {
     const IMAGES = 'sliderImages';
 
-    const AUTO_SCALE_OPTIONS = 'sliderAutoScaleOptions';
-    /** @const Automatically updates slider height based on base width. */
-    const AUTO_SCALE_SLIDER = 'sliderAutoScaleSlider';
-    /** @const Automatically updates slider height based on base width and Image height. */
-    const AUTO_SCALE_HEIGHT = 'sliderAutoScaleHeight';
     //Arrows
     const ARROWS_OPTIONS = 'sliderArrowsOptions';
     /** @const Show direction arrows navigation. */
@@ -52,9 +47,9 @@ final class WidgetMediaSlider extends Widget
     const FADEIN_LOADED = 'sliderFadeIdLoaded';
     //Values
     /** @const Base slider width. Slider will auto-calculate the ratio based on these values. */
-    const AUTO_SCALE_VALUE_WIDTH = 'sliderAutoScaleWidthValue';
+    const WIDTH = 'sliderAutoScaleWidthValue';
     /** @const Base slider height */
-    const AUTO_SCALE_VALUE_HEIGHT = 'sliderAutoScaleHeightValue';
+    const HEIGHT = 'sliderAutoScaleHeightValue';
     /** @const Start slide index */
     const START_SLIDE_ID = 'sliderStartSlideId';
     /** @const Number of slides to preload on sides.
@@ -100,7 +95,7 @@ final class WidgetMediaSlider extends Widget
         // Royal Slider
         wp_enqueue_style('royalslider', "{$uriToDirLibs}/royalslider/royalslider.css");
         wp_enqueue_style('royalslider-skin', "{$uriToDirLibs}/royalslider/rs-minimal-white.css");
-        wp_enqueue_script('royalslider', "{$uriToDirLibs}/royalslider/jquery.royalslider.min.js", ['jquery'],
+        wp_enqueue_script('royalslider', "{$uriToDirLibs}/royalslider/jquery.royalslider.js", ['jquery'],
             null, true);
     }
 
@@ -112,10 +107,10 @@ final class WidgetMediaSlider extends Widget
 
     function initFields()
     {
-        $this->addField(new WidgetField(WidgetField::NUMBER, self::AUTO_SCALE_VALUE_WIDTH,
-            __("Auto scale width"), [], 1170));
-        $this->addField(new WidgetField(WidgetField::NUMBER, self::AUTO_SCALE_VALUE_HEIGHT,
-            __("Auto scale height"), [], 450));
+        $this->addField(new WidgetField(WidgetField::TEXT, self::WIDTH,
+            __("Width"), [], '100%'));
+        $this->addField(new WidgetField(WidgetField::TEXT, self::HEIGHT,
+            __("Height"), [], '400px'));
         $this->addField(new WidgetField(WidgetField::IMAGES_WITH_URL, self::IMAGES, __("Images")));
         $this->addField(new WidgetField(WidgetField::SELECT, self::IMAGE_SCALE, __('Image Scale'), [
             self::IMAGE_SCALE_FIT_IF_SMALLER => __('Fit if Smaller'),
@@ -148,11 +143,6 @@ final class WidgetMediaSlider extends Widget
                 self::IMAGE_ALIGN_CENTER => __("Image aligned to center"),
 
             ], [self::USE_PRELOADER, self::FADEIN_LOADED, self::CONTROLS_INSIDE, self::IMAGE_ALIGN_CENTER]));
-        $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::AUTO_SCALE_OPTIONS,
-            __("Change height based on:"), [
-                self::AUTO_SCALE_SLIDER => __("Auto scale width and height"),
-                self::AUTO_SCALE_HEIGHT => __("Image width and height")
-            ], [self::AUTO_SCALE_SLIDER]));
         $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::NAVIGATE_OPTIONS,
             __("Change slide with:"), [
                 self::NAVIGATE_BY_CLICK => __("Click"),
@@ -211,10 +201,6 @@ final class WidgetMediaSlider extends Widget
             $controlNavigation = self::getInstanceValue($instance, self::NAVIGATION, $this);
             $slidesOrientation = self::getInstanceValue($instance, self::ORIENTATION, $this);
             $transitionType = self::getInstanceValue($instance, self::TRANSITION, $this);
-            //AutoScale
-            $autoScaleOptions = self::getInstanceValue($instance, self::AUTO_SCALE_OPTIONS, $this);
-            $autoScaleSlider = isset($autoScaleOptions[self::AUTO_SCALE_SLIDER]) ? 'true' : 'false';
-            $autoScaleHeight = isset($autoScaleOptions[self::AUTO_SCALE_HEIGHT]) ? 'true' : 'false';
             //Arrows
             $arrowsOptions = self::getInstanceValue($instance, self::ARROWS_OPTIONS, $this);
             $arrowsNav = in_array(self::NAV_ARROWS_SHOW, $arrowsOptions) ? 'true' : 'false';
@@ -235,17 +221,17 @@ final class WidgetMediaSlider extends Widget
             $fadeinLoadedSlide = in_array(self::FADEIN_LOADED, $slideOptions) ? 'true' : 'false';
             $controlsInside = in_array(self::CONTROLS_INSIDE, $slideOptions) ? 'true' : 'false';
             $imageAlignCenter = in_array(self::IMAGE_ALIGN_CENTER, $slideOptions) ? 'true' : 'false';
-
-            $autoScaleSliderWidth = self::getInstanceValue($instance, self::AUTO_SCALE_VALUE_WIDTH, $this);
-            $autoScaleSliderHeight = self::getInstanceValue($instance, self::AUTO_SCALE_VALUE_HEIGHT, $this);
+            //Values
+            $sliderWidth = self::getInstanceValue($instance, self::WIDTH, $this);
+            $sliderHeight = self::getInstanceValue($instance, self::HEIGHT, $this);
             $startSlideId = self::getInstanceValue($instance, self::START_SLIDE_ID, $this);
             $numImagesToPreload = self::getInstanceValue($instance, self::IMAGES_TO_PRELOAD, $this);
             $slidesSpacing = self::getInstanceValue($instance, self::SLIDES_SPACING, $this);
             $minSlideOffset = self::getInstanceValue($instance, self::MIN_SLIDES_OFFSET, $this);
             $transitionSpeed = self::getInstanceValue($instance, self::TRANSITION_SPEED, $this);
             $imageScalePadding = self::getInstanceValue($instance, self::IMAGE_SCALE_PADDING, $this);
-
-            $content = "<div id='{$galleryId}' class='royalSlider rsMinW'>{$content}</div>
+            //Content
+            $content = "<div id='{$galleryId}' class='royalSlider rsMinW' style='width:$sliderWidth;height:$sliderHeight;'>{$content}</div>
             <script type='text/javascript'>(function ($) {
             $(document).ready(function () {
             if ($().royalSlider) {
@@ -254,10 +240,6 @@ final class WidgetMediaSlider extends Widget
                     controlNavigation: '$controlNavigation',
                     slidesOrientation: '$slidesOrientation',
                     transitionType: '$transitionType',
-                    
-                    autoScaleSlider: $autoScaleSlider,
-                    autoScaleHeight: $autoScaleHeight,
-                    autoHeight: false,
                     
                     arrowsNav: $arrowsNav,
                     arrowsNavAutoHide: $arrowsNavAutoHide,
@@ -273,26 +255,21 @@ final class WidgetMediaSlider extends Widget
                     loopRewind: $sliderLoop,                    
                     fadeinLoadedSlide: $fadeinLoadedSlide,
                     fadeInAfterLoaded: $fadeinLoadedSlide,
-                    
                     imageAlignCenter: $imageAlignCenter,
                     randomizeSlides: $randomizeSlides,
                     usePreloader: $usePreloader,
                     globalCaption: $globalCaption,
                     
-                    autoScaleSliderWidth: $autoScaleSliderWidth,
-                    autoScaleSliderHeight: $autoScaleSliderHeight,
                     startSlideId: $startSlideId,
                     numImagesToPreload: $numImagesToPreload,
                     slidesSpacing: $slidesSpacing,
                     minSlideOffset: $minSlideOffset,
                     transitionSpeed: $transitionSpeed,
                     imageScalePadding: $imageScalePadding,
-                    slidesDiff: 2
                 });
             }});
             })(jQuery);</script>";
         }
-
         $args[WPSidebar::CONTENT] = $content;
         parent::widget($args, $instance);
     }
