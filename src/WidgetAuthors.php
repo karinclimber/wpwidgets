@@ -27,7 +27,7 @@ final class WidgetAuthors extends WidgetLayoutBase
         $this->addField(new WidgetField(WidgetField::CHECKBOX, self::SHOW_CALL_BUTTON,
             __('Show Call Button', 'wptheme'), [], false));
         $this->addField(new WidgetField(WidgetField::NUMBER, QueryUsers::NUMBER,
-            Widget::addIconToLabel("hashtag", __('Number of Agents', 'wptheme')), [], 3));
+            __('Number of Agents', 'wptheme'), [], 3));
         parent::initFields();
     }
 

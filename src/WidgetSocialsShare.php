@@ -34,11 +34,11 @@ final class WidgetSocialsShare extends Widget
     {
         $this->addField(new WidgetField(WidgetField::SELECT_MULTIPLE, self::SOCIAL_NETWORKS,
             __("Social Networks", 'wptheme'), [
-                self::FACEBOOK => $this->addIconToLabel(self::FACEBOOK, __('Facebook', 'wptheme')),
-                self::TWITTER => $this->addIconToLabel(self::TWITTER, __('Twitter', 'wptheme')),
-                self::ODNOKLASSNIKI => $this->addIconToLabel(self::ODNOKLASSNIKI, __('Odnoklassniki', 'wptheme')),
-                self::VK => $this->addIconToLabel(self::VK, __('VKontakte', 'wptheme')),
-                self::GOOGLE_PLUS => $this->addIconToLabel(self::GOOGLE_PLUS, __('Google Plus', 'wptheme')),
+                self::FACEBOOK => __('Facebook', 'wptheme'),
+                self::TWITTER => __('Twitter', 'wptheme'),
+                self::ODNOKLASSNIKI => __('Odnoklassniki', 'wptheme'),
+                self::VK => __('VKontakte', 'wptheme'),
+                self::GOOGLE_PLUS => __('Google Plus', 'wptheme'),
             ]));
         parent::initFields();
     }
