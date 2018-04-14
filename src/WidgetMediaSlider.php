@@ -225,12 +225,7 @@ final class WidgetMediaSlider extends Widget
             ]);
             $content = "<style type='text/css'>#{$this->id} > .royalSlider{width:$sliderWidth;height:$sliderHeight;}</style>
             <div class='royalSlider rsMinW'>{$content}</div>
-            <script>window.addEventListener('DOMContentLoaded', function() { 
-                (function($) {
-                    $(document).ready(function() {
-                        $('#{$this->id} > .royalSlider').royalSlider($sliderOptions);
-                    }); })(jQuery); 
-            });</script>";
+            <script>jQuery('#{$this->id} > .royalSlider').royalSlider($sliderOptions);</script>";
         }
         $args[WPSidebar::CONTENT] = $content;
         parent::widget($args, $instance);
