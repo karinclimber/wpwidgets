@@ -90,7 +90,6 @@ final class WidgetMediaSlider extends Widget
         wp_register_style('rslider-caption', "{$this->uriToDirLibs}/rslider/rslider-caption.css");
         wp_register_style('rslider-skin', "{$this->uriToDirLibs}/rslider/rs-minimal.css");
         wp_register_script('rslider', "{$this->uriToDirLibs}/rslider/rslider.js", ['jquery'], null, true);
-        wp_register_script("rsliderinit{$this->id}", "{$this->uriToDirLibs}/rslider/rsliderinit.js", ['rslider'], null, true);
     }
 
     function enqueueScriptsAdmin()
@@ -226,12 +225,11 @@ final class WidgetMediaSlider extends Widget
             ];
             $content = "<style type='text/css'>#{$this->id} > .royalSlider{width:$sliderWidth;height:$sliderHeight;}</style>
             <div class='royalSlider rsMinW'>{$content}</div>
-            <script defer>
-                jQuery('#{$this->id}.royalSlider').royalSlider({${json_encode($sliderOptions)}});
-            </script>";
-            /*$scriptName = "rsliderinit{$this->id}";
-            wp_localize_script($scriptName, 'slider', ['id' => "#{$this->id}.royalSlider", 'options' => $slideOptions]);
-            wp_enqueue_script($scriptName);*/
+            <script type='text/javascript'>window.addEventListener('DOMContentLoaded', function() { (function($) {
+                $(document).ready(function() {
+                    $('#{$this->id}.royalSlider').royalSlider({${json_encode($sliderOptions)}});
+                });
+            })(jQuery); });</script>";
         }
         $args[WPSidebar::CONTENT] = $content;
         parent::widget($args, $instance);
