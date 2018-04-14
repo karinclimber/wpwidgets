@@ -35,7 +35,7 @@
         a.st = n.extend({}, n.fn.royalSlider.defaults, f);
         a._c = a.st.transitionSpeed;
         a._d = 0;
-        !a.st.allowCSS3 || h.webkit && !a.st.allowCSS3OnWebkit || (c = k + (k ? "T" : "t"), a._e = c + "ransform" in d && c + "ransition" in d, a._e && (a._f = k + (k ? "P" : "p") + "erspective" in d));
+        //!a.st.allowCSS3 || h.webkit && !a.st.allowCSS3OnWebkit || (c = k + (k ? "T" : "t"), a._e = c + "ransform" in d && c + "ransition" in d, a._e && (a._f = k + (k ? "P" : "p") + "erspective" in d));
         k = k.toLowerCase();
         a._g = "-" + k + "-";
         a._h = "vertical" === a.st.slidesOrientation ?
@@ -95,7 +95,7 @@
         a.st.sliderDrag && (a._f1 = !0, h.msie || h.opera ? a._g1 = a._h1 = "move" : h.mozilla ? (a._g1 = "-moz-grab", a._h1 = "-moz-grabbing") : h.webkit && -1 != e.platform.indexOf("Mac") && (a._g1 =
                     "-webkit-grab", a._h1 = "-webkit-grabbing"), a._i1());
         a.slider.html(d);
-        a._o1 = a.st.controlsInside ? a._e1 : a.slider;
+        a._o1 = a._e1;
         a._p1 = a._e1.children(".rsContainer");
         a.pointerEnabled && a._p1.css((c ? "" : "-ms-") + "touch-action", a._h ? "pan-y" : "pan-x");
         a._q1 = n('<div class="rsPreloader"></div>');
@@ -316,7 +316,7 @@
             }, d = function () {
                 if (!b.isAppended && c.ev) {
                     var a = c.st.visibleNearby, d = b.id - c._o;
-                    f || b.appendOnLoaded || !c.st.fadeinLoadedSlide || 0 !== d && (!(a || c._r2 || c._l2) || -1 !== d && 1 !== d) || (a = {
+                    f || b.appendOnLoaded || 0 !== d && (!(a || c._r2 || c._l2) || -1 !== d && 1 !== d) || (a = {
                         visibility: "visible",
                         opacity: 0
                     }, a[c._g + "transition"] = "opacity 400ms ease-in-out", b.content.css(a), setTimeout(function () {
@@ -760,12 +760,10 @@
         loop: !1,
         loopRewind: !1,
         numImagesToPreload: 4,
-        fadeinLoadedSlide: !0,
         slidesOrientation: "horizontal",
         transitionType: "move",
         transitionSpeed: 600,
         controlNavigation: "bullets",
-        controlsInside: !0,
         arrowsNav: !0,
         arrowsNavAutoHide: !0,
         navigateByClick: !0,
@@ -773,9 +771,6 @@
         sliderDrag: !0,
         sliderTouch: !0,
         keyboardNavEnabled: !1,
-        fadeInAfterLoaded: !0,
-        allowCSS3: !0,
-        allowCSS3OnWebkit: !0,
         addActiveClass: !1,
         easeOut: "easeOutSine",
         easeInOut: "easeInOutSine",
@@ -1355,8 +1350,7 @@
             a.ev.on("rsAfterContentSet", function (b, f) {
                 f.id === a.slides[a.currSlideId].id && setTimeout(function () {
                     m()
-                }, a.st.fadeinLoadedSlide ?
-                    300 : 0)
+                }, 0)
             });
             a.ev.on("rsAfterSlideChange", function () {
                 m()
@@ -1575,8 +1569,7 @@
         }, a.st.visibleNearby = d.extend({}, a._h7, a.st.visibleNearby), a.ev.one("rsAfterPropsSetup", function () {
             a._i7 = a._e1.css("overflow", "visible").wrap('<div class="rsVisibleNearbyWrap"></div>').parent();
             a.st.visibleNearby.hiddenOverflow || a._i7.css("overflow", "visible");
-            a._o1 = a.st.controlsInside ?
-                a._i7 : a.slider
+            a._o1 = a._i7
         }), a.ev.on("rsAfterSizePropSet", function () {
             var b, c = a.st.visibleNearby;
             b = c.breakpoint && a.width < c.breakpoint ? c.breakpointCenterArea : c.centerArea;

@@ -32,19 +32,12 @@ final class WidgetMediaSlider extends Widget
     const SLIDE_OPTIONS = 'sliderSlideOptions';
     /** @const Makes slider to go from last slide to first. */
     const LOOP = 'sliderLoop';
-    /** @const If set to true adds arrows and FullScreen button inside rsOverflow container,
-     * otherwise inside root slider container. */
-    const CONTROLS_INSIDE = 'sliderControlsInside';
-    /** @const Aligns image to center of slide. Can be function with one argument - slide object that is being resized. */
-    const IMAGE_ALIGN_CENTER = 'sliderImageAlignCenter';
     /** @const Randomizes all slides at start. */
     const RANDOMIZE_SLIDES = 'sliderRandomizeSlides';
     /** @const Enables spinning pre-loader, you may style it via CSS (class rsPreloader). */
     const USE_PRELOADER = 'sliderUsePreloader';
     /** @const Adds global caption element to slider. Grab an image caption from alt or element with (class rsCaption) */
     const GLOBAL_CAPTION = 'sliderGlobalCaption';
-    /** @const Fades in slide after it's loaded. */
-    const FADEIN_LOADED = 'sliderFadeIdLoaded';
     //Values
     /** @const Base slider width. Slider will auto-calculate the ratio based on these values. */
     const WIDTH = 'sliderAutoScaleWidthValue';
@@ -134,36 +127,26 @@ final class WidgetMediaSlider extends Widget
             self::TRANSITION_FADE => __('Fade')
         ], self::TRANSITION_MOVE));
         $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::SLIDE_OPTIONS,
-            __("Show slides with:"), [
-                self::LOOP => __("Cycle"),
-                self::RANDOMIZE_SLIDES => __("Random order"),
-                self::GLOBAL_CAPTION => __("Caption"),
-                self::USE_PRELOADER => __("Preloader"),
-                self::FADEIN_LOADED => __("Fade in"),
-                self::CONTROLS_INSIDE => __("Controls inside"),
-                self::IMAGE_ALIGN_CENTER => __("Image aligned to center"),
+            __("Show slides:"), [
+                self::LOOP => __("In Cycle"),
+                self::RANDOMIZE_SLIDES => __("In Random order"),
+                self::GLOBAL_CAPTION => __("With Caption"),
+                self::USE_PRELOADER => __("With Preloader")
 
-            ], [self::USE_PRELOADER, self::FADEIN_LOADED, self::CONTROLS_INSIDE, self::IMAGE_ALIGN_CENTER]));
+            ], [self::USE_PRELOADER]));
         $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::NAVIGATE_OPTIONS,
             __("Change slide with:"), [
                 self::NAVIGATE_BY_CLICK => __("Click"),
                 self::NAVIGATE_BY_DRAG => __("Drag"),
                 self::NAVIGATE_BY_TOUCH => __("Touch"),
                 self::NAV_WITH_KEYBOARD => __("Keyboard left and right arrow"),
-            ], [
-                self::NAVIGATE_BY_CLICK,
-                self::NAVIGATE_BY_DRAG,
-                self::NAVIGATE_BY_TOUCH
-            ]));
+            ], [self::NAVIGATE_BY_CLICK, self::NAVIGATE_BY_DRAG, self::NAVIGATE_BY_TOUCH]));
         $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::ARROWS_OPTIONS,
             __("Arrows for slide change:"), [
                 self::NAV_ARROWS_SHOW => __("Show"),
                 self::NAV_ARROWS_AUTO_HIDE => __("Auto-hide"),
                 self::NAV_ARROWS_HIDE_ON_TOUCH => __("Hide on Touch"),
-            ], [
-                self::NAV_ARROWS_SHOW,
-                self::NAV_ARROWS_AUTO_HIDE
-            ]));
+            ], [self::NAV_ARROWS_SHOW, self::NAV_ARROWS_AUTO_HIDE]));
         //NAVIGATE_OPTIONS
         $this->addField(new WidgetField(WidgetField::NUMBER, self::IMAGES_TO_PRELOAD,
             __("Images to preload"), [], 4));
@@ -182,10 +165,14 @@ final class WidgetMediaSlider extends Widget
 
     function widget($args, $instance)
     {
+        wp_enqueue_style('rslider');
+        wp_enqueue_style('rslider-caption');
+        wp_enqueue_style('rslider-skin');
+        wp_enqueue_script('rslider');
         $content = "";
-        $galleryValue = self::getInstanceValue($instance, self::IMAGES, $this);
-        if (isset($galleryValue)) {
-            $attachmentIds = (array)$galleryValue;
+        $images = self::getInstanceValue($instance, self::IMAGES, $this);
+        if (isset($images)) {
+            $attachmentIds = (array)$images;
             if (is_array($attachmentIds)) {
                 //TODO Export slide change delay to configuration for slide switching and for switching effect
                 foreach ($attachmentIds as $attachmentId => $attachmentLink) {
@@ -207,47 +194,44 @@ final class WidgetMediaSlider extends Widget
             $sliderWidth = self::getInstanceValue($instance, self::WIDTH, $this);
             $sliderHeight = self::getInstanceValue($instance, self::HEIGHT, $this);
             //Content
+            $sliderOptions = [
+                'imageScaleMode' => self::getInstanceValue($instance, self::IMAGE_SCALE, $this),
+                'controlNavigation' => self::getInstanceValue($instance, self::NAVIGATION, $this),
+                'slidesOrientation' => self::getInstanceValue($instance, self::ORIENTATION, $this),
+                'transitionType' => self::getInstanceValue($instance, self::TRANSITION, $this),
+
+                'arrowsNav' => in_array(self::NAV_ARROWS_SHOW, $arrowsOptions),
+                'arrowsNavAutoHide' => in_array(self::NAV_ARROWS_AUTO_HIDE, $arrowsOptions),
+                'arrowsNavHideOnTouch' => in_array(self::NAV_ARROWS_HIDE_ON_TOUCH, $arrowsOptions),
+
+                'navigateByClick' => in_array(self::NAVIGATE_BY_CLICK, $navigateOptions),
+                'sliderTouch' => in_array(self::NAVIGATE_BY_TOUCH, $navigateOptions),
+                'sliderDrag' => in_array(self::NAVIGATE_BY_DRAG, $navigateOptions),
+                'keyboardNavEnabled' => in_array(self::NAV_WITH_KEYBOARD, $navigateOptions),
+
+
+                'loop' => in_array(self::LOOP, $slideOptions),
+                'loopRewind' => in_array(self::LOOP, $slideOptions),
+
+                'randomizeSlides' => in_array(self::RANDOMIZE_SLIDES, $slideOptions),
+                'usePreloader' => in_array(self::USE_PRELOADER, $slideOptions),
+                'globalCaption' => in_array(self::GLOBAL_CAPTION, $slideOptions),
+
+                'startSlideId' => (int)self::getInstanceValue($instance, self::START_SLIDE_ID, $this),
+                'numImagesToPreload' => (int)self::getInstanceValue($instance, self::IMAGES_TO_PRELOAD, $this),
+                'slidesSpacing' => (int)self::getInstanceValue($instance, self::SLIDES_SPACING, $this),
+                'minSlideOffset' => (int)self::getInstanceValue($instance, self::MIN_SLIDES_OFFSET, $this),
+                'transitionSpeed' => (int)self::getInstanceValue($instance, self::TRANSITION_SPEED, $this),
+                'imageScalePadding' => (int)self::getInstanceValue($instance, self::IMAGE_SCALE_PADDING, $this)
+            ];
             $content = "<style type='text/css'>#{$this->id} > .royalSlider{width:$sliderWidth;height:$sliderHeight;}</style>
-            <div class='royalSlider rsMinW'>{$content}</div>";
-            wp_enqueue_style('rslider');
-            wp_enqueue_style('rslider-caption');
-            wp_enqueue_style('rslider-skin');
-            wp_enqueue_script('rslider');
-            $scriptName = "rsliderinit{$this->id}";
-            wp_localize_script($scriptName, 'slider', [
-                'id' => "#{$this->id} > .royalSlider",
-                'options' => [
-                    'imageScaleMode' => self::getInstanceValue($instance, self::IMAGE_SCALE, $this),
-                    'controlNavigation' => self::getInstanceValue($instance, self::NAVIGATION, $this),
-                    'slidesOrientation' => self::getInstanceValue($instance, self::ORIENTATION, $this),
-                    'transitionType' => self::getInstanceValue($instance, self::TRANSITION, $this),
-
-                    'arrowsNav' => in_array(self::NAV_ARROWS_SHOW, $arrowsOptions),
-                    'arrowsNavAutoHide' => in_array(self::NAV_ARROWS_AUTO_HIDE, $arrowsOptions),
-                    'arrowsNavHideOnTouch' => in_array(self::NAV_ARROWS_HIDE_ON_TOUCH, $arrowsOptions),
-
-                    'navigateByClick' => in_array(self::NAVIGATE_BY_CLICK, $navigateOptions),
-                    'sliderTouch' => in_array(self::NAVIGATE_BY_TOUCH, $navigateOptions),
-                    'sliderDrag' => in_array(self::NAVIGATE_BY_DRAG, $navigateOptions),
-                    'keyboardNavEnabled' => in_array(self::NAV_WITH_KEYBOARD, $navigateOptions),
-
-                    'controlsInside' => in_array(self::CONTROLS_INSIDE, $slideOptions),
-                    'loop' => in_array(self::LOOP, $slideOptions),
-                    'loopRewind' => in_array(self::LOOP, $slideOptions),
-                    'fadeinLoadedSlide' => in_array(self::FADEIN_LOADED, $slideOptions),
-                    'imageAlignCenter' => in_array(self::IMAGE_ALIGN_CENTER, $slideOptions),
-                    'randomizeSlides' => in_array(self::RANDOMIZE_SLIDES, $slideOptions),
-                    'usePreloader' => in_array(self::USE_PRELOADER, $slideOptions),
-                    'globalCaption' => in_array(self::GLOBAL_CAPTION, $slideOptions),
-
-                    'startSlideId' => (int)self::getInstanceValue($instance, self::START_SLIDE_ID, $this),
-                    'numImagesToPreload' => (int)self::getInstanceValue($instance, self::IMAGES_TO_PRELOAD, $this),
-                    'slidesSpacing' => (int)self::getInstanceValue($instance, self::SLIDES_SPACING, $this),
-                    'minSlideOffset' => (int)self::getInstanceValue($instance, self::MIN_SLIDES_OFFSET, $this),
-                    'transitionSpeed' => (int)self::getInstanceValue($instance, self::TRANSITION_SPEED, $this),
-                    'imageScalePadding' => (int)self::getInstanceValue($instance, self::IMAGE_SCALE_PADDING, $this)]
-            ]);
-            wp_enqueue_script($scriptName);
+            <div class='royalSlider rsMinW'>{$content}</div>
+            <script defer>
+                jQuery('#{$this->id}.royalSlider').royalSlider({${json_encode($sliderOptions)}});
+            </script>";
+            /*$scriptName = "rsliderinit{$this->id}";
+            wp_localize_script($scriptName, 'slider', ['id' => "#{$this->id}.royalSlider", 'options' => $slideOptions]);
+            wp_enqueue_script($scriptName);*/
         }
         $args[WPSidebar::CONTENT] = $content;
         parent::widget($args, $instance);
