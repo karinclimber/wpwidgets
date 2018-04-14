@@ -1,1 +1,1 @@
-$(slider.id).royalSlider(slider.options);
+jQuery(slider.id).royalSlider(slider.options);

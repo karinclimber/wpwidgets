@@ -197,80 +197,16 @@ final class WidgetMediaSlider extends Widget
                     $content .= "</div>";
                 }
             }
-            $galleryId = uniqid("widgetGallery");
-            $imageScaleMode = self::getInstanceValue($instance, self::IMAGE_SCALE, $this);
-            $controlNavigation = self::getInstanceValue($instance, self::NAVIGATION, $this);
-            $slidesOrientation = self::getInstanceValue($instance, self::ORIENTATION, $this);
-            $transitionType = self::getInstanceValue($instance, self::TRANSITION, $this);
             //Arrows
             $arrowsOptions = self::getInstanceValue($instance, self::ARROWS_OPTIONS, $this);
-            $arrowsNav = in_array(self::NAV_ARROWS_SHOW, $arrowsOptions) ? 'true' : 'false';
-            $arrowsNavAutoHide = in_array(self::NAV_ARROWS_AUTO_HIDE, $arrowsOptions) ? 'true' : 'false';
-            $arrowsNavHideOnTouch = in_array(self::NAV_ARROWS_HIDE_ON_TOUCH, $arrowsOptions) ? 'true' : 'false';
             //Navigation
             $navigateOptions = self::getInstanceValue($instance, self::NAVIGATE_OPTIONS, $this);
-            $navigateByClick = in_array(self::NAVIGATE_BY_CLICK, $navigateOptions) ? 'true' : 'false';
-            $keyboardNavEnabled = in_array(self::NAV_WITH_KEYBOARD, $navigateOptions) ? 'true' : 'false';
-            $sliderDrag = in_array(self::NAVIGATE_BY_DRAG, $navigateOptions) ? 'true' : 'false';
-            $sliderTouch = in_array(self::NAVIGATE_BY_TOUCH, $navigateOptions) ? 'true' : 'false';
             //Options
             $slideOptions = self::getInstanceValue($instance, self::SLIDE_OPTIONS, $this);
-            $sliderLoop = in_array(self::LOOP, $slideOptions) ? 'true' : 'false';
-            $randomizeSlides = in_array(self::RANDOMIZE_SLIDES, $slideOptions) ? 'true' : 'false';
-            $globalCaption = in_array(self::GLOBAL_CAPTION, $slideOptions) ? 'true' : 'false';
-            $usePreloader = in_array(self::USE_PRELOADER, $slideOptions) ? 'true' : 'false';
-            $fadeinLoadedSlide = in_array(self::FADEIN_LOADED, $slideOptions) ? 'true' : 'false';
-            $controlsInside = in_array(self::CONTROLS_INSIDE, $slideOptions) ? 'true' : 'false';
-            $imageAlignCenter = in_array(self::IMAGE_ALIGN_CENTER, $slideOptions) ? 'true' : 'false';
             //Values
             $sliderWidth = self::getInstanceValue($instance, self::WIDTH, $this);
             $sliderHeight = self::getInstanceValue($instance, self::HEIGHT, $this);
-            $startSlideId = self::getInstanceValue($instance, self::START_SLIDE_ID, $this);
-            $numImagesToPreload = self::getInstanceValue($instance, self::IMAGES_TO_PRELOAD, $this);
-            $slidesSpacing = self::getInstanceValue($instance, self::SLIDES_SPACING, $this);
-            $minSlideOffset = self::getInstanceValue($instance, self::MIN_SLIDES_OFFSET, $this);
-            $transitionSpeed = self::getInstanceValue($instance, self::TRANSITION_SPEED, $this);
-            $imageScalePadding = self::getInstanceValue($instance, self::IMAGE_SCALE_PADDING, $this);
             //Content
-            /*$content = "<style type='text/css'>#{$galleryId}.royalSlider{width:$sliderWidth;height:$sliderHeight;}</style>
-            <div id='{$galleryId}' class='royalSlider rsMinW'>{$content}</div>
-            <script type='text/javascript'>(function ($) {
-            $(document).ready(function () {
-            if ($().royalSlider) {
-                $('#{$galleryId}').royalSlider({                   
-                    imageScaleMode: '$imageScaleMode',
-                    controlNavigation: '$controlNavigation',
-                    slidesOrientation: '$slidesOrientation',
-                    transitionType: '$transitionType',
-                    
-                    arrowsNav: $arrowsNav,
-                    arrowsNavAutoHide: $arrowsNavAutoHide,
-                    arrowsNavHideOnTouch: $arrowsNavHideOnTouch,
-                    
-                    navigateByClick: $navigateByClick,
-                    sliderTouch: $sliderTouch,
-                    sliderDrag: $sliderDrag,
-                    keyboardNavEnabled: $keyboardNavEnabled,
-                    
-                    controlsInside: $controlsInside,
-                    loop: $sliderLoop,
-                    loopRewind: $sliderLoop,                    
-                    fadeinLoadedSlide: $fadeinLoadedSlide,
-                    fadeInAfterLoaded: $fadeinLoadedSlide,
-                    imageAlignCenter: $imageAlignCenter,
-                    randomizeSlides: $randomizeSlides,
-                    usePreloader: $usePreloader,
-                    globalCaption: $globalCaption,
-                    
-                    startSlideId: $startSlideId,
-                    numImagesToPreload: $numImagesToPreload,
-                    slidesSpacing: $slidesSpacing,
-                    minSlideOffset: $minSlideOffset,
-                    transitionSpeed: $transitionSpeed,
-                    imageScalePadding: $imageScalePadding,
-                });
-            }});
-            })(jQuery);</script>";*/
             $content = "<style type='text/css'>#{$this->id} > .royalSlider{width:$sliderWidth;height:$sliderHeight;}</style>
             <div class='royalSlider rsMinW'>{$content}</div>";
             wp_enqueue_style('rslider');
@@ -280,36 +216,36 @@ final class WidgetMediaSlider extends Widget
             $scriptName = "rsliderinit{$this->id}";
             wp_localize_script($scriptName, 'slider', [
                 'id' => "#{$this->id} > .royalSlider",
-                'options' => "{imageScaleMode: '$imageScaleMode',
-                    controlNavigation: '$controlNavigation',
-                    slidesOrientation: '$slidesOrientation',
-                    transitionType: '$transitionType',
-                    
-                    arrowsNav: $arrowsNav,
-                    arrowsNavAutoHide: $arrowsNavAutoHide,
-                    arrowsNavHideOnTouch: $arrowsNavHideOnTouch,
-                    
-                    navigateByClick: $navigateByClick,
-                    sliderTouch: $sliderTouch,
-                    sliderDrag: $sliderDrag,
-                    keyboardNavEnabled: $keyboardNavEnabled,
-                    
-                    controlsInside: $controlsInside,
-                    loop: $sliderLoop,
-                    loopRewind: $sliderLoop,                    
-                    fadeinLoadedSlide: $fadeinLoadedSlide,
-                    fadeInAfterLoaded: $fadeinLoadedSlide,
-                    imageAlignCenter: $imageAlignCenter,
-                    randomizeSlides: $randomizeSlides,
-                    usePreloader: $usePreloader,
-                    globalCaption: $globalCaption,
-                    
-                    startSlideId: $startSlideId,
-                    numImagesToPreload: $numImagesToPreload,
-                    slidesSpacing: $slidesSpacing,
-                    minSlideOffset: $minSlideOffset,
-                    transitionSpeed: $transitionSpeed,
-                    imageScalePadding: $imageScalePadding}"
+                'options' => [
+                    'imageScaleMode' => self::getInstanceValue($instance, self::IMAGE_SCALE, $this),
+                    'controlNavigation' => self::getInstanceValue($instance, self::NAVIGATION, $this),
+                    'slidesOrientation' => self::getInstanceValue($instance, self::ORIENTATION, $this),
+                    'transitionType' => self::getInstanceValue($instance, self::TRANSITION, $this),
+
+                    'arrowsNav' => in_array(self::NAV_ARROWS_SHOW, $arrowsOptions),
+                    'arrowsNavAutoHide' => in_array(self::NAV_ARROWS_AUTO_HIDE, $arrowsOptions),
+                    'arrowsNavHideOnTouch' => in_array(self::NAV_ARROWS_HIDE_ON_TOUCH, $arrowsOptions),
+
+                    'navigateByClick' => in_array(self::NAVIGATE_BY_CLICK, $navigateOptions),
+                    'sliderTouch' => in_array(self::NAVIGATE_BY_TOUCH, $navigateOptions),
+                    'sliderDrag' => in_array(self::NAVIGATE_BY_DRAG, $navigateOptions),
+                    'keyboardNavEnabled' => in_array(self::NAV_WITH_KEYBOARD, $navigateOptions),
+
+                    'controlsInside' => in_array(self::CONTROLS_INSIDE, $slideOptions),
+                    'loop' => in_array(self::LOOP, $slideOptions),
+                    'loopRewind' => in_array(self::LOOP, $slideOptions),
+                    'fadeinLoadedSlide' => in_array(self::FADEIN_LOADED, $slideOptions),
+                    'imageAlignCenter' => in_array(self::IMAGE_ALIGN_CENTER, $slideOptions),
+                    'randomizeSlides' => in_array(self::RANDOMIZE_SLIDES, $slideOptions),
+                    'usePreloader' => in_array(self::USE_PRELOADER, $slideOptions),
+                    'globalCaption' => in_array(self::GLOBAL_CAPTION, $slideOptions),
+
+                    'startSlideId' => (int)self::getInstanceValue($instance, self::START_SLIDE_ID, $this),
+                    'numImagesToPreload' => (int)self::getInstanceValue($instance, self::IMAGES_TO_PRELOAD, $this),
+                    'slidesSpacing' => (int)self::getInstanceValue($instance, self::SLIDES_SPACING, $this),
+                    'minSlideOffset' => (int)self::getInstanceValue($instance, self::MIN_SLIDES_OFFSET, $this),
+                    'transitionSpeed' => (int)self::getInstanceValue($instance, self::TRANSITION_SPEED, $this),
+                    'imageScalePadding' => (int)self::getInstanceValue($instance, self::IMAGE_SCALE_PADDING, $this)]
             ]);
             wp_enqueue_script($scriptName);
         }
