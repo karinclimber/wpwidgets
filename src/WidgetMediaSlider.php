@@ -138,7 +138,7 @@ final class WidgetMediaSlider extends Widget
                 self::NAVIGATE_BY_CLICK => __("Click"),
                 self::NAVIGATE_BY_DRAG => __("Drag"),
                 self::NAVIGATE_BY_TOUCH => __("Touch"),
-                self::NAV_WITH_KEYBOARD => __("Keyboard left and right arrow"),
+                self::NAV_WITH_KEYBOARD => __("Keyboard Arrows"),
             ], [self::NAVIGATE_BY_CLICK, self::NAVIGATE_BY_DRAG, self::NAVIGATE_BY_TOUCH]));
         $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::ARROWS_OPTIONS,
             __("Arrows for slide change:"), [
@@ -193,6 +193,7 @@ final class WidgetMediaSlider extends Widget
             $sliderWidth = self::getInstanceValue($instance, self::WIDTH, $this);
             $sliderHeight = self::getInstanceValue($instance, self::HEIGHT, $this);
             //Content
+            $sliderId = "#{$this->id} > .royalSlider";
             $sliderOptions = json_encode([
                 'imageScaleMode' => self::getInstanceValue($instance, self::IMAGE_SCALE, $this),
                 'controlNavigation' => self::getInstanceValue($instance, self::NAVIGATION, $this),
@@ -223,9 +224,11 @@ final class WidgetMediaSlider extends Widget
                 'transitionSpeed' => (int)self::getInstanceValue($instance, self::TRANSITION_SPEED, $this),
                 'imageScalePadding' => (int)self::getInstanceValue($instance, self::IMAGE_SCALE_PADDING, $this)
             ]);
-            $content = "<style type='text/css'>#{$this->id} > .royalSlider{width:$sliderWidth;height:$sliderHeight;}</style>
+            $content = "<style type='text/css'>$sliderId{width:$sliderWidth;height:$sliderHeight;}</style>
             <div class='royalSlider rsMinW'>{$content}</div>
-            <script>jQuery('#{$this->id} > .royalSlider').royalSlider($sliderOptions);</script>";
+            <script>(function ($) { $(document).ready(function () { 
+                jQuery('$sliderId').royalSlider($sliderOptions);
+            }); })(jQuery)</script>";
         }
         $args[WPSidebar::CONTENT] = $content;
         parent::widget($args, $instance);
