@@ -1,0 +1,1 @@
+$(slider.id).royalSlider(slider.options);

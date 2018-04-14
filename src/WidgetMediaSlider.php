@@ -84,7 +84,6 @@ final class WidgetMediaSlider extends Widget
     const IMAGE_SCALE_FILL = 'fill';
     const IMAGE_SCALE_NONE = 'none';
     private $uriToDirLibs = '';
-    private $inlineJsContent;
 
     function __construct()
     {
@@ -94,13 +93,11 @@ final class WidgetMediaSlider extends Widget
     function enqueueScriptsTheme()
     {
         $this->uriToDirLibs = WPUtils::getUriToLibsDir(__FILE__);
-        wp_enqueue_style('rslider', "{$this->uriToDirLibs}/rslider/rslider.css");
-        wp_enqueue_style('rslider-caption', "{$this->uriToDirLibs}/rslider/rslider-caption.css");
-        wp_enqueue_style('rslider-skin', "{$this->uriToDirLibs}/rslider/rs-minimal.css");
-        wp_enqueue_script('rslider', "{$this->uriToDirLibs}/rslider/rslider.js", ['jquery'], null, true);
-        if ($this->inlineJsContent){
-            wp_add_inline_script($this->inlineJsContent->id,$this->inlineJsContent->data);
-        }
+        wp_register_style('rslider', "{$this->uriToDirLibs}/rslider/rslider.css");
+        wp_register_style('rslider-caption', "{$this->uriToDirLibs}/rslider/rslider-caption.css");
+        wp_register_style('rslider-skin', "{$this->uriToDirLibs}/rslider/rs-minimal.css");
+        wp_register_script('rslider', "{$this->uriToDirLibs}/rslider/rslider.js", ['jquery'], null, true);
+        wp_register_script("rsliderinit{$this->id}", "{$this->uriToDirLibs}/rslider/rsliderinit.js", ['rslider'], null, true);
     }
 
     function enqueueScriptsAdmin()
@@ -274,12 +271,16 @@ final class WidgetMediaSlider extends Widget
                 });
             }});
             })(jQuery);</script>";*/
-            $content = "<style type='text/css'>#{$galleryId}.royalSlider{width:$sliderWidth;height:$sliderHeight;}</style>
-            <div id='{$galleryId}' class='royalSlider rsMinW'>{$content}</div>";
-            $this->inlineJsContent = [
-                'id' => "rsInit{$galleryId}",
-                'data' => "$('#{$galleryId}').royalSlider({                   
-                    imageScaleMode: '$imageScaleMode',
+            $content = "<style type='text/css'>#{$this->id} > .royalSlider{width:$sliderWidth;height:$sliderHeight;}</style>
+            <div class='royalSlider rsMinW'>{$content}</div>";
+            wp_enqueue_style('rslider');
+            wp_enqueue_style('rslider-caption');
+            wp_enqueue_style('rslider-skin');
+            wp_enqueue_script('rslider');
+            $scriptName = "rsliderinit{$this->id}";
+            wp_localize_script($scriptName, 'slider', [
+                'id' => "#{$this->id} > .royalSlider",
+                'options' => "{imageScaleMode: '$imageScaleMode',
                     controlNavigation: '$controlNavigation',
                     slidesOrientation: '$slidesOrientation',
                     transitionType: '$transitionType',
@@ -308,9 +309,9 @@ final class WidgetMediaSlider extends Widget
                     slidesSpacing: $slidesSpacing,
                     minSlideOffset: $minSlideOffset,
                     transitionSpeed: $transitionSpeed,
-                    imageScalePadding: $imageScalePadding,
-                });"
-            ];
+                    imageScalePadding: $imageScalePadding}"
+            ]);
+            wp_enqueue_script($scriptName);
         }
         $args[WPSidebar::CONTENT] = $content;
         parent::widget($args, $instance);
