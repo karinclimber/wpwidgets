@@ -71,6 +71,12 @@ final class WidgetMediaSlider extends Widget
     const NAVIGATION_TABS = 'tabs';
     const NAVIGATION_NONE = 'none';
 
+    const SKIN = 'sliderSkin';
+    const SKIN_DEFAULT = 'rsDefault';
+    const SKIN_MINIMAL = 'rsMinimal';
+    const SKIN_INVERTED = 'rsInverted';
+    const SKIN_UNIVERSAL = 'rsUniversal';
+
     const IMAGE_SCALE = 'sliderImageScale';
     const IMAGE_SCALE_FIT_IF_SMALLER = 'fit-if-smaller';
     const IMAGE_SCALE_FIT = 'fit';
@@ -88,7 +94,10 @@ final class WidgetMediaSlider extends Widget
         $this->uriToDirLibs = WPUtils::getUriToLibsDir(__FILE__);
         wp_enqueue_style('rslider', "{$this->uriToDirLibs}/rslider/rslider.css");
         wp_enqueue_style('rslider-caption', "{$this->uriToDirLibs}/rslider/rslider-caption.css");
-        wp_enqueue_style('rslider-skin', "{$this->uriToDirLibs}/rslider/rs-minimal.css");
+        wp_enqueue_style(self::SKIN_DEFAULT, "{$this->uriToDirLibs}/rslider/rsDefault.css");
+        wp_enqueue_style(self::SKIN_MINIMAL, "{$this->uriToDirLibs}/rslider/rsMinimal.css");
+        wp_enqueue_style(self::SKIN_INVERTED, "{$this->uriToDirLibs}/rslider/rsInverted.css");
+        wp_enqueue_style(self::SKIN_UNIVERSAL, "{$this->uriToDirLibs}/rslider/rsUniversal.css");
         wp_enqueue_script('rslider', "{$this->uriToDirLibs}/rslider/rslider.js", ['jquery'], null, true);
     }
 
@@ -100,6 +109,12 @@ final class WidgetMediaSlider extends Widget
 
     function initFields()
     {
+        $this->addField(new WidgetField(WidgetField::SELECT, self::SKIN, __('Skin'), [
+            self::SKIN_DEFAULT => __('Default'),
+            self::SKIN_MINIMAL => __('Minimal'),
+            self::SKIN_INVERTED => __('Inverted'),
+            self::SKIN_UNIVERSAL => __('Universal')
+        ], self::SKIN_DEFAULT));
         $this->addField(new WidgetField(WidgetField::TEXT, self::WIDTH,
             __("Width"), [], '100%'));
         $this->addField(new WidgetField(WidgetField::TEXT, self::HEIGHT,
@@ -179,6 +194,7 @@ final class WidgetMediaSlider extends Widget
                     $content .= "</div>";
                 }
             }
+            $skin = self::getInstanceValue($instance, self::SKIN, $this);
             //Arrows
             $arrowsOptions = self::getInstanceValue($instance, self::ARROWS_OPTIONS, $this);
             //Navigation
@@ -220,8 +236,7 @@ final class WidgetMediaSlider extends Widget
                 'transitionSpeed' => (int)self::getInstanceValue($instance, self::TRANSITION_SPEED, $this),
                 'imageScalePadding' => (int)self::getInstanceValue($instance, self::IMAGE_SCALE_PADDING, $this)
             ]);
-            $content = "<style type='text/css'>$sliderId{width:$sliderWidth;height:$sliderHeight;}</style>
-            <div class='royalSlider rsMinW'>{$content}</div>
+            $content = "<div class='royalSlider $skin' style='width:$sliderWidth;height:$sliderHeight;'>{$content}</div>
             <script>if (typeof jQuery == 'undefined'){
                 window.addEventListener('DOMContentLoaded', function() { jQuery('$sliderId').royalSlider($sliderOptions);});
             } else {
