@@ -86,10 +86,10 @@ final class WidgetMediaSlider extends Widget
     function enqueueScriptsTheme()
     {
         $this->uriToDirLibs = WPUtils::getUriToLibsDir(__FILE__);
-        wp_register_style('rslider', "{$this->uriToDirLibs}/rslider/rslider.css");
-        wp_register_style('rslider-caption', "{$this->uriToDirLibs}/rslider/rslider-caption.css");
-        wp_register_style('rslider-skin', "{$this->uriToDirLibs}/rslider/rs-minimal.css");
-        wp_register_script('rslider', "{$this->uriToDirLibs}/rslider/rslider.js", ['jquery'], null, true);
+        wp_enqueue_style('rslider', "{$this->uriToDirLibs}/rslider/rslider.css");
+        wp_enqueue_style('rslider-caption', "{$this->uriToDirLibs}/rslider/rslider-caption.css");
+        wp_enqueue_style('rslider-skin', "{$this->uriToDirLibs}/rslider/rs-minimal.css");
+        wp_enqueue_script('rslider', "{$this->uriToDirLibs}/rslider/rslider.js", ['jquery'], null, true);
     }
 
     function enqueueScriptsAdmin()
@@ -164,10 +164,6 @@ final class WidgetMediaSlider extends Widget
 
     function widget($args, $instance)
     {
-        wp_enqueue_style('rslider');
-        wp_enqueue_style('rslider-caption');
-        wp_enqueue_style('rslider-skin');
-        wp_enqueue_script('rslider');
         $content = "";
         $images = self::getInstanceValue($instance, self::IMAGES, $this);
         if (isset($images)) {
