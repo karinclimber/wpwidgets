@@ -205,7 +205,6 @@ final class WidgetMediaSlider extends Widget
             $sliderWidth = self::getInstanceValue($instance, self::WIDTH, $this);
             $sliderHeight = self::getInstanceValue($instance, self::HEIGHT, $this);
             //Content
-            $sliderId = "#{$this->id} > .royalSlider";
             $sliderOptions = json_encode([
                 'imageScaleMode' => self::getInstanceValue($instance, self::IMAGE_SCALE, $this),
                 'controlNavigation' => self::getInstanceValue($instance, self::NAVIGATION, $this),
@@ -236,11 +235,18 @@ final class WidgetMediaSlider extends Widget
                 'transitionSpeed' => (int)self::getInstanceValue($instance, self::TRANSITION_SPEED, $this),
                 'imageScalePadding' => (int)self::getInstanceValue($instance, self::IMAGE_SCALE_PADDING, $this)
             ]);
+            $optionsName = $this->id_base.$this->number;
+            $sliderId = "#{$this->id} > .royalSlider";
             $content = "<div class='royalSlider $skin' style='width:$sliderWidth;height:$sliderHeight;'>{$content}</div>
-            <script>if (typeof jQuery == 'undefined'){
-                window.addEventListener('DOMContentLoaded', function() { jQuery('$sliderId').royalSlider($sliderOptions);});
+            <script>var $optionsName = $sliderOptions;
+            if (typeof jQuery == 'undefined'){
+                window.addEventListener('DOMContentLoaded', function() { jQuery('$sliderId').royalSlider($optionsName);});
             } else {
-                jQuery('$sliderId').royalSlider($sliderOptions);
+                if (jQuery.royalSlider){
+                    jQuery(document).ready(function () { jQuery('$sliderId').royalSlider($optionsName); });   
+                } else {
+                    jQuery('$sliderId').royalSlider($optionsName);
+                }
             }</script>";
         }
         $args[WPSidebar::CONTENT] = $content;
