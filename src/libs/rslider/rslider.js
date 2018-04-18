@@ -772,6 +772,7 @@
         sliderTouch: !0,
         keyboardNavEnabled: !1,
         addActiveClass: !1,
+        autoHeight: !0,
         easeOut: "easeOutSine",
         easeInOut: "easeInOutSine",
         minSlideOffset: 10,
@@ -1418,6 +1419,47 @@
         }
     });
     l.rsModules.animatedBlocks = l.rsProto._p4
+})(jQuery);
+// jquery.rs.auto-height v1.0.3
+(function (b) {
+    b.extend(b.rsProto, {
+        _w4: function () {
+            var a = this;
+            if (a.st.autoHeight) {
+                var b, c, e, f = !0, d = function (d) {
+                    e = a.slides[a.currSlideId];
+                    (b = e.holder) && (c = b.height()) && void 0 !== c && c > (a.st.minAutoHeight || 30) && (a._c4 = c, a._e || !d ? a._e1.css("height", c) : a._e1.stop(!0, !0).animate({height: c}, a.st.transitionSpeed), a.ev.trigger("rsAutoHeightChange", c), f && (a._e && setTimeout(function () {
+                        a._e1.css(a._g + "transition", "height " + a.st.transitionSpeed + "ms ease-in-out")
+                    }, 16), f = !1))
+                };
+                a.ev.on("rsMaybeSizeReady.rsAutoHeight",
+                    function (a, b) {
+                        e === b && d()
+                    });
+                a.ev.on("rsAfterContentSet.rsAutoHeight", function (a, b) {
+                    e === b && d()
+                });
+                a.slider.addClass("rsAutoHeight");
+                a.ev.one("rsAfterInit", function () {
+                    setTimeout(function () {
+                        d(!1);
+                        setTimeout(function () {
+                            a.slider.append('<div style="clear:both; float: none;"></div>')
+                        }, 16)
+                    }, 16)
+                });
+                a.ev.on("rsBeforeAnimStart", function () {
+                    d(!0)
+                });
+                a.ev.on("rsBeforeSizeSet", function () {
+                    setTimeout(function () {
+                        d(!1)
+                    }, 16)
+                })
+            }
+        }
+    });
+    b.rsModules.autoHeight = b.rsProto._w4
 })(jQuery);
 // jquery.rs.global-caption v1.0
 (function (b) {
