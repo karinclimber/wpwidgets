@@ -243,9 +243,9 @@ final class WidgetMediaSlider extends Widget
                 window.addEventListener('DOMContentLoaded', function() { jQuery('$sliderId').royalSlider($optionsName);});
             } else {
                 if (jQuery.royalSlider){
-                    jQuery(document).ready(function () { jQuery('$sliderId').royalSlider($optionsName); });   
-                } else {
                     jQuery('$sliderId').royalSlider($optionsName);
+                } else {
+                    jQuery(document).ready(function () { jQuery('$sliderId').royalSlider($optionsName); });   
                 }
             }</script>";
         }
