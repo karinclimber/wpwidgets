@@ -28,7 +28,7 @@ final class WidgetSiteBranding extends Widget
             if ( $image ) {
                 list($src, $width, $height) = $image;
                 $hwstring = image_hwstring($width, $height);
-                $imageMarkup = "<img $hwstring src='$src' class='custom-logo' usemap='custom-logo' alt='$siteTitle' />
+                $imageMarkup = "<img $hwstring src='$src' class='custom-logo' usemap='#custom-logo' alt='$siteTitle' />
                 <map name='custom-logo'><area shape='rect' coords='0,0,$width,$height' href='$siteHomeUrl' alt='$siteTitle'></map>";
                 $siteNameStyle = "style='display:none;'";
             }
