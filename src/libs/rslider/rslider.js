@@ -772,7 +772,7 @@
         sliderTouch: !0,
         keyboardNavEnabled: !1,
         addActiveClass: !1,
-        autoHeight: !0,
+        autoHeight: !1,
         easeOut: "easeOutSine",
         easeInOut: "easeInOutSine",
         minSlideOffset: 10,
@@ -984,14 +984,14 @@
     f.rsModules.thumbnails = f.rsProto._h6
 })(jQuery);
 // jquery.rs.tabs v1.0.2
-(function (e) {
-    e.extend(e.rsProto, {
+(function ($) {
+    $.extend($.rsProto, {
         _f6: function () {
             var a = this;
             "tabs" === a.st.controlNavigation && (a.ev.on("rsBeforeParseNode", function (a, d, b) {
-                d = e(d);
+                d = $(d);
                 b.thumbnail = d.find(".rsTmb").remove();
-                b.thumbnail.length ? b.thumbnail = e(document.createElement("div")).append(b.thumbnail).html() : (b.thumbnail = d.attr("data-rsTmb"), b.thumbnail || (b.thumbnail = d.find(".rsImg").attr("data-rsTmb")), b.thumbnail = b.thumbnail ? '<img src="' + b.thumbnail + '"/>' : "")
+                b.thumbnail.length ? b.thumbnail = $(document.createElement("div")).append(b.thumbnail).html() : (b.thumbnail = d.attr("data-rsTmb"), b.thumbnail || (b.thumbnail = d.find(".rsImg").attr("data-rsTmb")), b.thumbnail = b.thumbnail ? '<img src="' + b.thumbnail + '"/>' : "")
             }), a.ev.one("rsAfterPropsSetup", function () {
                 a._g6()
             }), a.ev.on("rsOnAppendSlide",
@@ -1013,25 +1013,25 @@
             a._j5 = !0;
             c = '<div class="rsNav rsTabs">';
             for (var d = 0; d < a.numSlides; d++)c += '<div class="rsNavItem rsTab">' + a.slides[d].thumbnail + "</div>";
-            c = e(c + "</div>");
+            c = $(c + "</div>");
             a._k5 = c;
             a._l5 = c.children(".rsNavItem");
             a.slider.append(c);
             a._k5.click(function (b) {
-                b = e(b.target).closest(".rsNavItem");
+                b = $(b.target).closest(".rsNavItem");
                 b.length && a.goTo(b.index())
             })
         }
     });
-    e.rsModules.tabs = e.rsProto._f6
+    $.rsModules.tabs = $.rsProto._f6
 })(jQuery);
 // jquery.rs.fullscreen v1.0.6
-(function (c) {
-    c.extend(c.rsProto, {
+(function ($) {
+    $.extend($.rsProto, {
         _q5: function () {
             var a = this;
             a._r5 = {enabled: !1, keyboardNav: !0, buttonFS: !0, nativeFS: !1, doubleTap: !0};
-            a.st.fullscreen = c.extend({}, a._r5, a.st.fullscreen);
+            a.st.fullscreen = $.extend({}, a._r5, a.st.fullscreen);
             if (a.st.fullscreen.enabled) a.ev.one("rsBeforeSizeSet", function () {
                 a._s5()
             })
@@ -1067,17 +1067,17 @@
                         return "" === this.prefix ? document.cancelFullScreen() : document[this.prefix + "CancelFullScreen"]()
                     }, a._u5 = b) : a._u5 = !1
             }
-            a.st.fullscreen.buttonFS && (a._v5 = c('<div class="rsFullscreenBtn"><div class="rsFullscreenIcn"></div></div>').appendTo(a._o1).on("click.rs", function () {
+            a.st.fullscreen.buttonFS && (a._v5 = $('<div class="rsFullscreenBtn"><div class="rsFullscreenIcn"></div></div>').appendTo(a._o1).on("click.rs", function () {
                 a.isFullscreen ? a.exitFullscreen() : a.enterFullscreen()
             }))
         }, enterFullscreen: function (a) {
             var b =
                 this;
-            if (b._u5)if (a) b._u5.requestFullScreen(c("html")[0]); else {
+            if (b._u5)if (a) b._u5.requestFullScreen($("html")[0]); else {
                 b._b.on(b._u5.fullScreenEventName, function (a) {
                     b._u5.isFullScreen() ? b.enterFullscreen(!0) : b.exitFullscreen(!0)
                 });
-                b._u5.requestFullScreen(c("html")[0]);
+                b._u5.requestFullScreen($("html")[0]);
                 return
             }
             if (!b._w5) {
@@ -1086,13 +1086,13 @@
                     27 === a.keyCode && b.exitFullscreen()
                 });
                 b._t5 && b._b2();
-                a = c(window);
+                a = $(window);
                 b._x5 = a.scrollTop();
                 b._y5 = a.scrollLeft();
-                b._z5 = c("html").attr("style");
-                b._a6 = c("body").attr("style");
+                b._z5 = $("html").attr("style");
+                b._a6 = $("body").attr("style");
                 b._b6 = b.slider.attr("style");
-                c("body, html").css({
+                $("body, html").css({
                     overflow: "hidden",
                     height: "100%", width: "100%", margin: "0", padding: "0"
                 });
@@ -1108,7 +1108,7 @@
             var b = this;
             if (b._u5) {
                 if (!a) {
-                    b._u5.cancelFullScreen(c("html")[0]);
+                    b._u5.cancelFullScreen($("html")[0]);
                     return
                 }
                 b._b.off(b._u5.fullScreenEventName)
@@ -1117,13 +1117,13 @@
                 b._w5 = !0;
                 b._b.off("keyup" + b.ns + "fullscreen");
                 b._t5 && b._b.off("keydown" + b.ns);
-                c("html").attr("style", b._z5 || "");
-                c("body").attr("style", b._a6 || "");
+                $("html").attr("style", b._z5 || "");
+                $("body").attr("style", b._a6 || "");
                 var d;
                 for (d = 0; d < b.numSlides; d++)a = b.slides[d], a.isRendered = !1, a.bigImage && (a.isBig = !1, a.slideId = -99, a.isBigLoaded = a.isLoaded, a.isBigLoading = a.isLoading, a.bigImage =
                     a.image, a.bigIW = a.iW, a.bigIH = a.iH, a.isLoaded = a.isMedLoaded, a.isLoading = !1, a.image = a.medImage, a.images[0] = a.medImage, a.iW = a.medIW, a.iH = a.medIH, a.isAppended = a.contentAdded = !1, b._c6(a, !0), a.bigImage !== a.medImage && (a.sizeType = "med"));
                 b.isFullscreen = !1;
-                a = c(window);
+                a = $(window);
                 a.scrollTop(b._x5);
                 a.scrollLeft(b._y5);
                 b._w5 = !1;
@@ -1137,29 +1137,29 @@
         }, _c6: function (a, b) {
             var d = a.isLoaded || a.isLoading ? '<img class="rsImg rsMainSlideImage" src="' +
                 a.image + '"/>' : '<a class="rsImg rsMainSlideImage" href="' + a.image + '"></a>';
-            a.content.hasClass("rsImg") ? a.content = c(d) : a.content.find(".rsImg").eq(0).replaceWith(d);
+            a.content.hasClass("rsImg") ? a.content = $(d) : a.content.find(".rsImg").eq(0).replaceWith(d);
             a.isLoaded || a.isLoading || !a.holder || a.holder.html(a.content)
         }
     });
-    c.rsModules.fullscreen = c.rsProto._q5
+    $.rsModules.fullscreen = $.rsProto._q5
 })(jQuery);
 // jquery.rs.autoplay v1.0.5
-(function (b) {
-    b.extend(b.rsProto, {
+(function ($) {
+    $.extend($.rsProto, {
         _x4: function () {
             var a = this, d;
             a._y4 = {enabled: !1, stopAtAction: !0, pauseOnHover: !0, delay: 2E3};
             !a.st.autoPlay && a.st.autoplay && (a.st.autoPlay = a.st.autoplay);
-            a.st.autoPlay = b.extend({}, a._y4, a.st.autoPlay);
+            a.st.autoPlay = $.extend({}, a._y4, a.st.autoPlay);
             a.st.autoPlay.enabled && (a.ev.on("rsBeforeParseNode", function (a, c, f) {
-                c = b(c);
+                c = $(c);
                 if (d = c.attr("data-rsDelay")) f.customDelay = parseInt(d, 10)
             }), a.ev.one("rsAfterInit", function () {
                 a._z4()
             }), a.ev.on("rsBeforeDestroy", function () {
                 a.stopAutoPlay();
                 a.slider.off("mouseenter mouseleave");
-                b(window).off("blur" +
+                $(window).off("blur" +
                     a.ns + " focus" + a.ns)
             }))
         }, _z4: function () {
@@ -1188,7 +1188,7 @@
             a.ev.on("rsVideoPlay", function () {
                 a._a5 && (a._c5 = !1, a._d5(), a._e5 = !0)
             });
-            b(window).on("blur" + a.ns, function () {
+            $(window).on("blur" + a.ns, function () {
                 a._a5 && (a._c5 = !0, a._d5())
             }).on("focus" + a.ns, function () {
                 a._a5 && a._c5 && (a._c5 = !1, a._b5())
@@ -1220,11 +1220,11 @@
                 this._h5 = null))
         }
     });
-    b.rsModules.autoplay = b.rsProto._x4
+    $.rsModules.autoplay = $.rsProto._x4
 })(jQuery);
 // jquery.rs.video v1.1.3
-(function (f) {
-    f.extend(f.rsProto, {
+(function ($) {
+    $.extend($.rsProto, {
         _z6: function () {
             var a = this;
             a._a7 = {
@@ -1236,7 +1236,7 @@
                 youTubeCode: '<iframe src="https://www.youtube.com/embed/%id%?rel=1&showinfo=0&autoplay=1&wmode=transparent" frameborder="no"></iframe>',
                 vimeoCode: '<iframe src="https://player.vimeo.com/video/%id%?byline=0&portrait=0&autoplay=1" frameborder="no" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>'
             };
-            a.st.video = f.extend({}, a._a7,
+            a.st.video = $.extend({}, a._a7,
                 a.st.video);
             a.ev.on("rsBeforeSizeSet", function () {
                 a._b7 && setTimeout(function () {
@@ -1246,11 +1246,11 @@
             });
             var d = a._a.mozilla;
             a.ev.on("rsAfterParseNode", function (b, c, e) {
-                b = f(c);
+                b = $(c);
                 if (e.videoURL) {
                     a.st.video.disableCSS3inFF && d && (a._e = a._f = !1);
-                    c = f('<div class="rsVideoContainer"></div>');
-                    var g = f('<div class="rsBtnCenterer"><div class="rsPlayBtn"><div class="rsPlayBtnIcon"></div></div></div>');
+                    c = $('<div class="rsVideoContainer"></div>');
+                    var g = $('<div class="rsBtnCenterer"><div class="rsPlayBtn"><div class="rsPlayBtnIcon"></div></div></div>');
                     b.hasClass("rsImg") ?
                         e.content = c.append(b).append(g) : e.content.find(".rsImg").wrap(c).after(g)
                 }
@@ -1269,9 +1269,9 @@
                 var b = a._e7 = d.content, d = d.videoURL, c, e;
                 d.match(/youtu\.be/i) || d.match(/youtube\.com/i) ? (e = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/, (e = d.match(e)) && 11 == e[7].length &&
                     (c = e[7]), void 0 !== c && (a._c7 = a.st.video.youTubeCode.replace("%id%", c))) : d.match(/vimeo\.com/i) && (e = /(www\.)?vimeo.com\/(\d+)($|\/)/, (e = d.match(e)) && (c = e[2]), void 0 !== c && (a._c7 = a.st.video.vimeoCode.replace("%id%", c)));
-                a.videoObj = f(a._c7);
+                a.videoObj = $(a._c7);
                 a.ev.trigger("rsOnCreateVideoElement", [d]);
-                a.videoObj.length && (a._c7 = f('<div class="rsVideoFrameHolder"><div class="rsPreloader"></div><div class="rsCloseVideoBtn"><div class="rsCloseVideoIcn"></div></div></div>'), a._c7.find(".rsPreloader").after(a.videoObj), b = b.hasClass("rsVideoContainer") ?
+                a.videoObj.length && (a._c7 = $('<div class="rsVideoFrameHolder"><div class="rsPreloader"></div><div class="rsCloseVideoBtn"><div class="rsCloseVideoIcn"></div></div></div>'), a._c7.find(".rsPreloader").after(a.videoObj), b = b.hasClass("rsVideoContainer") ?
                     b : b.find(".rsVideoContainer"), a._c7.css({
                     width: b.width(),
                     height: b.height()
@@ -1310,11 +1310,11 @@
             if (b.length)for (c = 0; c < b.length; c++)a ? b[c].removeClass("rsHidden") : b[c].addClass("rsHidden")
         }
     });
-    f.rsModules.video = f.rsProto._z6
+    $.rsModules.video = $.rsProto._z6
 })(jQuery);
 // jquery.rs.animated-blocks v1.0.7
-(function (l) {
-    l.extend(l.rsProto, {
+(function ($) {
+    $.extend($.rsProto, {
         _p4: function () {
             function m() {
                 var g = a.currSlide;
@@ -1337,14 +1337,14 @@
                 fadeEffect: !0,
                 moveEffect: "top", moveOffset: 20, speed: 400, easing: "easeOutSine", delay: 200
             };
-            a.st.block = l.extend({}, a._q4, a.st.block);
+            a.st.block = $.extend({}, a._q4, a.st.block);
             a._r4 = [];
             a._s4 = [];
             a.ev.on("rsAfterInit", function () {
                 m()
             });
             a.ev.on("rsBeforeParseNode", function (a, b, d) {
-                b = l(b);
+                b = $(b);
                 d.animBlocks = b.find(".rsABlock").css("display", "none");
                 d.animBlocks.length || (b.hasClass("rsABlock") ? d.animBlocks = b.css("display", "none") : d.animBlocks = !1)
             });
@@ -1364,7 +1364,7 @@
             var a = this, b, g, f, d, h, e, n;
             a._s4 = [];
             m.each(function (m) {
-                b = l(this);
+                b = $(this);
                 g = {};
                 f = {};
                 d = null;
@@ -1383,7 +1383,7 @@
                 if (!c) c = a.st.block.fadeEffect; else if ("none" === c.toLowerCase() ||
                     "false" === c.toLowerCase()) c = !1;
                 c && (f.opacity = 0, g.opacity = 1);
-                if (c || e) d = {}, d.hasFade = Boolean(c), Boolean(e) && (d.moveProp = h, d.hasMove = !0), d.speed = b.data("speed"), isNaN(d.speed) && (d.speed = a.st.block.speed), d.easing = b.data("easing"), d.easing || (d.easing = a.st.block.easing), d.css3Easing = l.rsCSS3Easing[d.easing], d.delay = b.data("delay"), isNaN(d.delay) && (d.delay = a.st.block.delay * m);
+                if (c || e) d = {}, d.hasFade = Boolean(c), Boolean(e) && (d.moveProp = h, d.hasMove = !0), d.speed = b.data("speed"), isNaN(d.speed) && (d.speed = a.st.block.speed), d.easing = b.data("easing"), d.easing || (d.easing = a.st.block.easing), d.css3Easing = $.rsCSS3Easing[d.easing], d.delay = b.data("delay"), isNaN(d.delay) && (d.delay = a.st.block.delay * m);
                 c = {};
                 a._e && (c[a._g + a._u1] = "0ms");
                 c.moveProp = g.moveProp;
@@ -1418,67 +1418,61 @@
             })
         }
     });
-    l.rsModules.animatedBlocks = l.rsProto._p4
+    $.rsModules.animatedBlocks = $.rsProto._p4
 })(jQuery);
 // jquery.rs.auto-height v1.0.3
-(function (b) {
-    b.extend(b.rsProto, {
-        _w4: function () {
-            var a = this;
-            if (a.st.autoHeight) {
-                var b, c, e, f = !0, d = function (d) {
-                    e = a.slides[a.currSlideId];
-                    (b = e.holder) && (c = b.height()) && void 0 !== c && c > (a.st.minAutoHeight || 30) && (a._c4 = c, a._e || !d ? a._e1.css("height", c) : a._e1.stop(!0, !0).animate({height: c}, a.st.transitionSpeed), a.ev.trigger("rsAutoHeightChange", c), f && (a._e && setTimeout(function () {
-                        a._e1.css(a._g + "transition", "height " + a.st.transitionSpeed + "ms ease-in-out")
-                    }, 16), f = !1))
-                };
-                a.ev.on("rsMaybeSizeReady.rsAutoHeight",
-                    function (a, b) {
-                        e === b && d()
-                    });
-                a.ev.on("rsAfterContentSet.rsAutoHeight", function (a, b) {
+(function ($) {
+    $.rsModules.autoHeight = $.rsProto.autoHeight = function () {
+        var a = this;
+        if (a.st.autoHeight) {
+            var b, c, e, f = !0, d = function (d) {
+                e = a.slides[a.currSlideId];
+                (b = e.holder) && (c = b.height()) && void 0 !== c && c > (a.st.minAutoHeight || 30) && (a._c4 = c, a._e || !d ? a._e1.css("height", c) : a._e1.stop(!0, !0).animate({height: c}, a.st.transitionSpeed), a.ev.trigger("rsAutoHeightChange", c), f && (a._e && setTimeout(function () {
+                    a._e1.css(a._g + "transition", "height " + a.st.transitionSpeed + "ms ease-in-out")
+                }, 16), f = !1))
+            };
+            a.ev.on("rsMaybeSizeReady.rsAutoHeight",
+                function (a, b) {
                     e === b && d()
                 });
-                a.slider.addClass("rsAutoHeight");
-                a.ev.one("rsAfterInit", function () {
+            a.ev.on("rsAfterContentSet.rsAutoHeight", function (a, b) {
+                e === b && d()
+            });
+            a.slider.addClass("rsAutoHeight");
+            a.ev.one("rsAfterInit", function () {
+                setTimeout(function () {
+                    d(!1);
                     setTimeout(function () {
-                        d(!1);
-                        setTimeout(function () {
-                            a.slider.append('<div style="clear:both; float: none;"></div>')
-                        }, 16)
+                        a.slider.append('<div style="clear:both; float: none;"></div>')
                     }, 16)
-                });
-                a.ev.on("rsBeforeAnimStart", function () {
-                    d(!0)
-                });
-                a.ev.on("rsBeforeSizeSet", function () {
-                    setTimeout(function () {
-                        d(!1)
-                    }, 16)
-                })
-            }
+                }, 16)
+            });
+            a.ev.on("rsBeforeAnimStart", function () {
+                d(!0)
+            });
+            a.ev.on("rsBeforeSizeSet", function () {
+                setTimeout(function () {
+                    d(!1)
+                }, 16)
+            })
         }
-    });
-    b.rsModules.autoHeight = b.rsProto._w4
+    };
 })(jQuery);
 // jquery.rs.global-caption v1.0
-(function (b) {
-    b.extend(b.rsProto, {
-        _d6: function () {
-            var a = this;
-            a.st.globalCaption && (a.ev.on("rsAfterInit", function () {
-                a.globalCaption = b('<div class="rsGCaption"></div>').appendTo(a.st.globalCaptionInside ? a._e1 : a.slider);
-                a.globalCaption.html(a.currSlide.caption)
-            }), a.ev.on("rsBeforeAnimStart", function () {
-                a.globalCaption.html(a.currSlide.caption)
-            }))
-        }
-    });
-    b.rsModules.globalCaption = b.rsProto._d6
+(function ($) {
+    $.rsModules.globalCaption = $.rsProto.globalCaption = function () {
+        var a = this;
+        a.st.globalCaption && (a.ev.on("rsAfterInit", function () {
+            a.globalCaption = $('<div class="rsGCaption"></div>').appendTo(a.st.globalCaptionInside ? a._e1 : a.slider);
+            a.globalCaption.html(a.currSlide.caption)
+        }), a.ev.on("rsBeforeAnimStart", function () {
+            a.globalCaption.html(a.currSlide.caption)
+        }))
+    };
 })(jQuery);
 // jquery.rs.active-class v1.0.1
-(function (c) {
-    c.rsProto._o4 = function () {
+(function ($) {
+    $.rsModules.activeClass = $.rsProto.activeClass = function () {
         var b, a = this;
         if (a.st.addActiveClass) a.ev.on("rsOnUpdateNav", function () {
             b && clearTimeout(b);
@@ -1489,116 +1483,10 @@
             }, 50)
         })
     };
-    c.rsModules.activeClass = c.rsProto._o4
 })(jQuery);
-// jquery.rs.deeplinking v1.0.6 + jQuery hashchange plugin v1.3 Copyright (c) 2010 Ben Alman
-(function (b) {
-    b.extend(b.rsProto, {
-        _o5: function () {
-            var a = this, h, d, f;
-            a._p5 = {enabled: !1, change: !1, prefix: ""};
-            a.st.deeplinking = b.extend({}, a._p5, a.st.deeplinking);
-            if (a.st.deeplinking.enabled) {
-                var g = a.st.deeplinking.change, e = a.st.deeplinking.prefix, c = "#" + e, k = function () {
-                    var a = window.location.hash;
-                    return a && 0 < a.indexOf(e) && (a = parseInt(a.substring(c.length), 10), 0 <= a) ? a - 1 : -1
-                }, p = k();
-                -1 !== p && (a.st.startSlideId = p);
-                g && (b(window).on("hashchange" + a.ns, function (b) {
-                    h || (b = k(), 0 > b || (b > a.numSlides - 1 && (b = a.numSlides - 1),
-                        a.goTo(b)))
-                }), a.ev.on("rsBeforeAnimStart", function () {
-                    d && clearTimeout(d);
-                    f && clearTimeout(f)
-                }), a.ev.on("rsAfterSlideChange", function () {
-                    d && clearTimeout(d);
-                    f && clearTimeout(f);
-                    f = setTimeout(function () {
-                        h = !0;
-                        window.location.replace(("" + window.location).split("#")[0] + c + (a.currSlideId + 1));
-                        d = setTimeout(function () {
-                            h = !1;
-                            d = null
-                        }, 60)
-                    }, 400)
-                }));
-                a.ev.on("rsBeforeDestroy", function () {
-                    d = f = null;
-                    g && b(window).off("hashchange" + a.ns)
-                })
-            }
-        }
-    });
-    b.rsModules.deeplinking = b.rsProto._o5
-})(jQuery);
-(function (b, a, h) {
-    function d(a) {
-        a = a || location.href;
-        return "#" + a.replace(/^[^#]*#?(.*)$/, "$1")
-    }
-
-    "$:nomunge";
-    var f = document, g, e = b.event.special, c = f.documentMode, k = "onhashchange" in a && (c === h || 7 < c);
-    b.fn.hashchange = function (a) {
-        return a ? this.bind("hashchange", a) : this.trigger("hashchange")
-    };
-    b.fn.hashchange.delay = 50;
-    e.hashchange = b.extend(e.hashchange, {
-        setup: function () {
-            if (k)return !1;
-            b(g.start)
-        }, teardown: function () {
-            if (k)return !1;
-            b(g.stop)
-        }
-    });
-    g = function () {
-        function g() {
-            var f = d(), e = q(l);
-            f !== l ? (m(l = f, e), b(a).trigger("hashchange")) :
-                e !== l && (location.href = location.href.replace(/#.*/, "") + e);
-            c = setTimeout(g, b.fn.hashchange.delay)
-        }
-
-        var e = {}, c, l = d(), n = function (a) {
-            return a
-        }, m = n, q = n;
-        e.start = function () {
-            c || g()
-        };
-        e.stop = function () {
-            c && clearTimeout(c);
-            c = h
-        };
-        a.attachEvent && !a.addEventListener && !k && function () {
-            var a, c;
-            e.start = function () {
-                a || (c = (c = b.fn.hashchange.src) && c + d(), a = b('<iframe tabindex="-1" title="empty"/>').hide().one("load", function () {
-                    c || m(d());
-                    g()
-                }).attr("src", c || "javascript:0").insertAfter("body")[0].contentWindow, f.onpropertychange =
-                    function () {
-                        try {
-                            "title" === event.propertyName && (a.document.title = f.title)
-                        } catch (b) {
-                        }
-                    })
-            };
-            e.stop = n;
-            q = function () {
-                return d(a.location.href)
-            };
-            m = function (c, e) {
-                var d = a.document, g = b.fn.hashchange.domain;
-                c !== e && (d.title = f.title, d.open(), g && d.write('<script>document.domain="' + g + '"\x3c/script>'), d.close(), a.location.hash = c)
-            }
-        }();
-        return e
-    }()
-})(jQuery, this);
 // jquery.rs.visible-nearby v1.0.2
-(function (d) {
-    d.rsProto._g7 = function () {
+(function ($) {
+    $.rsModules.visibleNearby = $.rsProto.visibleNearby = function () {
         var a = this;
         a.st.visibleNearby && a.st.visibleNearby.enabled && (a._h7 = {
             enabled: !0,
@@ -1608,7 +1496,7 @@
             breakpointCenterArea: .8,
             hiddenOverflow: !0,
             navigateByCenterClick: !1
-        }, a.st.visibleNearby = d.extend({}, a._h7, a.st.visibleNearby), a.ev.one("rsAfterPropsSetup", function () {
+        }, a.st.visibleNearby = $.extend({}, a._h7, a.st.visibleNearby), a.ev.one("rsAfterPropsSetup", function () {
             a._i7 = a._e1.css("overflow", "visible").wrap('<div class="rsVisibleNearbyWrap"></div>').parent();
             a.st.visibleNearby.hiddenOverflow || a._i7.css("overflow", "visible");
             a._o1 = a._i7
@@ -1616,15 +1504,14 @@
             var b, c = a.st.visibleNearby;
             b = c.breakpoint && a.width < c.breakpoint ? c.breakpointCenterArea : c.centerArea;
             a._h ? (a._b4 *= b, a._i7.css({
-                    height: a._c4,
-                    width: a._b4 / b
-                }), a._d = a._b4 * (1 - b) / 2 / b) : (a._c4 *= b, a._i7.css({
-                    height: a._c4 / b,
-                    width: a._b4
-                }), a._d = a._c4 * (1 - b) / 2 / b);
+                height: a._c4,
+                width: a._b4 / b
+            }), a._d = a._b4 * (1 - b) / 2 / b) : (a._c4 *= b, a._i7.css({
+                height: a._c4 / b,
+                width: a._b4
+            }), a._d = a._c4 * (1 - b) / 2 / b);
             c.navigateByCenterClick || (a._q = a._h ? a._b4 : a._c4);
             c.center && a._e1.css("margin-" + (a._h ? "left" : "top"), a._d)
         }))
     };
-    d.rsModules.visibleNearby = d.rsProto._g7
 })(jQuery);
