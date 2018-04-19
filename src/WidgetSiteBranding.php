@@ -24,14 +24,14 @@ final class WidgetSiteBranding extends Widget
         $siteNameStyle = "";
         $imageMarkup = "";
         if ($siteLogoId) {
-            $imageMarkup = wp_get_attachment_image($siteLogoId, WPImages::FULL, false, [
-                'class' => 'custom-logo',
-                'alt' => get_bloginfo('name', 'display'),
-                'usemap' => '#custom-logo'
-            ]);
-
-            $imageMarkup .= '<map name="custom-logo"><area shape="rect" coords="0,0,102,60" href="%1$s" alt="Sun"></map>';
-            $siteNameStyle = "style='display:none;'";
+            $image = wp_get_attachment_image_src($siteLogoId, WPImages::FULL);
+            if ( $image ) {
+                list($src, $width, $height) = $image;
+                $hwstring = image_hwstring($width, $height);
+                $imageMarkup = "<img $hwstring src='$src' class='custom-logo' alt='$siteTitle' />
+                <map name='custom-logo'><area shape='rect' coords='0,0,$width,$height' href='$siteHomeUrl alt='$siteTitle'></map>";
+                $siteNameStyle = "style='display:none;'";
+            }
         }
         return "<figure style='display: inline-block;' rel='home'>
         $imageMarkup
