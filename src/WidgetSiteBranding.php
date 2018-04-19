@@ -32,7 +32,7 @@ final class WidgetSiteBranding extends Widget
                 'usemap' => '#custom-logo'
             ]);
 
-            $imageMarkup .= '<map name="planetmap"><area shape="rect" coords="0,0,102,60" href="%1$s" alt="Sun"></map>';
+            $imageMarkup .= '<map name="custom-logo"><area shape="rect" coords="0,0,102,60" href="%1$s" alt="Sun"></map>';
         }
         return "<figure style='display: inline-block;' rel='home'>
         $imageMarkup
