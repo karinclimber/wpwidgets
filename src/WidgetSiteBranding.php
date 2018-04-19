@@ -24,8 +24,6 @@ final class WidgetSiteBranding extends Widget
         $siteNameStyle = "";
         $imageMarkup = "";
         if ($siteLogoId) {
-            $siteNameStyle = "style='display:none;'";
-        } else {
             $imageMarkup = wp_get_attachment_image($siteLogoId, WPImages::FULL, false, [
                 'class' => 'custom-logo',
                 'alt' => get_bloginfo('name', 'display'),
@@ -33,6 +31,8 @@ final class WidgetSiteBranding extends Widget
             ]);
 
             $imageMarkup .= '<map name="custom-logo"><area shape="rect" coords="0,0,102,60" href="%1$s" alt="Sun"></map>';
+        } else {
+            $siteNameStyle = "style='display:none;'";
         }
         return "<figure style='display: inline-block;' rel='home'>
         $imageMarkup
