@@ -39,6 +39,8 @@ final class WidgetMediaSlider extends Widget
     /** @const Adds global caption element to slider. Grab an image caption from alt or element with (class rsCaption) */
     const GLOBAL_CAPTION = 'sliderGlobalCaption';
     //Values
+    /** @const Base slider width. Slider will auto-calculate the ratio based on these values. */
+    const WIDTH = 'sliderAutoScaleWidthValue';
     /** @const Base slider height */
     const HEIGHT = 'sliderAutoScaleHeightValue';
     /** @const Start slide index */
@@ -113,6 +115,8 @@ final class WidgetMediaSlider extends Widget
             self::SKIN_INVERTED => __('Inverted'),
             self::SKIN_UNIVERSAL => __('Universal')
         ], self::SKIN_DEFAULT));
+        $this->addField(new WidgetField(WidgetField::TEXT, self::WIDTH,
+            __("Width"), [], '100%'));
         $this->addField(new WidgetField(WidgetField::TEXT, self::HEIGHT,
             __("Height"), [], '400px'));
         $this->addField(new WidgetField(WidgetField::IMAGES_WITH_URL, self::IMAGES, __("Images")));
@@ -198,6 +202,7 @@ final class WidgetMediaSlider extends Widget
             //Options
             $slideOptions = self::getInstanceValue($instance, self::SLIDE_OPTIONS, $this);
             //Values
+            $sliderWidth = self::getInstanceValue($instance, self::WIDTH, $this);
             $sliderHeight = self::getInstanceValue($instance, self::HEIGHT, $this);
             //Content
             $sliderOptions = json_encode([
@@ -232,7 +237,7 @@ final class WidgetMediaSlider extends Widget
             ]);
             $optionsName = $this->id_base.$this->number;
             $sliderId = "#{$this->id} > .royalSlider";
-            $content = "<div class='royalSlider $skin' style='height:$sliderHeight;'>{$content}</div>
+            $content = "<div class='royalSlider $skin' style='width:$sliderWidth;height:$sliderHeight;'>{$content}</div>
             <script>var $optionsName = $sliderOptions;
             if (typeof jQuery == 'undefined'){
                 window.addEventListener('DOMContentLoaded', function() { jQuery('$sliderId').royalSlider($optionsName);});
