@@ -23,7 +23,7 @@ final class WidgetPostContent extends Widget
             __('in', 'wptheme'),
             get_the_category_list(', '));
         if (have_posts()) : while (have_posts()) : the_post();
-            $pageContent = do_shortcode(get_the_content());
+            $pageContent = get_the_content();
             $pageContent = apply_filters('the_content', $pageContent);
             $pageContent = str_replace(']]>', ']]&gt;', $pageContent);
             $pageClass = implode(' ', get_post_class('', get_the_ID()));
