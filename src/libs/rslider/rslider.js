@@ -1,49 +1,57 @@
 // version v9.5.7
 (function ($) {
-    function v(b, f) {
-        var c, a = this, e = window.navigator, g = e.userAgent.toLowerCase();
+    function rsInit(sliderElement, options) {
+        var a = this;
+        var navigator = window.navigator;
+        var userAgent = navigator.userAgent.toLowerCase();
         a.uid = $.rsModules.uid++;
         a.ns = ".rs" + a.uid;
-        var d = document.createElement("div").style, h = ["webkit", "Moz", "ms", "O"], k = "", l = 0, q;
-        for (c = 0; c < h.length; c++) q = h[c], !k && q + "Transform" in d && (k = q), q = q.toLowerCase(), window.requestAnimationFrame || (window.requestAnimationFrame = window[q + "RequestAnimationFrame"], window.cancelAnimationFrame = window[q + "CancelAnimationFrame"] || window[q + "CancelRequestAnimationFrame"]);
+        var rsContainerMarkup = document.createElement("div").style;
+        var browserPrefixes = ["webkit", "Moz", "ms", "O"];
+        var k = "";
+        var l = 0;
+        var q;
+        var c;
+        for (c = 0; c < browserPrefixes.length; c++) {
+            q = browserPrefixes[c], !k && q + "Transform" in rsContainerMarkup && (k = q), q = q.toLowerCase(), window.requestAnimationFrame || (window.requestAnimationFrame = window[q + "RequestAnimationFrame"], window.cancelAnimationFrame = window[q + "CancelAnimationFrame"] || window[q + "CancelRequestAnimationFrame"]);
+        }
         window.requestAnimationFrame ||
         (window.requestAnimationFrame = function (a, b) {
-            var c = (new Date).getTime(), d = Math.max(0, 16 - (c - l)), e = window.setTimeout(function () {
-                a(c + d)
+            var currentTime = (new Date).getTime(), d = Math.max(0, 16 - (currentTime - l)), animationTimerId = window.setTimeout(function () {
+                a(currentTime + d)
             }, d);
-            l = c + d;
-            return e
+            l = currentTime + d;
+            return animationTimerId
         });
         window.cancelAnimationFrame || (window.cancelAnimationFrame = function (a) {
             clearTimeout(a)
         });
-        a.isIPAD = g.match(/(ipad)/);
-        a.isIOS = a.isIPAD || g.match(/(iphone|ipod)/);
+        a.isIPAD = userAgent.match(/(ipad)/);
+        a.isIOS = a.isIPAD || userAgent.match(/(iphone|ipod)/);
         c = function (a) {
             a = /(chrome)[ \/]([\w.]+)/.exec(a) || /(webkit)[ \/]([\w.]+)/.exec(a) || /(opera)(?:.*version|)[ \/]([\w.]+)/.exec(a) || /(msie) ([\w.]+)/.exec(a) || 0 > a.indexOf("compatible") && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(a) ||
                 [];
             return {browser: a[1] || "", version: a[2] || "0"}
-        }(g);
-        h = {};
-        c.browser && (h[c.browser] = !0, h.version = c.version);
-        h.chrome && (h.webkit = !0);
-        a._a = h;
-        a.isAndroid = -1 < g.indexOf("android");
-        a.slider = $(b);
+        }(userAgent);
+        browserPrefixes = {};
+        c.browser && (browserPrefixes[c.browser] = true, browserPrefixes.version = c.version);
+        browserPrefixes.chrome && (browserPrefixes.webkit = true);
+        a.deviceInfo = browserPrefixes;
+        a.isAndroid = (-1 < userAgent.indexOf("android"));
+        a.slider = $(sliderElement);
         a.ev = $(a);
-        a._b = $(document);
-        a.options = $.extend({}, $.fn.royalSlider.defaults, f);
-        a._c = a.options.transitionSpeed;
+        a.$document = $(document);
+        a.options = $.extend({}, $.fn.royalSlider.defaults, options);
+        a.transitionSpeed = a.options.transitionSpeed;
         a._d = 0;
         k = k.toLowerCase();
         a._g = "-" + k + "-";
-        a._h = "vertical" === a.options.slidesOrientation ?
-            !1 : !0;
-        a._i = a._h ? "left" : "top";
-        a._j = a._h ? "width" : "height";
+        a.isHorizontal = ("vertical" === a.options.slidesOrientation) ? false : true;
+        a._i = a.isHorizontal ? "left" : "top";
+        a._j = a.isHorizontal ? "width" : "height";
         a._k = -1;
-        a._l = "fade" === a.options.transitionType ? !1 : !0;
-        a._l || (a.options.sliderDrag = !1, a._m = 10);
+        a.transitionIsNotFade = ("fade" === a.options.transitionType) ? false : true;
+        a.transitionIsNotFade || (a.options.sliderDrag = false, a._m = 10);
         a._n = "z-index:0; display:none; opacity:0;";
         a._o = 0;
         a._p = 0;
@@ -67,42 +75,44 @@
         a.currSlide = a.slides[a.currSlideId];
         a._v = 0;
         a.pointerMultitouch = !1;
-        a.slider.addClass((a._h ? "rsHor" : "rsVer") + (a._l ? "" : " rsFade"));
-        d = '<div class="rsOverflow"><div class="rsContainer">';
+        a.slider.addClass((a.isHorizontal ? "rsHor" : "rsVer") + (a.transitionIsNotFade ? "" : " rsFade"));
+
         a.slidesSpacing = a.options.slidesSpacing;
-        a._w = (a._h ? a.slider.width() : a.slider.height()) + a.options.slidesSpacing;
+        a._w = (a.isHorizontal ? a.slider.width() : a.slider.height()) + a.options.slidesSpacing;
         a._x = Boolean(0 < a._y);
         1 >= a.numSlides && (a._z = !1);
-        a._a1 = a._z && a._l ? 2 === a.numSlides ? 1 : 2 : 0;
+        a._a1 = a._z && a.transitionIsNotFade ? 2 === a.numSlides ? 1 : 2 : 0;
         a._b1 =
             6 > a.numSlides ? a.numSlides : 6;
         a._c1 = 0;
         a._d1 = 0;
         a.slidesJQ = [];
-        for (c = 0; c < a.numSlides; c++) a.slidesJQ.push($('<div style="' + (a._l ? "" : c !== a.currSlideId ? a._n : "z-index:0;") + '" class="rsSlide "></div>'));
-        a._e1 = d = $(d + "</div></div>");
-        var m = a.ns, k = function (b, c, d, e, f) {
+        rsContainerMarkup = '<div class="rsOverflow"><div class="rsContainer">';
+        for (c = 0; c < a.numSlides; c++) {
+            a.slidesJQ.push($('<div style="' + (a.transitionIsNotFade ? "" : c !== a.currSlideId ? a._n : "z-index:0;") + '" class="rsSlide "></div>'));
+        }
+        a._e1 = rsContainerMarkup = $(rsContainerMarkup + "</div></div>");
+        var m = a.ns;
+        var k = function (b, c, d, e, f) {
             a._j1 = b + c + m;
             a._k1 = b + d + m;
             a._l1 = b + e + m;
             f && (a._m1 = b + f + m)
         };
-        c = e.pointerEnabled;
-        a.pointerEnabled = c || e.msPointerEnabled;
-        a.pointerEnabled ? (a.hasTouch = !1, a._n1 = .2, a.pointerMultitouch = Boolean(1 < e[(c ? "m" : "msM") + "axTouchPoints"]), c ? k("pointer", "down", "move", "up",
-            "cancel") : k("MSPointer", "Down", "Move", "Up", "Cancel")) : (a.isIOS ? a._j1 = a._k1 = a._l1 = a._m1 = "" : k("mouse", "down", "move", "up"), "ontouchstart" in window || "createTouch" in document ? (a.hasTouch = !0, a._j1 += " touchstart" + m, a._k1 += " touchmove" + m, a._l1 += " touchend" + m, a._m1 += " touchcancel" + m, a._n1 = .5, a.options.sliderTouch && (a._f1 = !0)) : (a.hasTouch = !1, a._n1 = .2));
-        a.options.sliderDrag && (a._f1 = !0, h.msie || h.opera ? a._g1 = a._h1 = "move" : h.mozilla ? (a._g1 = "-moz-grab", a._h1 = "-moz-grabbing") : h.webkit && -1 != e.platform.indexOf("Mac") && (a._g1 =
-            "-webkit-grab", a._h1 = "-webkit-grabbing"), a._i1());
-        a.slider.html(d);
+        c = navigator.pointerEnabled;
+        a.pointerEnabled = c || navigator.msPointerEnabled;
+        a.pointerEnabled ? (a.hasTouch = !1, a._n1 = .2, a.pointerMultitouch = Boolean(1 < navigator[(c ? "m" : "msM") + "axTouchPoints"]), c ? k("pointer", "down", "move", "up", "cancel") : k("MSPointer", "Down", "Move", "Up", "Cancel")) : (a.isIOS ? a._j1 = a._k1 = a._l1 = a._m1 = "" : k("mouse", "down", "move", "up"), "ontouchstart" in window || "createTouch" in document ? (a.hasTouch = !0, a._j1 += " touchstart" + m, a._k1 += " touchmove" + m, a._l1 += " touchend" + m, a._m1 += " touchcancel" + m, a._n1 = .5, a.options.sliderTouch && (a._f1 = !0)) : (a.hasTouch = !1, a._n1 = .2));
+        a.options.sliderDrag && (a._f1 = !0, browserPrefixes.msie || browserPrefixes.opera ? a._g1 = a._h1 = "move" : browserPrefixes.mozilla ? (a._g1 = "-moz-grab", a._h1 = "-moz-grabbing") : browserPrefixes.webkit && -1 != navigator.platform.indexOf("Mac") && (a._g1 = "-webkit-grab", a._h1 = "-webkit-grabbing"), a._i1());
+        a.slider.html(rsContainerMarkup);
         a._o1 = a._e1;
         a._p1 = a._e1.children(".rsContainer");
-        a.pointerEnabled && a._p1.css((c ? "" : "-ms-") + "touch-action", a._h ? "pan-y" : "pan-x");
+        a.pointerEnabled && a._p1.css((c ? "" : "-ms-") + "touch-action", a.isHorizontal ? "pan-y" : "pan-x");
         a._q1 = $('<div class="rsPreloader"></div>');
-        e = a._p1.children(".rsSlide");
+        navigator = a._p1.children(".rsSlide");
         a._r1 = a.slidesJQ[a.currSlideId];
         a._s1 = 0;
-        (a._e && a.numSlides > 1) ? (a._t1 = "transition-property", a._u1 = "transition-duration", a._v1 = "transition-timing-function", a._w1 = a._x1 = a._g + "transform", a._f ? (h.webkit && !h.chrome && a.slider.addClass("rsWebkit3d"),
-            a._y1 = "translate3d(", a._z1 = "px, ", a._a2 = "px, 0px)") : (a._y1 = "translate(", a._z1 = "px, ", a._a2 = "px)"), a._l ? a._p1[a._g + a._t1] = a._g + "transform" : (h = {}, h[a._g + a._t1] = "opacity", h[a._g + a._u1] = a.options.transitionSpeed + "ms", h[a._g + a._v1] = a.options.css3easeInOut, e.css(h))) : (a._x1 = "left", a._w1 = "top");
+        (a._e && a.numSlides > 1) ? (a._t1 = "transition-property", a._u1 = "transition-duration", a._v1 = "transition-timing-function", a._w1 = a._x1 = a._g + "transform", a._f ? (browserPrefixes.webkit && !browserPrefixes.chrome && a.slider.addClass("rsWebkit3d"),
+            a._y1 = "translate3d(", a._z1 = "px, ", a._a2 = "px, 0px)") : (a._y1 = "translate(", a._z1 = "px, ", a._a2 = "px)"), a.transitionIsNotFade ? a._p1[a._g + a._t1] = a._g + "transform" : (browserPrefixes = {}, browserPrefixes[a._g + a._t1] = "opacity", browserPrefixes[a._g + a._u1] = a.options.transitionSpeed + "ms", browserPrefixes[a._g + a._v1] = a.options.css3easeInOut, navigator.css(browserPrefixes))) : (a._x1 = "left", a._w1 = "top");
         var p;
         $(window).on("resize" + a.ns, function () {
             p && clearTimeout(p);
@@ -115,17 +125,17 @@
         a.options.keyboardNavEnabled && a._b2();
         a.options.arrowsNavHideOnTouch &&
         (a.hasTouch || a.pointerMultitouch) && (a.options.arrowsNav = !1);
-        a.options.arrowsNav && (e = a._o1, $('<div class="rsArrow rsArrowLeft"><div class="rsArrowIcn"></div></div><div class="rsArrow rsArrowRight"><div class="rsArrowIcn"></div></div>').appendTo(e), a._c2 = e.children(".rsArrowLeft").click(function (b) {
+        a.options.arrowsNav && (navigator = a._o1, $('<div class="rsArrow rsArrowLeft"><div class="rsArrowIcn"></div></div><div class="rsArrow rsArrowRight"><div class="rsArrowIcn"></div></div>').appendTo(navigator), a._c2 = navigator.children(".rsArrowLeft").click(function (b) {
             b.preventDefault();
             a.prev()
-        }), a._d2 = e.children(".rsArrowRight").click(function (b) {
+        }), a._d2 = navigator.children(".rsArrowRight").click(function (b) {
             b.preventDefault();
             a.next()
-        }), a.options.arrowsNavAutoHide && !a.hasTouch && (a._c2.addClass("rsHidden"), a._d2.addClass("rsHidden"), e.one("mousemove.arrowshover",
+        }), a.options.arrowsNavAutoHide && !a.hasTouch && (a._c2.addClass("rsHidden"), a._d2.addClass("rsHidden"), navigator.one("mousemove.arrowshover",
             function () {
                 a._c2.removeClass("rsHidden");
                 a._d2.removeClass("rsHidden")
-            }), e.hover(function () {
+            }), navigator.hover(function () {
             a._e2 || (a._c2.removeClass("rsHidden"), a._d2.removeClass("rsHidden"))
         }, function () {
             a._e2 || (a._c2.addClass("rsHidden"), a._d2.addClass("rsHidden"))
@@ -133,7 +143,7 @@
             a._f2()
         }), a._f2());
         if (a.hasTouch && a.options.sliderTouch || !a.hasTouch && a.options.sliderDrag) a._p1.on(a._j1, function (b) {
-            a._g2(b)
+            a.startTouch(b)
         }); else a.dragSuccess = !1;
         var r = ["rsPlayBtnIcon", "rsPlayBtn", "rsCloseVideoBtn", "rsCloseVideoIcn"];
         a._p1.click(function (b) {
@@ -158,17 +168,18 @@
     }
 
     $.rsModules || ($.rsModules = {uid: 0});
-    v.prototype = {
-        constructor: v, _i2: function (b) {
-            b = b[this._h ? "pageX" : "pageY"] - this._j2;
+    rsInit.prototype = {
+        constructor: rsInit, _i2: function (b) {
+            b = b[this.isHorizontal ? "pageX" : "pageY"] - this._j2;
             b >= this._q ? this.next() : 0 > b && this.prev()
-        }, _t: function () {
-            var b;
-            b = this.options.numImagesToPreload;
+        },
+        _t: function () {
+            var numImagesToPreload = this.options.numImagesToPreload;
             if (this._z = this.options.loop) 2 === this.numSlides ? (this._z = !1, this.options.loopRewind = !0) : 2 > this.numSlides && (this.options.loopRewind = this._z = !1);
-            this._z && 0 < b && (4 >= this.numSlides ? b = 1 : this.options.numImagesToPreload > (this.numSlides - 1) / 2 && (b = Math.floor((this.numSlides - 1) / 2)));
-            this._y = b
-        }, _s: function (b, f) {
+            this._z && 0 < numImagesToPreload && (4 >= this.numSlides ? numImagesToPreload = 1 : this.options.numImagesToPreload > (this.numSlides - 1) / 2 && (numImagesToPreload = Math.floor((this.numSlides - 1) / 2)));
+            this._y = numImagesToPreload
+        },
+        _s: function (b, f) {
             function c(b, c) {
                 c ? g.images.push(b.attr(c)) : g.images.push(b.text());
                 if (h) {
@@ -191,29 +202,32 @@
                     $(this);
                 a.is("a") ? c(a, "href") : a.is("img") ? c(a, "src") : c(a)
             })) : b.is("img") && (b.addClass("rsImg rsMainSlideImage"), c(b, "src"))), d = b.find(".rsCaption"), d.length && (g.caption = d.remove()), g.content = b, a.ev.trigger("rsAfterParseNode", [b, g]), f && a.slides.push(g), 0 === g.images.length && (g.isLoaded = !0, g.isRendered = !1, g.isLoading = !1, g.images = null), g
-        }, _b2: function () {
-            var b = this, f, c, a = function (a) {
-                37 === a ? b.prev() : 39 === a && b.next()
+        },
+        _b2: function () {
+            var self = this, f, c, a = function (a) {
+                37 === a ? self.prev() : 39 === a && self.next()
             };
-            b._b.on("keydown" + b.ns, function (e) {
-                if (!b.options.keyboardNavEnabled) return !0;
-                if (!(b._l2 || (c =
+            self.$document.on("keydown" + self.ns, function (e) {
+                if (!self.options.keyboardNavEnabled) return !0;
+                if (!(self._l2 || (c =
                         e.keyCode, 37 !== c && 39 !== c || f))) {
                     if (document.activeElement && /(INPUT|SELECT|TEXTAREA)/i.test(document.activeElement.tagName)) return !0;
-                    b.isFullscreen && e.preventDefault();
+                    self.isFullscreen && e.preventDefault();
                     a(c);
                     f = setInterval(function () {
                         a(c)
                     }, 700)
                 }
-            }).on("keyup" + b.ns, function (a) {
+            }).on("keyup" + self.ns, function (a) {
                 f && (clearInterval(f), f = null)
             })
-        }, goTo: function (b, f) {
+        },
+        goTo: function (b, f) {
             b !== this.currSlideId && this._m2(b, this.options.transitionSpeed, !0, !f)
-        }, destroy: function (b) {
+        },
+        destroy: function (b) {
             this.ev.trigger("rsBeforeDestroy");
-            this._b.off("keydown" + this.ns + " keyup" + this.ns + " " + this._k1 + " " + this._l1);
+            this.$document.off("keydown" + this.ns + " keyup" + this.ns + " " + this._k1 + " " + this._l1);
             this._p1.off(this._j1 +
                 " click");
             this.slider.data("royalSlider", null);
@@ -222,9 +236,10 @@
             this.loadingTimeout && clearTimeout(this.loadingTimeout);
             b && this.slider.remove();
             this.ev = this.slider = this.slides = null
-        }, _n2: function (b, f) {
+        },
+        _n2: function (b, f) {
             function c(c, f, g) {
-                c.isAdded ? (a(f, c), e(f, c)) : (g || (g = d.slidesJQ[f]), c.holder ? g = c.holder : (g = d.slidesJQ[f] = $(g), c.holder = g), c.appendOnLoaded = !1, e(f, c, g), a(f, c), d._p2(c, g, b), c.isAdded = !0)
+                c.isAdded ? (a(f, c), e(f, c)) : (g || (g = d.slidesJQ[f]), c.holder ? g = c.holder : (g = d.slidesJQ[f] = $(g), c.holder = g), c.appendOnLoaded = !1, e(f, c, g), a(f, c), d.appendHolder(c, g, b), c.isAdded = !0)
             }
 
             function a(a, c) {
@@ -232,7 +247,7 @@
             }
 
             function e(a, b, c) {
-                d._l && (c || (c = d.slidesJQ[a]), c.css(d._i, (a + d._d1 + p) * d._w))
+                d.transitionIsNotFade && (c || (c = d.slidesJQ[a]), c.css(d._i, (a + d._d1 + p) * d._w))
             }
 
             function g(a) {
@@ -259,8 +274,9 @@
                             m; k < m + r + 1; k++) u = g(k), p = Math.floor((d._u - (m - k)) / d.numSlides) * d.numSlides, (h = d.slides[u]) && c(h, u);
             if (v) for (k = m - 1; k > m - 1 - r; k--) u = g(k), p = Math.floor((d._u - (m - k)) / q) * q, (h = d.slides[u]) && c(h, u);
             if (!b) for (t = g(m - r), m = g(m + r), r = t > m ? 0 : t, k = 0; k < q; k++) t > m && k > t - 1 || !(k < r || k > m) || (h = d.slides[k]) && h.holder && (h.holder.detach(), h.isAdded = !1)
-        }, setItemHtml: function (b, f) {
-            var c = this, a = function () {
+        },
+        setItemHtml: function (b, f) {
+            var self = this, a = function () {
                 if (!b.images) b.isRendered = !0, b.isLoaded = !0, b.isLoading = !1, d(!0); else if (!b.isLoading) {
                     var a, f;
                     b.content.hasClass("rsImg") ? (a = b.content,
@@ -273,7 +289,7 @@
                     a = f ? b.content : b.content.find("img.rsImg");
                     k();
                     a.eq(0).addClass("rsMainSlideImage");
-                    b.iW && b.iH && (b.isLoaded || c._q2(b), d());
+                    b.iW && b.iH && (b.isLoaded || self._q2(b), d());
                     b.isLoading = !0;
                     if (b.isBig) $("<img />").on("load.rs error.rs", function (a) {
                         $(this).off("load.rs error.rs");
@@ -315,70 +331,77 @@
                 l();
                 h()
             }, d = function () {
-                if (!b.isAppended && c.ev) {
-                    var a = c.options.visibleNearby, d = b.id - c._o;
-                    f || b.appendOnLoaded || 0 !== d && (!(a || c._r2 || c._l2) || -1 !== d && 1 !== d) || (a = {
+                if (!b.isAppended && self.ev) {
+                    var a = self.options.visibleNearby, d = b.id - self._o;
+                    f || b.appendOnLoaded || 0 !== d && (!(a || self._r2 || self._l2) || -1 !== d && 1 !== d) || (a = {
                         visibility: "visible",
                         opacity: 0
-                    }, a[c._g + "transition"] = "opacity 400ms ease-in-out", b.content.css(a), setTimeout(function () {
+                    }, a[self._g + "transition"] = "opacity 400ms ease-in-out", b.content.css(a), setTimeout(function () {
                         b.content.css("opacity", 1)
                     }, 16));
                     b.holder.find(".rsPreloader").length ? b.holder.append(b.content) : b.holder.html(b.content);
                     b.isAppended = !0;
-                    b.isLoaded && (c._q2(b), h());
+                    b.isLoaded && (self._q2(b), h());
                     b.sizeReady || (b.sizeReady = !0, setTimeout(function () {
-                        c.ev.trigger("rsMaybeSizeReady", b)
+                        self.ev.trigger("rsMaybeSizeReady", b)
                     }, 100))
                 }
             }, h = function () {
-                !b.loadedTriggered && c.ev && (b.isLoaded = b.loadedTriggered = !0, b.holder.trigger("rsAfterContentSet"), c.ev.trigger("rsAfterContentSet", b))
+                !b.loadedTriggered && self.ev && (b.isLoaded = b.loadedTriggered = !0, b.holder.trigger("rsAfterContentSet"), self.ev.trigger("rsAfterContentSet", b))
             }, k = function () {
-                c.options.usePreloader && b.holder.html(c._q1.clone())
+                self.options.usePreloader && b.holder.html(self._q1.clone())
             }, l = function (a) {
-                c.options.usePreloader && (a = b.holder.find(".rsPreloader"), a.length && a.remove())
+                self.options.usePreloader && (a = b.holder.find(".rsPreloader"), a.length && a.remove())
             };
-            b.isLoaded ? d() : f ? !c._l && b.images && b.iW && b.iH ? a() : (b.holder.isWaiting = !0, k(), b.holder.slideId = -99) : a()
-        }, _p2: function (b, f, c) {
+            b.isLoaded ? d() : f ? !self.transitionIsNotFade && b.images && b.iW && b.iH ? a() : (b.holder.isWaiting = !0, k(), b.holder.slideId = -99) : a()
+        },
+        appendHolder: function (b, f, c) {
             this._p1.append(b.holder);
             b.appendOnLoaded = !1
-        }, _g2: function (b, f) {
-            var c = this, a, e = "touchstart" === b.type;
-            c._s2 = e;
-            c.ev.trigger("rsDragStart");
-            if ($(b.target).closest(".rsNoDrag", c._r1).length) return c.dragSuccess = !1, !0;
-            !f && c._r2 && (c._t2 = !0, c._u2());
-            c.dragSuccess = !1;
-            if (c._l2) e && (c._v2 = !0); else {
-                e && (c._v2 = !1);
-                c._w2();
-                if (e) {
-                    var g = b.originalEvent.touches;
-                    if (g && 0 < g.length) a = g[0], 1 < g.length && (c._v2 = !0); else return
-                } else b.preventDefault(), a = b, c.pointerEnabled &&
+        },
+        startTouch: function (event, f) {
+            var self = this;
+            var isTouchStart = ("touchstart" === event.type);
+            var a;
+            self._s2 = isTouchStart;
+            self.ev.trigger("rsDragStart");
+            if ($(event.target).closest(".rsNoDrag", self._r1).length) return self.dragSuccess = !1, !0;
+            !f && self._r2 && (self._t2 = !0, self._u2());
+            self.dragSuccess = !1;
+            if (self._l2) isTouchStart && (self._v2 = !0); else {
+                isTouchStart && (self._v2 = !1);
+                self._w2();
+                if (isTouchStart) {
+                    var g = event.originalEvent.touches;
+                    if (g && 0 < g.length) a = g[0], 1 < g.length && (self._v2 = !0); else return
+                } else event.preventDefault(), a = event, self.pointerEnabled &&
                 (a = a.originalEvent);
-                c._l2 = !0;
-                c._b.on(c._k1, function (a) {
-                    c._x2(a, f)
-                }).on(c._l1, function (a) {
-                    c._y2(a, f)
+                self._l2 = !0;
+                self.$document.on(self._k1, function (a) {
+                    self.startTouchMove(a, f)
+                }).on(self._l1, function (a) {
+                    self._y2(a, f)
                 });
-                c._z2 = "";
-                c._a3 = !1;
-                c._b3 = a.pageX;
-                c._c3 = a.pageY;
-                c._d3 = c._v = (f ? c._e3 : c._h) ? a.pageX : a.pageY;
-                c._f3 = 0;
-                c._g3 = 0;
-                c._h3 = f ? c._i3 : c._p;
-                c._j3 = (new Date).getTime();
-                if (e) c._e1.on(c._m1, function (a) {
-                    c._y2(a, f)
-                })
+                self._z2 = "";
+                self._a3 = !1;
+                self._b3 = a.pageX;
+                self._c3 = a.pageY;
+                self._d3 = self._v = (f ? self._e3 : self.isHorizontal) ? a.pageX : a.pageY;
+                self._f3 = 0;
+                self._g3 = 0;
+                self._h3 = f ? self._i3 : self._p;
+                self._j3 = (new Date).getTime();
+                if (isTouchStart) {
+                    self._e1.on(self._m1, function (event) {
+                        self._y2(event, f);
+                    });
+                }
             }
-        }, _k3: function (b, f) {
+        },
+        _k3: function (b, f) {
             if (this._l3) {
                 var c = this._m3, a = b.pageX - this._b3, e = b.pageY - this._c3, g = this._h3 + a, d = this._h3 + e,
-                    h = f ? this._e3 : this._h, g = h ? g : d, d = this._z2;
+                    h = f ? this._e3 : this.isHorizontal, g = h ? g : d, d = this._z2;
                 this._a3 = !0;
                 this._b3 = b.pageX;
                 this._c3 = b.pageY;
@@ -389,63 +412,68 @@
                 f ? g > this._n3 ? g = this._h3 + a * this._n1 : g < this._o3 && (g = this._h3 + a * this._n1) : this._z || (0 >= this.currSlideId && 0 < d - this._d3 && (g = this._h3 + a * this._n1), this.currSlideId >= this.numSlides - 1 && 0 > d - this._d3 && (g = this._h3 + a * this._n1));
                 this._h3 = g;
                 200 < c - this._j3 && (this._j3 = c, this._v = d);
-                f ? this._q3(this._h3) : this._l && this._p3(this._h3)
+                f ? this._q3(this._h3) : this.transitionIsNotFade && this._p3(this._h3)
             }
-        }, _x2: function (b, f) {
-            var c = this, a, e = "touchmove" === b.type;
-            if (!c._s2 || e) {
-                if (e) {
-                    if (c._r3) return;
+        },
+        startTouchMove: function (event, f) {
+            var self = this;
+            var isTouchMove = ("touchmove" === event.type);
+            var a;
+            if (!self._s2 || isTouchMove) {
+                if (isTouchMove) {
+                    if (self._r3) return;
                     var g =
-                        b.originalEvent.touches;
+                        event.originalEvent.touches;
                     if (g) {
                         if (1 < g.length) return;
                         a = g[0]
                     } else return
-                } else a = b, c.pointerEnabled && (a = a.originalEvent);
-                c._a3 || (c._e && (f ? c._s3 : c._p1).css(c._g + c._u1, "0s"), function h() {
-                    c._l2 && (c._t3 = requestAnimationFrame(h), c._u3 && c._k3(c._u3, f))
+                } else a = event, self.pointerEnabled && (a = a.originalEvent);
+                self._a3 || (self._e && (f ? self._s3 : self._p1).css(self._g + self._u1, "0s"), function h() {
+                    self._l2 && (self._t3 = requestAnimationFrame(h), self._u3 && self._k3(self._u3, f))
                 }());
-                if (c._l3) b.preventDefault(), c._m3 = (new Date).getTime(), c._u3 = a; else if (g = f ? c._e3 : c._h, a = Math.abs(a.pageX - c._b3) - Math.abs(a.pageY - c._c3) - (g ? -7 : 7), 7 < a) {
-                    if (g) b.preventDefault(), c._z2 = "x"; else if (e) {
-                        c._v3(b);
+                if (self._l3) event.preventDefault(), self._m3 = (new Date).getTime(), self._u3 = a; else if (g = f ? self._e3 : self.isHorizontal, a = Math.abs(a.pageX - self._b3) - Math.abs(a.pageY - self._c3) - (g ? -7 : 7), 7 < a) {
+                    if (g) event.preventDefault(), self._z2 = "x"; else if (isTouchMove) {
+                        self._v3(event);
                         return
                     }
-                    c._l3 = !0
+                    self._l3 = !0
                 } else if (-7 > a) {
-                    if (!g) b.preventDefault(),
-                        c._z2 = "y"; else if (e) {
-                        c._v3(b);
+                    if (!g) event.preventDefault(),
+                        self._z2 = "y"; else if (isTouchMove) {
+                        self._v3(event);
                         return
                     }
-                    c._l3 = !0
+                    self._l3 = !0
                 }
             }
-        }, _v3: function (b, f) {
-            this._r3 = !0;
-            this._a3 = this._l2 = !1;
-            this._y2(b)
-        }, _y2: function (b, f) {
+        },
+        _v3: function (event, f) {
+            this._r3 = true;
+            this._a3 = this._l2 = false;
+            this._y2(event)
+        },
+        _y2: function (event, f) {
             function c(a) {
                 return 100 > a ? 100 : 500 < a ? 500 : a
             }
 
             function a(a, b) {
-                if (e._l || f) h = (-e._u - e._d1) * e._w, k = Math.abs(e._p - h), e._c = k / b, a && (e._c += 250), e._c = c(e._c), e._x3(h, !1)
+                if (e.transitionIsNotFade || f) h = (-e._u - e._d1) * e._w, k = Math.abs(e._p - h), e.transitionSpeed = k / b, a && (e.transitionSpeed += 250), e.transitionSpeed = c(e.transitionSpeed), e._x3(h, !1)
             }
 
             var e = this, g, d, h, k;
-            g = -1 < b.type.indexOf("touch");
-            if (!e._s2 || g) if (e._s2 = !1, e.ev.trigger("rsDragRelease"), e._u3 = null, e._l2 = !1, e._r3 = !1, e._l3 = !1, e._m3 = 0, cancelAnimationFrame(e._t3), e._a3 && (f ? e._q3(e._h3) : e._l && e._p3(e._h3)),
-                    e._b.off(e._k1).off(e._l1), g && e._e1.off(e._m1), e._i1(), !e._a3 && !e._v2 && f && e._w3) {
-                var l = $(b.target).closest(".rsNavItem");
+            g = -1 < event.type.indexOf("touch");
+            if (!e._s2 || g) if (e._s2 = !1, e.ev.trigger("rsDragRelease"), e._u3 = null, e._l2 = !1, e._r3 = !1, e._l3 = !1, e._m3 = 0, cancelAnimationFrame(e._t3), e._a3 && (f ? e._q3(e._h3) : e.transitionIsNotFade && e._p3(e._h3)),
+                    e.$document.off(e._k1).off(e._l1), g && e._e1.off(e._m1), e._i1(), !e._a3 && !e._v2 && f && e._w3) {
+                var l = $(event.target).closest(".rsNavItem");
                 l.length && e.goTo(l.index())
             } else {
-                d = f ? e._e3 : e._h;
+                d = f ? e._e3 : e.isHorizontal;
                 if (!e._a3 || "y" === e._z2 && d || "x" === e._z2 && !d) if (!f && e._t2) {
                     e._t2 = !1;
                     if (e.options.navigateByClick) {
-                        e._i2(e.pointerEnabled ? b.originalEvent : b);
+                        e._i2(e.pointerEnabled ? event.originalEvent : event);
                         e.dragSuccess = !0;
                         return
                     }
@@ -458,8 +486,7 @@
                 e._t2 = !1;
                 e._z2 = "";
                 var q = e.options.minSlideOffset;
-                g = g ? b.originalEvent.changedTouches[0] : e.pointerEnabled ?
-                    b.originalEvent : b;
+                g = g ? event.originalEvent.changedTouches[0] : e.pointerEnabled ? event.originalEvent : event;
                 var m = d ? g.pageX : g.pageY, p = e._d3;
                 g = e._v;
                 var r = e.currSlideId, t = e.numSlides, w = d ? e._f3 : e._g3, v = e._z;
@@ -504,11 +531,13 @@
                     }, p + q < m ? 0 > w ? a(!1, d) : (l = l(m - p), e._m2(e.currSlideId - l, c(Math.abs(e._p - (-e._u - e._d1 + l) * e._w) / d), !1, !0, !0)) : p - q > m ? 0 < w ? a(!1, d) : (l = l(p - m), e._m2(e.currSlideId + l, c(Math.abs(e._p - (-e._u - e._d1 - l) * e._w) / d), !1, !0, !0)) : a(!1, d)
                 }
             }
-        }, _p3: function (b) {
+        },
+        _p3: function (b) {
             b = this._p = b;
-            this._e ? this._p1.css(this._x1, this._y1 + (this._h ? b + this._z1 + 0 :
-                0 + this._z1 + b) + this._a2) : this._p1.css(this._h ? this._x1 : this._w1, b)
-        }, updateSliderSize: function (b) {
+            this._e ? this._p1.css(this._x1, this._y1 + (this.isHorizontal ? b + this._z1 + 0 :
+                0 + this._z1 + b) + this._a2) : this._p1.css(this.isHorizontal ? this._x1 : this._w1, b)
+        },
+        updateSliderSize: function (b) {
             if (this.slider) {
                 var sliderWidth = this.slider.width();
                 var sliderHeight = this.slider.height();
@@ -520,32 +549,35 @@
                     this.ev.trigger("rsBeforeSizeSet");
                     this.ev.trigger("rsAfterSizePropSet");
                     this._e1.css({width: this.sliderWidth, height: this.sliderHeight});
-                    this._w = (this._h ? this.sliderWidth : this.sliderHeight) + this.options.slidesSpacing;
+                    this._w = (this.isHorizontal ? this.sliderWidth : this.sliderHeight) + this.options.slidesSpacing;
                     this.imageScalePadding = this.options.imageScalePadding;
-                    for (sliderWidth = 0; sliderWidth < this.slides.length; sliderWidth++) b = this.slides[sliderWidth], b.positionSet = !1, b && b.images && b.isLoaded && (b.isRendered = !1, this._q2(b));
-                    if (this._e4) for (sliderWidth = 0; sliderWidth < this._e4.length; sliderWidth++) b = this._e4[sliderWidth], b.holder.css(this._i,
-                        (b.id + this._d1) * this._w);
+                    for (sliderWidth = 0; sliderWidth < this.slides.length; sliderWidth++) {
+                        b = this.slides[sliderWidth], b.positionSet = !1, b && b.images && b.isLoaded && (b.isRendered = !1, this._q2(b));
+                    }
                     this._n2();
-                    this._l && (this._e && this._p1.css(this._g + "transition-duration", "0s"), this._p3((-this._u - this._d1) * this._w));
+                    this.transitionIsNotFade && (this._e && this._p1.css(this._g + "transition-duration", "0s"), this._p3((-this._u - this._d1) * this._w));
                     this.ev.trigger("rsOnUpdateNav")
                 }
                 this._j2 = this._e1.offset();
                 this._j2 = this._j2[this._i]
             }
-        }, appendSlide: function (b, f) {
+        },
+        appendSlide: function (b, f) {
             var c = this._s(b);
             if (isNaN(f) || f > this.numSlides) f = this.numSlides;
             this.slides.splice(f, 0, c);
-            this.slidesJQ.splice(f, 0, $('<div style="' + (this._l ? "position:absolute;" : this._n) + '" class="rsSlide"></div>'));
+            this.slidesJQ.splice(f, 0, $('<div style="' + (this.transitionIsNotFade ? "position:absolute;" : this._n) + '" class="rsSlide"></div>'));
             f <= this.currSlideId && this.currSlideId++;
             this.ev.trigger("rsOnAppendSlide",
                 [c, f]);
             this._f4(f);
             f === this.currSlideId && this.ev.trigger("rsAfterSlideChange")
-        }, removeSlide: function (b) {
+        },
+        removeSlide: function (b) {
             var f = this.slides[b];
             f && (f.holder && f.holder.remove(), b < this.currSlideId && this.currSlideId--, this.slides.splice(b, 1), this.slidesJQ.splice(b, 1), this.ev.trigger("rsOnRemoveSlide", [b]), this._f4(b), b === this.currSlideId && this.ev.trigger("rsAfterSlideChange"))
-        }, _f4: function (b) {
+        },
+        _f4: function (b) {
             var slider = this;
             b = slider.numSlides;
             b = 0 >= slider._u ? 0 : Math.floor(slider._u / b);
@@ -557,24 +589,29 @@
             slider._r1 = slider.slidesJQ[slider.currSlideId];
             slider.currSlideId >= slider.numSlides ? slider.goTo(slider.numSlides - 1) : 0 > slider.currSlideId && slider.goTo(0);
             slider._t();
-            slider._l && slider._p1.css(slider._g + slider._u1, "0ms");
+            slider.transitionIsNotFade && slider._p1.css(slider._g + slider._u1, "0ms");
             slider.timerId && clearTimeout(slider.timerId);
             slider.timerId = setTimeout(function () {
-                slider._l && slider._p3((-slider._u - slider._d1) * slider._w);
+                slider.transitionIsNotFade && slider._p3((-slider._u - slider._d1) * slider._w);
                 slider._n2();
-                slider._l || slider._r1.css({display: "block", opacity: 1})
+                slider.transitionIsNotFade || slider._r1.css({display: "block", opacity: 1})
             }, 14);
             slider.ev.trigger("rsOnUpdateNav")
-        }, _i1: function () {
-            this._f1 && this._l && (this._g1 ?
+        },
+        _i1: function () {
+            this._f1 && this.transitionIsNotFade && (this._g1 ?
                 this._e1.css("cursor", this._g1) : (this._e1.removeClass("grabbing-cursor"), this._e1.addClass("grab-cursor")))
-        }, _w2: function () {
-            this._f1 && this._l && (this._h1 ? this._e1.css("cursor", this._h1) : (this._e1.removeClass("grab-cursor"), this._e1.addClass("grabbing-cursor")))
-        }, next: function (b) {
+        },
+        _w2: function () {
+            this._f1 && this.transitionIsNotFade && (this._h1 ? this._e1.css("cursor", this._h1) : (this._e1.removeClass("grab-cursor"), this._e1.addClass("grabbing-cursor")))
+        },
+        next: function (b) {
             this._m2("next", this.options.transitionSpeed, !0, !b)
-        }, prev: function (b) {
+        },
+        prev: function (b) {
             this._m2("prev", this.options.transitionSpeed, !0, !b)
-        }, _m2: function (b, f, c, a, e) {
+        },
+        _m2: function (b, f, c, a, e) {
             var g = this, d, h, k;
             g.ev.trigger("rsBeforeMove", [b, a]);
             k = "next" === b ? g.currSlideId + 1 : "prev" ===
@@ -610,7 +647,7 @@
             k = m ? p - k : k - p;
             k > g._y && (k = g._y);
             if (h > k + l) for (g._d1 += (h - (k + l)) * (m ? -1 : 1), f *= 1.4, k = 0; k < g.numSlides; k++) g.slides[k].positionSet = !1;
-            g._c = f;
+            g.transitionSpeed = f;
             g._n2(!0);
             e || (n = !0);
             d = (-a - g._d1) * g._w;
@@ -619,10 +656,12 @@
                 g._x3(d, b, !1, c);
                 g.ev.trigger("rsOnUpdateNav")
             }, 0) : (g._x3(d, b, !1, c), g.ev.trigger("rsOnUpdateNav"))
-        }, _f2: function () {
+        },
+        _f2: function () {
             this.options.arrowsNav && (1 >= this.numSlides ? (this._c2.css("display", "none"), this._d2.css("display", "none")) : (this._c2.css("display",
                 "block"), this._d2.css("display", "block"), this._z || this.options.loopRewind || (0 === this.currSlideId ? this._c2.addClass("rsArrowDisabled") : this._c2.removeClass("rsArrowDisabled"), this.currSlideId === this.numSlides - 1 ? this._d2.addClass("rsArrowDisabled") : this._d2.removeClass("rsArrowDisabled"))))
-        }, _x3: function (b, f, c, a, e) {
+        },
+        _x3: function (b, f, c, a, e) {
             function g() {
                 var a;
                 h && (a = h.data("rsTimeout")) && (h !== k && h.css({
@@ -635,12 +674,12 @@
             }
 
             var d = this, h, k, l = {};
-            isNaN(d._c) && (d._c = 400);
+            isNaN(d.transitionSpeed) && (d.transitionSpeed = 400);
             d._p = d._h3 = b;
             d.ev.trigger("rsBeforeAnimStart");
-            d._e ? d._l ? (d._c = parseInt(d._c, 10), c = d._g + d._v1, l[d._g + d._u1] = d._c + "ms", l[c] = a ? $.rsCSS3Easing[d.options.easeInOut] : $.rsCSS3Easing[d.options.easeOut], d._p1.css(l), a || !d.hasTouch ? setTimeout(function () {
+            d._e ? d.transitionIsNotFade ? (d.transitionSpeed = parseInt(d.transitionSpeed, 10), c = d._g + d._v1, l[d._g + d._u1] = d.transitionSpeed + "ms", l[c] = a ? $.rsCSS3Easing[d.options.easeInOut] : $.rsCSS3Easing[d.options.easeOut], d._p1.css(l), a || !d.hasTouch ? setTimeout(function () {
                 d._p3(b)
-            }, 5) : d._p3(b)) : (d._c = d.options.transitionSpeed, h = d._g4, k = d._r1, k.data("rsTimeout") && k.css("opacity", 0), g(), h && h.data("rsTimeout", setTimeout(function () {
+            }, 5) : d._p3(b)) : (d.transitionSpeed = d.options.transitionSpeed, h = d._g4, k = d._r1, k.data("rsTimeout") && k.css("opacity", 0), g(), h && h.data("rsTimeout", setTimeout(function () {
                 l[d._g + d._u1] = "0ms";
                 l.zIndex = 0;
                 l.display = "none";
@@ -650,32 +689,33 @@
                 setTimeout(function () {
                     h.css("opacity", 0)
                 }, 16)
-            }, d._c + 60)), l.display = "block", l.zIndex = d._m, l.opacity = 0, l[d._g + d._u1] = "0ms", l[d._g + d._v1] = $.rsCSS3Easing[d.options.easeInOut], k.css(l), k.data("rsTimeout", setTimeout(function () {
-                k.css(d._g + d._u1, d._c + "ms");
+            }, d.transitionSpeed + 60)), l.display = "block", l.zIndex = d._m, l.opacity = 0, l[d._g + d._u1] = "0ms", l[d._g + d._v1] = $.rsCSS3Easing[d.options.easeInOut], k.css(l), k.data("rsTimeout", setTimeout(function () {
+                k.css(d._g + d._u1, d.transitionSpeed + "ms");
                 k.data("rsTimeout", setTimeout(function () {
                     k.css("opacity", 1);
                     k.data("rsTimeout", "")
                 }, 20))
-            }, 20))) : d._l ? (l[d._h ? d._x1 : d._w1] = b + "px", d._p1.animate(l, d._c, a ? d.options.easeInOut : d.options.easeOut)) : (h = d._g4, k = d._r1, k.stop(!0, !0).css({
+            }, 20))) : d.transitionIsNotFade ? (l[d.isHorizontal ? d._x1 : d._w1] = b + "px", d._p1.animate(l, d.transitionSpeed, a ? d.options.easeInOut : d.options.easeOut)) : (h = d._g4, k = d._r1, k.stop(!0, !0).css({
                 opacity: 0, display: "block",
                 zIndex: d._m
-            }), d._c = d.options.transitionSpeed, k.animate({opacity: 1}, d._c, d.options.easeInOut), g(), h && h.data("rsTimeout", setTimeout(function () {
+            }), d.transitionSpeed = d.options.transitionSpeed, k.animate({opacity: 1}, d.transitionSpeed, d.options.easeInOut), g(), h && h.data("rsTimeout", setTimeout(function () {
                 h.stop(!0, !0).css({opacity: 0, display: "none", zIndex: 0})
-            }, d._c + 60)));
+            }, d.transitionSpeed + 60)));
             d._r2 = !0;
             d.loadingTimeout && clearTimeout(d.loadingTimeout);
             d.loadingTimeout = e ? setTimeout(function () {
                 d.loadingTimeout = null;
                 e.call()
-            }, d._c + 60) : setTimeout(function () {
+            }, d.transitionSpeed + 60) : setTimeout(function () {
                 d.loadingTimeout = null;
                 d._k4(f)
-            }, d._c + 60)
-        }, _u2: function (b) {
+            }, d.transitionSpeed + 60)
+        },
+        _u2: function (b) {
             this._r2 = !1;
             clearTimeout(this.loadingTimeout);
-            if (this._l) if (!this._e) this._p1.stop(!0),
-                this._p = parseInt(this._p1.css(this._h ? this._x1 : this._w1), 10); else {
+            if (this.transitionIsNotFade) if (!this._e) this._p1.stop(!0),
+                this._p = parseInt(this._p1.css(this.isHorizontal ? this._x1 : this._w1), 10); else {
                 if (!b) {
                     b = this._p;
                     var f = this._h3 = this._l4();
@@ -683,24 +723,28 @@
                     b !== f && this._p3(f)
                 }
             } else 20 < this._m ? this._m = 10 : this._m++
-        }, _l4: function () {
+        },
+        _l4: function () {
             var b = window.getComputedStyle(this._p1.get(0), null).getPropertyValue(this._g + "transform").replace(/^matrix\(/i, "").split(/, |\)$/g),
                 f = 0 === b[0].indexOf("matrix3d");
-            return parseInt(b[this._h ? f ? 12 : 4 : f ? 13 : 5], 10)
-        }, _m4: function (b, f) {
+            return parseInt(b[this.isHorizontal ? f ? 12 : 4 : f ? 13 : 5], 10)
+        },
+        _m4: function (b, f) {
             return this._e ? this._y1 + (f ? b + this._z1 + 0 : 0 + this._z1 + b) + this._a2 :
                 b
-        }, _k4: function (b) {
-            this._l || (this._r1.css("z-index", 0), this._m = 10);
+        },
+        _k4: function (b) {
+            this.transitionIsNotFade || (this._r1.css("z-index", 0), this._m = 10);
             this._r2 = !1;
             this.staticSlideId = this.currSlideId;
             this._n2();
             this._n4 = !1;
             this.ev.trigger("rsAfterSlideChange")
-        }, _i4: function (b, f) {
+        },
+        _i4: function (b, f) {
             var c = this, a = (-c._u - c._d1) * c._w;
-            if (0 !== c.numSlides && !c._r2) if (c.options.loopRewind) c.goTo("left" === b ? c.numSlides - 1 : 0, f); else if (c._l) {
-                c._c = 200;
+            if (0 !== c.numSlides && !c._r2) if (c.options.loopRewind) c.goTo("left" === b ? c.numSlides - 1 : 0, f); else if (c.transitionIsNotFade) {
+                c.transitionSpeed = 200;
                 var e = function () {
                     c._r2 = !1
                 };
@@ -709,7 +753,8 @@
                     c._x3(a, "", !1, !0, e)
                 })
             }
-        }, _q2: function (b, f) {
+        },
+        _q2: function (b, f) {
             if (!b.isRendered) {
                 var c = b.content, a = "rsMainSlideImage",
                     e,
@@ -742,46 +787,54 @@
             }
         }
     };
-    $.rsProto = v.prototype;
-    $.fn.royalSlider = function (b) {
-        var f = arguments;
+    $.rsProto = rsInit.prototype;
+    $.fn.royalSlider = function (args) {
         return this.each(function () {
-            var c = $(this);
-            if ("object" !== typeof b && b) {
-                if ((c = c.data("royalSlider")) && c[b]) return c[b].apply(c,
-                    Array.prototype.slice.call(f, 1))
-            } else c.data("royalSlider") || c.data("royalSlider", new v(c, b))
-        })
+            var $self = $(this);
+            if (typeof args !== "object" && args) {
+                if (($self = $self.data("royalSlider")) && $self[args]) {
+                    return $self[args].apply($self, Array.prototype.slice.call(arguments, 1))
+                }
+            } else {
+                $self.data("royalSlider") || $self.data("royalSlider", new rsInit($self, args))
+            }
+        });
     };
     $.fn.royalSlider.defaults = {
-        slidesSpacing: 8,
-        startSlideId: 0,
-        loop: !1,
-        loopRewind: !1,
-        numImagesToPreload: 4,
+        imageScaleMode: "fit-if-smaller",
+        controlNavigation: "bullets",
         slidesOrientation: "horizontal",
         transitionType: "move",
-        transitionSpeed: 600,
-        controlNavigation: "bullets",
-        arrowsNav: !0,
-        arrowsNavAutoHide: !0,
-        navigateByClick: !0,
-        randomizeSlides: !1,
-        sliderDrag: !0,
-        sliderTouch: !0,
-        keyboardNavEnabled: !1,
-        addActiveClass: !1,
-        autoHeight: !1,
         easeOut: "easeOutSine",
         easeInOut: "easeInOutSine",
+
+        arrowsNav: true,
+        arrowsNavAutoHide: true,
+        arrowsNavHideOnTouch: false,
+
+        navigateByClick: true,
+        sliderTouch: true,
+        sliderDrag: true,
+        keyboardNavEnabled: false,
+
+        loop: false,
+        loopRewind: false,
+
+        randomizeSlides: false,
+        usePreloader: true,
+        globalCaption: false,
+
+        autoHeight: false,
+        imageAlignCenter: true,
+        addActiveClass: false,
+        autoScaleHeight: false,
+
+        startSlideId: 0,
+        numImagesToPreload: 4,
+        slidesSpacing: 8,
         minSlideOffset: 10,
-        imageScaleMode: "fit-if-smaller",
-        imageAlignCenter: !0,
+        transitionSpeed: 600,
         imageScalePadding: 4,
-        usePreloader: !0,
-        arrowsNavHideOnTouch: !1,
-        globalCaption: !1,
-        autoScaleHeight: !1,
         slidesDiff: 2
     };
     $.rsCSS3Easing = {
@@ -789,172 +842,177 @@
         easeInOutSine: "cubic-bezier(0.445, 0.050, 0.550, 0.950)"
     };
     $.extend(jQuery.easing, {
-        easeInOutSine: function (b,
-                                 f, c, a, e) {
-            return -a / 2 * (Math.cos(Math.PI * f / e) - 1) + c
-        }, easeOutSine: function (b, f, c, a, e) {
+        easeOutSine: function (b, f, c, a, e) {
             return a * Math.sin(f / e * (Math.PI / 2)) + c
-        }, easeOutCubic: function (b, f, c, a, e) {
+        },
+        easeInOutSine: function (b, f, c, a, e) {
+            return -a / 2 * (Math.cos(Math.PI * f / e) - 1) + c
+        },
+        easeOutCubic: function (b, f, c, a, e) {
             return a * ((f = f / e - 1) * f * f + 1) + c
         }
     })
 })(jQuery, window);
 // jquery.rs.bullets v1.0.1
-(function (c) {
-    c.extend(c.rsProto, {
-        _i5: function () {
-            var a = this;
-            "bullets" === a.options.controlNavigation && (a.ev.one("rsAfterPropsSetup", function () {
-                a._j5 = !0;
-                a.slider.addClass("rsWithBullets");
-                for (var b = '<div class="rsNav rsBullets">', e = 0; e < a.numSlides; e++) b += '<div class="rsNavItem rsBullet"><span></span></div>';
-                a._k5 = b = c(b + "</div>");
-                a._l5 = b.appendTo(a.slider).children();
-                a._k5.on("click.rs", ".rsNavItem", function (b) {
-                    a._m5 || a.goTo(c(this).index())
-                })
-            }), a.ev.on("rsOnAppendSlide", function (b, c, d) {
-                d >= a.numSlides ? a._k5.append('<div class="rsNavItem rsBullet"><span></span></div>') :
-                    a._l5.eq(d).before('<div class="rsNavItem rsBullet"><span></span></div>');
-                a._l5 = a._k5.children()
-            }), a.ev.on("rsOnRemoveSlide", function (b, c) {
-                var d = a._l5.eq(c);
-                d && d.length && (d.remove(), a._l5 = a._k5.children())
-            }), a.ev.on("rsOnUpdateNav", function () {
-                var b = a.currSlideId;
-                a._n5 && a._n5.removeClass("rsNavSelected");
-                b = a._l5.eq(b);
-                b.addClass("rsNavSelected");
-                a._n5 = b
-            }))
-        }
-    });
-    c.rsModules.bullets = c.rsProto._i5
+(function ($) {
+    $.rsModules.bullets = $.rsProto.bullets = function () {
+        var slider = this;
+        "bullets" === slider.options.controlNavigation && (slider.ev.one("rsAfterPropsSetup", function () {
+            slider._j5 = !0;
+            slider.slider.addClass("rsWithBullets");
+            for (var markupBullets = '<div class="rsNav rsBullets">', e = 0; e < slider.numSlides; e++) {
+                markupBullets += '<div class="rsNavItem rsBullet"><span></span></div>';
+            }
+            slider._k5 = markupBullets = $(markupBullets + "</div>");
+            slider._l5 = markupBullets.appendTo(slider.slider).children();
+            slider._k5.on("click.rs", ".rsNavItem", function (event) {
+                slider._m5 || slider.goTo($(this).index())
+            });
+        }), slider.ev.on("rsOnAppendSlide", function (b, c, d) {
+            d >= slider.numSlides ? slider._k5.append('<div class="rsNavItem rsBullet"><span></span></div>') :
+                slider._l5.eq(d).before('<div class="rsNavItem rsBullet"><span></span></div>');
+            slider._l5 = slider._k5.children()
+        }), slider.ev.on("rsOnRemoveSlide", function (b, c) {
+            var d = slider._l5.eq(c);
+            d && d.length && (d.remove(), slider._l5 = slider._k5.children())
+        }), slider.ev.on("rsOnUpdateNav", function () {
+            var b = slider.currSlideId;
+            slider._n5 && slider._n5.removeClass("rsNavSelected");
+            b = slider._l5.eq(b);
+            b.addClass("rsNavSelected");
+            slider._n5 = b
+        }))
+    };
 })(jQuery);
 // jquery.rs.thumbnails v1.0.8
-(function (f) {
-    f.extend(f.rsProto, {
-        _h6: function () {
-            var a = this;
-            "thumbnails" === a.options.controlNavigation && (a._i6 = {
-                drag: !0,
-                touch: !0,
+(function ($) {
+    $.extend($.rsProto, {
+        thumbnails: function () {
+            var self = this;
+            "thumbnails" === self.options.controlNavigation && (self.optionsThumbs = {
+                drag: true,
+                touch: true,
                 orientation: "horizontal",
-                navigation: !0,
-                arrows: !0,
+                navigation: true,
+                arrows: true,
                 arrowLeft: null,
                 arrowRight: null,
                 spacing: 4,
-                arrowsAutoHide: !1,
-                appendSpan: !1,
+                arrowsAutoHide: false,
+                appendSpan: false,
                 transitionSpeed: 600,
-                autoCenter: !0,
-                fitInViewport: !0,
-                firstMargin: !0,
+                autoCenter: true,
+                fitInViewport: true,
+                firstMargin: true,
                 paddingTop: 0,
                 paddingBottom: 0
-            }, a.options.thumbs = f.extend({}, a._i6, a.options.thumbs), a._j6 = !0, !1 === a.options.thumbs.firstMargin ? a.options.thumbs.firstMargin = 0 : !0 === a.options.thumbs.firstMargin && (a.options.thumbs.firstMargin =
-                a.options.thumbs.spacing), a.ev.on("rsBeforeParseNode", function (a, b, c) {
-                b = f(b);
-                c.thumbnail = b.find(".rsTmb").remove();
-                c.thumbnail.length ? c.thumbnail = f(document.createElement("div")).append(c.thumbnail).html() : (c.thumbnail = b.attr("data-rsTmb"), c.thumbnail || (c.thumbnail = b.find(".rsImg").attr("data-rsTmb")), c.thumbnail = c.thumbnail ? '<img src="' + c.thumbnail + '"/>' : "")
-            }), a.ev.one("rsAfterPropsSetup", function () {
-                a._k6()
-            }), a._n5 = null, a.ev.on("rsOnUpdateNav", function () {
-                var e = f(a._l5[a.currSlideId]);
-                e !== a._n5 && (a._n5 &&
-                (a._n5.removeClass("rsNavSelected"), a._n5 = null), a._l6 && a._m6(a.currSlideId), a._n5 = e.addClass("rsNavSelected"))
-            }), a.ev.on("rsOnAppendSlide", function (e, b, c) {
-                e = "<div" + a._n6 + ' class="rsNavItem rsThumb">' + a._o6 + b.thumbnail + "</div>";
-                a._e && a._s3.css(a._g + "transition-duration", "0ms");
-                c >= a.numSlides ? a._s3.append(e) : a._l5.eq(c).before(e);
-                a._l5 = a._s3.children();
-                a.updateThumbsSize(!0)
-            }), a.ev.on("rsOnRemoveSlide", function (e, b) {
-                var c = a._l5.eq(b);
-                c && (a._e && a._s3.css(a._g + "transition-duration", "0ms"), c.remove(),
-                    a._l5 = a._s3.children(), a.updateThumbsSize(!0))
+            }, self.options.thumbs = $.extend({}, self.optionsThumbs, self.options.thumbs), self._j6 = !0, !1 === self.options.thumbs.firstMargin ? self.options.thumbs.firstMargin = 0 : !0 === self.options.thumbs.firstMargin && (self.options.thumbs.firstMargin =
+                self.options.thumbs.spacing),
+                self.ev.on("rsBeforeParseNode", function (a, b, c) {
+                    b = $(b);
+                    c.thumbnail = b.find(".rsTmb").remove();
+                    c.thumbnail.length ? c.thumbnail = $(document.createElement("div")).append(c.thumbnail).html() : (c.thumbnail = b.attr("data-rsTmb"), c.thumbnail || (c.thumbnail = b.find(".rsImg").attr("data-rsTmb")), c.thumbnail = c.thumbnail ? '<img src="' + c.thumbnail + '"/>' : "")
+                }),
+                self.ev.one("rsAfterPropsSetup", function () {
+                    self._k6()
+                }), self._n5 = null, self.ev.on("rsOnUpdateNav", function () {
+                var e = $(self._l5[self.currSlideId]);
+                e !== self._n5 && (self._n5 &&
+                (self._n5.removeClass("rsNavSelected"), self._n5 = null), self._l6 && self._m6(self.currSlideId), self._n5 = e.addClass("rsNavSelected"))
+            }), self.ev.on("rsOnAppendSlide", function (e, b, c) {
+                e = "<div" + self._n6 + ' class="rsNavItem rsThumb">' + self._o6 + b.thumbnail + "</div>";
+                self._e && self._s3.css(self._g + "transition-duration", "0ms");
+                c >= self.numSlides ? self._s3.append(e) : self._l5.eq(c).before(e);
+                self._l5 = self._s3.children();
+                self.updateThumbsSize(!0)
+            }), self.ev.on("rsOnRemoveSlide", function (e, b) {
+                var c = self._l5.eq(b);
+                c && (self._e && self._s3.css(self._g + "transition-duration", "0ms"), c.remove(),
+                    self._l5 = self._s3.children(), self.updateThumbsSize(!0))
             }))
-        }, _k6: function () {
-            var a = this, e = "rsThumbs", b = a.options.thumbs, c = "", g, d, h = b.spacing;
-            a._j5 = !0;
-            a._e3 = "vertical" === b.orientation ? !1 : !0;
-            a._n6 = g = h ? ' style="margin-' + (a._e3 ? "right" : "bottom") + ":" + h + 'px;"' : "";
-            a._i3 = 0;
-            a._p6 = !1;
-            a._m5 = !1;
-            a._l6 = !1;
-            a._q6 = b.arrows && b.navigation;
-            d = a._e3 ? "Hor" : "Ver";
-            a.slider.addClass("rsWithThumbs rsWithThumbs" + d);
+        },
+        _k6: function () {
+            var self = this, e = "rsThumbs", b = self.options.thumbs, c = "", g, d, h = b.spacing;
+            self._j5 = !0;
+            self._e3 = "vertical" === b.orientation ? !1 : !0;
+            self._n6 = g = h ? ' style="margin-' + (self._e3 ? "right" : "bottom") + ":" + h + 'px;"' : "";
+            self._i3 = 0;
+            self._p6 = !1;
+            self._m5 = !1;
+            self._l6 = !1;
+            self._q6 = b.arrows && b.navigation;
+            d = self._e3 ? "Hor" : "Ver";
+            self.slider.addClass("rsWithThumbs rsWithThumbs" + d);
             c += '<div class="rsNav rsThumbs rsThumbs' + d + '"><div class="' + e + 'Container">';
-            a._o6 = b.appendSpan ? '<span class="thumbIco"></span>' :
+            self._o6 = b.appendSpan ? '<span class="thumbIco"></span>' :
                 "";
-            for (var k = 0; k < a.numSlides; k++) d = a.slides[k], c += "<div" + g + ' class="rsNavItem rsThumb">' + d.thumbnail + a._o6 + "</div>";
-            c = f(c + "</div></div>");
+            for (var k = 0; k < self.numSlides; k++) d = self.slides[k], c += "<div" + g + ' class="rsNavItem rsThumb">' + d.thumbnail + self._o6 + "</div>";
+            c = $(c + "</div></div>");
             g = {};
-            b.paddingTop && (g[a._e3 ? "paddingTop" : "paddingLeft"] = b.paddingTop);
-            b.paddingBottom && (g[a._e3 ? "paddingBottom" : "paddingRight"] = b.paddingBottom);
+            b.paddingTop && (g[self._e3 ? "paddingTop" : "paddingLeft"] = b.paddingTop);
+            b.paddingBottom && (g[self._e3 ? "paddingBottom" : "paddingRight"] = b.paddingBottom);
             c.css(g);
-            a._s3 = f(c).find("." + e + "Container");
-            a._q6 && (e += "Arrow", b.arrowLeft ? a._r6 = b.arrowLeft : (a._r6 = f('<div class="' + e + " " + e + 'Left"><div class="' + e + 'Icn"></div></div>'), c.append(a._r6)), b.arrowRight ? a._s6 = b.arrowRight :
-                (a._s6 = f('<div class="' + e + " " + e + 'Right"><div class="' + e + 'Icn"></div></div>'), c.append(a._s6)), a._r6.click(function () {
-                var b = (Math.floor(a._i3 / a._t6) + a._u6) * a._t6 + a.options.thumbs.firstMargin;
-                a._a4(b > a._n3 ? a._n3 : b)
-            }), a._s6.click(function () {
-                var b = (Math.floor(a._i3 / a._t6) - a._u6) * a._t6 + a.options.thumbs.firstMargin;
-                a._a4(b < a._o3 ? a._o3 : b)
-            }), b.arrowsAutoHide && !a.hasTouch && (a._r6.css("opacity", 0), a._s6.css("opacity", 0), c.one("mousemove.rsarrowshover", function () {
-                a._l6 && (a._r6.css("opacity", 1), a._s6.css("opacity", 1))
+            self._s3 = $(c).find("." + e + "Container");
+            self._q6 && (e += "Arrow", b.arrowLeft ? self._r6 = b.arrowLeft : (self._r6 = $('<div class="' + e + " " + e + 'Left"><div class="' + e + 'Icn"></div></div>'), c.append(self._r6)), b.arrowRight ? self._s6 = b.arrowRight :
+                (self._s6 = $('<div class="' + e + " " + e + 'Right"><div class="' + e + 'Icn"></div></div>'), c.append(self._s6)), self._r6.click(function () {
+                var b = (Math.floor(self._i3 / self._t6) + self._u6) * self._t6 + self.options.thumbs.firstMargin;
+                self._a4(b > self._n3 ? self._n3 : b)
+            }), self._s6.click(function () {
+                var b = (Math.floor(self._i3 / self._t6) - self._u6) * self._t6 + self.options.thumbs.firstMargin;
+                self._a4(b < self._o3 ? self._o3 : b)
+            }), b.arrowsAutoHide && !self.hasTouch && (self._r6.css("opacity", 0), self._s6.css("opacity", 0), c.one("mousemove.rsarrowshover", function () {
+                self._l6 && (self._r6.css("opacity", 1), self._s6.css("opacity", 1))
             }),
                 c.hover(function () {
-                    a._l6 && (a._r6.css("opacity", 1), a._s6.css("opacity", 1))
+                    self._l6 && (self._r6.css("opacity", 1), self._s6.css("opacity", 1))
                 }, function () {
-                    a._l6 && (a._r6.css("opacity", 0), a._s6.css("opacity", 0))
+                    self._l6 && (self._r6.css("opacity", 0), self._s6.css("opacity", 0))
                 })));
-            a._k5 = c;
-            a._l5 = a._s3.children();
-            a.msEnabled && a.options.thumbs.navigation && a._s3.css("-ms-touch-action", a._e3 ? "pan-y" : "pan-x");
-            a.slider.append(c);
-            a._w3 = !0;
-            a._v6 = h;
-            b.navigation && a._e && a._s3.css(a._g + "transition-property", a._g + "transform");
-            a._k5.on("click.rs", ".rsNavItem", function (b) {
-                a._m5 || a.goTo(f(this).index())
+            self._k5 = c;
+            self._l5 = self._s3.children();
+            self.msEnabled && self.options.thumbs.navigation && self._s3.css("-ms-touch-action", self._e3 ? "pan-y" : "pan-x");
+            self.slider.append(c);
+            self._w3 = !0;
+            self._v6 = h;
+            b.navigation && self._e && self._s3.css(self._g + "transition-property", self._g + "transform");
+            self._k5.on("click.rs", ".rsNavItem", function (b) {
+                self._m5 || self.goTo($(this).index())
             });
-            a.ev.off("rsBeforeSizeSet.thumbs").on("rsBeforeSizeSet.thumbs",
-                function () {
-                    a._w6 = a._e3 ? a.sliderHeight : a.sliderWidth;
-                    a.updateThumbsSize(!0)
-                });
-            a.ev.off("rsAutoHeightChange.thumbs").on("rsAutoHeightChange.thumbs", function (b, c) {
-                a.updateThumbsSize(!0, c)
+            self.ev.off("rsBeforeSizeSet.thumbs").on("rsBeforeSizeSet.thumbs", function () {
+                self._w6 = self._e3 ? self.sliderHeight : self.sliderWidth;
+                self.updateThumbsSize(true)
+            });
+            self.ev.off("rsAutoHeightChange.thumbs").on("rsAutoHeightChange.thumbs", function (b, c) {
+                self.updateThumbsSize(true, c)
             })
-        }, updateThumbsSize: function (a, e) {
-            var b = this, c = b._l5.first(), f = {}, d = b._l5.length;
-            b._t6 = (b._e3 ? c.outerWidth() : c.outerHeight()) + b._v6;
-            b._y3 = d * b._t6 - b._v6;
-            f[b._e3 ? "width" : "height"] = b._y3 + b._v6;
-            b._z3 = b._e3 ? b._k5.width() : void 0 !== e ? e : b._k5.height();
-            b._w3 && (b.isFullscreen || b.options.thumbs.fitInViewport) && (b._e3 ? b.sliderHeight = b._w6 - b._k5.outerHeight() :
-                b.sliderWidth = b._w6 - b._k5.outerWidth());
-            b._z3 && (b._o3 = -(b._y3 - b._z3) - b.options.thumbs.firstMargin, b._n3 = b.options.thumbs.firstMargin, b._u6 = Math.floor(b._z3 / b._t6), b._y3 < b._z3 ? (b.options.thumbs.autoCenter ? b._q3((b._z3 - b._y3) / 2) : b._q3(b._n3), b.options.thumbs.arrows && b._r6 && (b._r6.addClass("rsThumbsArrowDisabled"), b._s6.addClass("rsThumbsArrowDisabled")), b._l6 = !1, b._m5 = !1, b._k5.off(b._j1)) : b.options.thumbs.navigation && !b._l6 && (b._l6 = !0, !b.hasTouch && b.options.thumbs.drag || b.hasTouch && b.options.thumbs.touch) && (b._m5 = !0, b._k5.on(b._j1, function (a) {
-                b._g2(a,
-                    !0)
-            })), b._s3.css(f), a && e && b._m6(b.currSlideId, !0))
+        },
+        updateThumbsSize: function (a, e) {
+            var self = this, c = self._l5.first(), f = {}, d = self._l5.length;
+            self._t6 = (self._e3 ? c.outerWidth() : c.outerHeight()) + self._v6;
+            self._y3 = d * self._t6 - self._v6;
+            f[self._e3 ? "width" : "height"] = self._y3 + self._v6;
+            self._z3 = self._e3 ? self._k5.width() : void 0 !== e ? e : self._k5.height();
+            self._w3 && (self.isFullscreen || self.options.thumbs.fitInViewport) && (self._e3 ? self.sliderHeight = self._w6 - self._k5.outerHeight() :
+                self.sliderWidth = self._w6 - self._k5.outerWidth());
+            self._z3 && (self._o3 = -(self._y3 - self._z3) - self.options.thumbs.firstMargin, self._n3 = self.options.thumbs.firstMargin, self._u6 = Math.floor(self._z3 / self._t6), self._y3 < self._z3 ? (self.options.thumbs.autoCenter ? self._q3((self._z3 - self._y3) / 2) : self._q3(self._n3), self.options.thumbs.arrows && self._r6 && (self._r6.addClass("rsThumbsArrowDisabled"), self._s6.addClass("rsThumbsArrowDisabled")), self._l6 = !1, self._m5 = !1, self._k5.off(self._j1)) : self.options.thumbs.navigation && !self._l6 && (self._l6 = !0, !self.hasTouch && self.options.thumbs.drag || self.hasTouch && self.options.thumbs.touch) && (self._m5 = true, self._k5.on(self._j1, function (event) {
+                self.startTouch(event, true);
+            })), self._s3.css(f), a && e && self._m6(self.currSlideId, true))
             //TODO Here Added Modification Hack For Left Alignment must be found another way
-            /*if (b.numSlides == 1){
-                b._s3.css({ float: "right" });
-            } else if (b.numSlides == 3){
-                b._s3.css({ transform: "translate3d(160px, 0, 0)" });
+            /*if (self.numSlides == 1){
+                self._s3.css({ float: "right" });
+            } else if (self.numSlides == 3){
+                self._s3.css({ transform: "translate3d(160px, 0, 0)" });
             }*/
-            b._s3.css({transform: "translate3d(160px, 0, 0)"});
-        }, setThumbsOrientation: function (a, e) {
+            self._s3.css({transform: "translate3d(160px, 0, 0)"});
+        },
+        setThumbsOrientation: function (a, e) {
             this._w3 && (this.options.thumbs.orientation = a, this._k5.remove(), this.slider.removeClass("rsWithThumbsHor rsWithThumbsVer"), this._k6(), this._k5.off(this._j1), e || this.updateSliderSize(!0))
-        }, _q3: function (a) {
+        },
+        _q3: function (a) {
             this._i3 = a;
             this._e ? this._s3.css(this._x1, this._y1 + (this._e3 ? a + this._z1 + 0 : 0 + this._z1 + a) + this._a2) : this._s3.css(this._e3 ? this._x1 : this._w1, a)
-        }, _a4: function (a, e, b, c, g) {
+        },
+        _a4: function (a, e, b, c, g) {
             var d = this;
             if (d._l6) {
                 e || (e = d.options.thumbs.transitionSpeed);
@@ -963,7 +1021,7 @@
                 d._p6 && (d._e || d._s3.stop(), b = !0);
                 var h = {};
                 d._p6 = !0;
-                d._e ? (h[d._g + "transition-duration"] = e + "ms", h[d._g + "transition-timing-function"] = b ? f.rsCSS3Easing[d.options.easeOut] : f.rsCSS3Easing[d.options.easeInOut], d._s3.css(h), d._q3(a)) : (h[d._e3 ? d._x1 : d._w1] = a + "px", d._s3.animate(h, e, b ? "easeOutCubic" : d.options.easeInOut));
+                d._e ? (h[d._g + "transition-duration"] = e + "ms", h[d._g + "transition-timing-function"] = b ? $.rsCSS3Easing[d.options.easeOut] : $.rsCSS3Easing[d.options.easeInOut], d._s3.css(h), d._q3(a)) : (h[d._e3 ? d._x1 : d._w1] = a + "px", d._s3.animate(h, e, b ? "easeOutCubic" : d.options.easeInOut));
                 c && (d._i3 = c);
                 d._y6();
                 d._x6 = setTimeout(function () {
@@ -971,55 +1029,57 @@
                     g && (d._a4(c, g, !0), g = null)
                 }, e)
             }
-        }, _y6: function () {
+        },
+        _y6: function () {
             this._q6 && (this._i3 === this._n3 ? this._r6.addClass("rsThumbsArrowDisabled") :
                 this._r6.removeClass("rsThumbsArrowDisabled"), this._i3 === this._o3 ? this._s6.addClass("rsThumbsArrowDisabled") : this._s6.removeClass("rsThumbsArrowDisabled"))
-        }, _m6: function (a, e) {
+        },
+        _m6: function (a, e) {
             var b = 0, c, f = a * this._t6 + 2 * this._t6 - this._v6 + this._n3, d = Math.floor(this._i3 / this._t6);
             this._l6 && (this._j6 && (e = !0, this._j6 = !1), f + this._i3 > this._z3 ? (a === this.numSlides - 1 && (b = 1), d = -a + this._u6 - 2 + b, c = d * this._t6 + this._z3 % this._t6 + this._v6 - this._n3) : 0 !== a ? (a - 1) * this._t6 <= -this._i3 + this._n3 && a - 1 <= this.numSlides - this._u6 && (c = (-a + 1) * this._t6 +
                 this._n3) : c = this._n3, c !== this._i3 && (b = void 0 === c ? this._i3 : c, b > this._n3 ? this._q3(this._n3) : b < this._o3 ? this._q3(this._o3) : void 0 !== c && (e ? this._q3(c) : this._a4(c))), this._y6())
         }
     });
-    f.rsModules.thumbnails = f.rsProto._h6
+    $.rsModules.thumbnails = $.rsProto.thumbnails
 })(jQuery);
 // jquery.rs.tabs v1.0.2
 (function ($) {
     $.extend($.rsProto, {
         _f6: function () {
-            var a = this;
-            "tabs" === a.options.controlNavigation && (a.ev.on("rsBeforeParseNode", function (a, d, b) {
+            var slider = this;
+            "tabs" === slider.options.controlNavigation && (slider.ev.on("rsBeforeParseNode", function (a, d, b) {
                 d = $(d);
                 b.thumbnail = d.find(".rsTmb").remove();
                 b.thumbnail.length ? b.thumbnail = $(document.createElement("div")).append(b.thumbnail).html() : (b.thumbnail = d.attr("data-rsTmb"), b.thumbnail || (b.thumbnail = d.find(".rsImg").attr("data-rsTmb")), b.thumbnail = b.thumbnail ? '<img src="' + b.thumbnail + '"/>' : "")
-            }), a.ev.one("rsAfterPropsSetup", function () {
-                a._g6()
-            }), a.ev.on("rsOnAppendSlide",
+            }), slider.ev.one("rsAfterPropsSetup", function () {
+                slider._g6()
+            }), slider.ev.on("rsOnAppendSlide",
                 function (c, d, b) {
-                    b >= a.numSlides ? a._k5.append('<div class="rsNavItem rsTab">' + d.thumbnail + "</div>") : a._l5.eq(b).before('<div class="rsNavItem rsTab">' + item.thumbnail + "</div>");
-                    a._l5 = a._k5.children()
-                }), a.ev.on("rsOnRemoveSlide", function (c, d) {
-                var b = a._l5.eq(d);
-                b && (b.remove(), a._l5 = a._k5.children())
-            }), a.ev.on("rsOnUpdateNav", function () {
-                var c = a.currSlideId;
-                a._n5 && a._n5.removeClass("rsNavSelected");
-                c = a._l5.eq(c);
+                    b >= slider.numSlides ? slider._k5.append('<div class="rsNavItem rsTab">' + d.thumbnail + "</div>") : slider._l5.eq(b).before('<div class="rsNavItem rsTab">' + item.thumbnail + "</div>");
+                    slider._l5 = slider._k5.children()
+                }), slider.ev.on("rsOnRemoveSlide", function (c, d) {
+                var b = slider._l5.eq(d);
+                b && (b.remove(), slider._l5 = slider._k5.children())
+            }), slider.ev.on("rsOnUpdateNav", function () {
+                var c = slider.currSlideId;
+                slider._n5 && slider._n5.removeClass("rsNavSelected");
+                c = slider._l5.eq(c);
                 c.addClass("rsNavSelected");
-                a._n5 = c
+                slider._n5 = c
             }))
         }, _g6: function () {
-            var a = this, c;
-            a._j5 = !0;
-            c = '<div class="rsNav rsTabs">';
-            for (var d = 0; d < a.numSlides; d++) c += '<div class="rsNavItem rsTab">' + a.slides[d].thumbnail + "</div>";
-            c = $(c + "</div>");
-            a._k5 = c;
-            a._l5 = c.children(".rsNavItem");
-            a.slider.append(c);
-            a._k5.click(function (b) {
-                b = $(b.target).closest(".rsNavItem");
-                b.length && a.goTo(b.index())
-            })
+            var slider = this;
+            slider._j5 = !0;
+            var markupTabs = '<div class="rsNav rsTabs">';
+            for (var d = 0; d < slider.numSlides; d++) markupTabs += '<div class="rsNavItem rsTab">' + slider.slides[d].thumbnail + "</div>";
+            markupTabs = $(markupTabs + "</div>");
+            slider._k5 = markupTabs;
+            slider._l5 = markupTabs.children(".rsNavItem");
+            slider.slider.append(markupTabs);
+            slider._k5.click(function (event) {
+                event = $(event.target).closest(".rsNavItem");
+                event.length && slider.goTo(event.index())
+            });
         }
     });
     $.rsModules.tabs = $.rsProto._f6
@@ -1028,115 +1088,135 @@
 (function ($) {
     $.extend($.rsProto, {
         _q5: function () {
-            var a = this;
-            a._r5 = {enabled: !1, keyboardNav: !0, buttonFS: !0, nativeFS: !1, doubleTap: !0};
-            a.options.fullscreen = $.extend({}, a._r5, a.options.fullscreen);
-            if (a.options.fullscreen.enabled) a.ev.one("rsBeforeSizeSet", function () {
-                a._s5()
-            })
-        }, _s5: function () {
-            var a = this;
-            a._t5 = !a.options.keyboardNavEnabled && a.options.fullscreen.keyboardNav;
-            if (a.options.fullscreen.nativeFS) {
+            var slider = this;
+            slider._r5 = {enabled: !1, keyboardNav: !0, buttonFS: !0, nativeFS: !1, doubleTap: !0};
+            slider.options.fullscreen = $.extend({}, slider._r5, slider.options.fullscreen);
+            if (slider.options.fullscreen.enabled) {
+                slider.ev.one("rsBeforeSizeSet", function () {
+                    slider._s5()
+                });
+            }
+        },
+        _s5: function () {
+            var slider = this;
+            slider._t5 = !slider.options.keyboardNavEnabled && slider.options.fullscreen.keyboardNav;
+            if (slider.options.fullscreen.nativeFS) {
                 var b = {
-                    supportsFullScreen: !1, isFullScreen: function () {
-                        return !1
-                    }, requestFullScreen: function () {
-                    }, cancelFullScreen: function () {
-                    }, fullScreenEventName: "",
-                    prefix: ""
-                }, d = ["webkit", "moz", "o", "ms", "khtml"];
-                if ("undefined" != typeof document.cancelFullScreen) b.supportsFullScreen = !0; else for (var e = 0, f = d.length; e < f; e++) if (b.prefix = d[e], "undefined" != typeof document[b.prefix + "CancelFullScreen"]) {
+                    supportsFullScreen: !1,
+                    fullScreenEventName: "",
+                    prefix: "",
+                    isFullScreen: function () {
+                        return !1;
+                    },
+                    requestFullScreen: function () {
+                    },
+                    cancelFullScreen: function () {
+                    }
+                };
+                var d = ["webkit", "moz", "o", "ms", "khtml"];
+                if ("undefined" !== typeof document.cancelFullScreen) {
                     b.supportsFullScreen = !0;
-                    break
+                } else {
+                    for (var e = 0, f = d.length; e < f; e++) {
+                        if (b.prefix = d[e], "undefined" !== typeof document[b.prefix + "CancelFullScreen"]) {
+                            b.supportsFullScreen = !0;
+                            break;
+                        }
+                    }
                 }
-                b.supportsFullScreen ? (a.nativeFS = !0, b.fullScreenEventName = b.prefix + "fullscreenchange" + a.ns, b.isFullScreen = function () {
+                b.supportsFullScreen ? (slider.nativeFS = !0, b.fullScreenEventName = b.prefix + "fullscreenchange" + slider.ns, b.isFullScreen = function () {
                     switch (this.prefix) {
-                        case "":
+                        case "": {
                             return document.fullScreen;
-                        case "webkit":
+                        }
+                        case "webkit": {
                             return document.webkitIsFullScreen;
-                        default:
-                            return document[this.prefix +
-                            "FullScreen"]
+                        }
+                        default: {
+                            return document[this.prefix + "FullScreen"]
+                        }
                     }
                 }, b.requestFullScreen = function (a) {
                     return "" === this.prefix ? a.requestFullScreen() : a[this.prefix + "RequestFullScreen"]()
                 }, b.cancelFullScreen = function (a) {
                     return "" === this.prefix ? document.cancelFullScreen() : document[this.prefix + "CancelFullScreen"]()
-                }, a._u5 = b) : a._u5 = !1
+                }, slider._u5 = b) : slider._u5 = !1
             }
-            a.options.fullscreen.buttonFS && (a._v5 = $('<div class="rsFullscreenBtn"><div class="rsFullscreenIcn"></div></div>').appendTo(a._o1).on("click.rs", function () {
-                a.isFullscreen ? a.exitFullscreen() : a.enterFullscreen()
+            slider.options.fullscreen.buttonFS && (slider._v5 = $('<div class="rsFullscreenBtn"><div class="rsFullscreenIcn"></div></div>').appendTo(slider._o1).on("click.rs", function () {
+                slider.isFullscreen ? slider.exitFullscreen() : slider.enterFullscreen()
             }))
-        }, enterFullscreen: function (a) {
-            var b =
-                this;
-            if (b._u5) if (a) b._u5.requestFullScreen($("html")[0]); else {
-                b._b.on(b._u5.fullScreenEventName, function (a) {
-                    b._u5.isFullScreen() ? b.enterFullscreen(!0) : b.exitFullscreen(!0)
+        },
+        enterFullscreen: function (a) {
+            var slider = this;
+            if (slider._u5) if (a) slider._u5.requestFullScreen($("html")[0]); else {
+                slider.$document.on(slider._u5.fullScreenEventName, function (a) {
+                    slider._u5.isFullScreen() ? slider.enterFullscreen(!0) : slider.exitFullscreen(!0)
                 });
-                b._u5.requestFullScreen($("html")[0]);
+                slider._u5.requestFullScreen($("html")[0]);
                 return
             }
-            if (!b._w5) {
-                b._w5 = !0;
-                b._b.on("keyup" + b.ns + "fullscreen", function (a) {
-                    27 === a.keyCode && b.exitFullscreen()
+            if (!slider._w5) {
+                slider._w5 = !0;
+                slider.$document.on("keyup" + slider.ns + "fullscreen", function (a) {
+                    27 === a.keyCode && slider.exitFullscreen()
                 });
-                b._t5 && b._b2();
+                slider._t5 && slider._b2();
                 a = $(window);
-                b._x5 = a.scrollTop();
-                b._y5 = a.scrollLeft();
-                b._z5 = $("html").attr("style");
-                b._a6 = $("body").attr("style");
-                b._b6 = b.slider.attr("style");
+                slider._x5 = a.scrollTop();
+                slider._y5 = a.scrollLeft();
+                slider._z5 = $("html").attr("style");
+                slider._a6 = $("body").attr("style");
+                slider._b6 = slider.slider.attr("style");
                 $("body, html").css({
                     overflow: "hidden",
                     height: "100%", width: "100%", margin: "0", padding: "0"
                 });
-                b.slider.addClass("rsFullscreen");
+                slider.slider.addClass("rsFullscreen");
                 var d;
-                for (d = 0; d < b.numSlides; d++) a = b.slides[d], a.isRendered = !1, a.bigImage && (a.isBig = !0, a.isMedLoaded = a.isLoaded, a.isMedLoading = a.isLoading, a.medImage = a.image, a.medIW = a.iW, a.medIH = a.iH, a.slideId = -99, a.bigImage !== a.medImage && (a.sizeType = "big"), a.isLoaded = a.isBigLoaded, a.isLoading = !1, a.image = a.bigImage, a.images[0] = a.bigImage, a.iW = a.bigIW, a.iH = a.bigIH, a.isAppended = a.contentAdded = !1, b._c6(a));
-                b.isFullscreen = !0;
-                b._w5 = !1;
-                b.updateSliderSize();
-                b.ev.trigger("rsEnterFullscreen")
+                for (d = 0; d < slider.numSlides; d++) a = slider.slides[d], a.isRendered = !1, a.bigImage && (a.isBig = !0, a.isMedLoaded = a.isLoaded, a.isMedLoading = a.isLoading, a.medImage = a.image, a.medIW = a.iW, a.medIH = a.iH, a.slideId = -99, a.bigImage !== a.medImage && (a.sizeType = "big"), a.isLoaded = a.isBigLoaded, a.isLoading = !1, a.image = a.bigImage, a.images[0] = a.bigImage, a.iW = a.bigIW, a.iH = a.bigIH, a.isAppended = a.contentAdded = !1, slider.updateMarkup(a));
+                slider.isFullscreen = !0;
+                slider._w5 = !1;
+                slider.updateSliderSize();
+                slider.ev.trigger("rsEnterFullscreen")
             }
-        }, exitFullscreen: function (a) {
-            var b = this;
-            if (b._u5) {
+        },
+        exitFullscreen: function (a) {
+            var slider = this;
+            if (slider._u5) {
                 if (!a) {
-                    b._u5.cancelFullScreen($("html")[0]);
+                    slider._u5.cancelFullScreen($("html")[0]);
                     return
                 }
-                b._b.off(b._u5.fullScreenEventName)
+                slider.$document.off(slider._u5.fullScreenEventName)
             }
-            if (!b._w5) {
-                b._w5 = !0;
-                b._b.off("keyup" + b.ns + "fullscreen");
-                b._t5 && b._b.off("keydown" + b.ns);
-                $("html").attr("style", b._z5 || "");
-                $("body").attr("style", b._a6 || "");
+            if (!slider._w5) {
+                slider._w5 = !0;
+                slider.$document.off("keyup" + slider.ns + "fullscreen");
+                slider._t5 && slider.$document.off("keydown" + slider.ns);
+                $("html").attr("style", slider._z5 || "");
+                $("body").attr("style", slider._a6 || "");
                 var d;
-                for (d = 0; d < b.numSlides; d++) a = b.slides[d], a.isRendered = !1, a.bigImage && (a.isBig = !1, a.slideId = -99, a.isBigLoaded = a.isLoaded, a.isBigLoading = a.isLoading, a.bigImage =
-                    a.image, a.bigIW = a.iW, a.bigIH = a.iH, a.isLoaded = a.isMedLoaded, a.isLoading = !1, a.image = a.medImage, a.images[0] = a.medImage, a.iW = a.medIW, a.iH = a.medIH, a.isAppended = a.contentAdded = !1, b._c6(a, !0), a.bigImage !== a.medImage && (a.sizeType = "med"));
-                b.isFullscreen = !1;
+                for (d = 0; d < slider.numSlides; d++) a = slider.slides[d], a.isRendered = !1, a.bigImage && (a.isBig = !1, a.slideId = -99, a.isBigLoaded = a.isLoaded, a.isBigLoading = a.isLoading, a.bigImage =
+                    a.image, a.bigIW = a.iW, a.bigIH = a.iH, a.isLoaded = a.isMedLoaded, a.isLoading = !1, a.image = a.medImage, a.images[0] = a.medImage, a.iW = a.medIW, a.iH = a.medIH, a.isAppended = a.contentAdded = !1, slider.updateMarkup(a, !0), a.bigImage !== a.medImage && (a.sizeType = "med"));
+                slider.isFullscreen = !1;
                 a = $(window);
-                a.scrollTop(b._x5);
-                a.scrollLeft(b._y5);
-                b._w5 = !1;
-                b.slider.removeClass("rsFullscreen");
-                b.updateSliderSize();
+                a.scrollTop(slider._x5);
+                a.scrollLeft(slider._y5);
+                slider._w5 = !1;
+                slider.slider.removeClass("rsFullscreen");
+                slider.updateSliderSize();
                 setTimeout(function () {
-                    b.updateSliderSize()
+                    slider.updateSliderSize()
                 }, 1);
-                b.ev.trigger("rsExitFullscreen")
+                slider.ev.trigger("rsExitFullscreen")
             }
-        }, _c6: function (a, b) {
-            var d = a.isLoaded || a.isLoading ? '<img class="rsImg rsMainSlideImage" src="' +
-                a.image + '"/>' : '<a class="rsImg rsMainSlideImage" href="' + a.image + '"></a>';
-            a.content.hasClass("rsImg") ? a.content = $(d) : a.content.find(".rsImg").eq(0).replaceWith(d);
+        },
+        updateMarkup: function (a, b) {
+            var imgMarkup = '<a class="rsImg rsMainSlideImage" href="' + a.image + '"></a>';
+            if (a.isLoaded || a.isLoading) {
+                imgMarkup = '<img class="rsImg rsMainSlideImage" src="' + a.image + '"/>';
+            }
+            a.content.hasClass("rsImg") ? a.content = $(imgMarkup) : a.content.find(".rsImg").eq(0).replaceWith(imgMarkup);
             a.isLoaded || a.isLoading || !a.holder || a.holder.html(a.content)
         }
     });
@@ -1215,8 +1295,7 @@
                 b && (a.options.loopRewind = !1)
             }, a.currSlide.customDelay ? a.currSlide.customDelay : a.options.autoPlay.delay))
         }, _d5: function () {
-            this._f5 || this._e5 || (this._g5 = !1, this._h5 && (clearTimeout(this._h5),
-                this._h5 = null))
+            this._f5 || this._e5 || (this._g5 = !1, this._h5 && (clearTimeout(this._h5), this._h5 = null))
         }
     });
     $.rsModules.autoplay = $.rsProto._x4
@@ -1243,7 +1322,7 @@
                     a._c7 && a._c7.css({width: b.width(), height: b.height()})
                 }, 32)
             });
-            var d = a._a.mozilla;
+            var d = a.deviceInfo.mozilla;
             a.ev.on("rsAfterParseNode", function (b, c, e) {
                 b = $(c);
                 if (e.videoURL) {
@@ -1434,30 +1513,29 @@
                     slider._e1.css(slider._g + "transition", "height " + slider.options.transitionSpeed + "ms ease-in-out")
                 }, 16), f = !1))
             };
-            slider.ev.on("rsMaybeSizeReady.rsAutoHeight",
-                function (a, b) {
-                    slideActive === b && d()
-                });
+            slider.ev.on("rsMaybeSizeReady.rsAutoHeight", function (a, b) {
+                slideActive === b && d()
+            });
             slider.ev.on("rsAfterContentSet.rsAutoHeight", function (a, b) {
                 slideActive === b && d()
             });
             slider.slider.addClass("rsAutoHeight");
             slider.ev.one("rsAfterInit", function () {
                 setTimeout(function () {
-                    d(!1);
+                    d(false);
                     setTimeout(function () {
-                        slider.slider.append('<div style="clear:both; float: none;"></div>')
+                        slider.slider.append('<div style="clear:both; float: none;"></div>');
                     }, 16)
-                }, 16)
+                }, 16);
             });
             slider.ev.on("rsBeforeAnimStart", function () {
-                d(!0)
+                d(true);
             });
             slider.ev.on("rsBeforeSizeSet", function () {
                 setTimeout(function () {
-                    d(!1)
-                }, 16)
-            })
+                    d(false);
+                }, 16);
+            });
         }
     };
 })(jQuery);
@@ -1508,15 +1586,15 @@
         }), a.ev.on("rsAfterSizePropSet", function () {
             var b, c = a.options.visibleNearby;
             b = c.breakpoint && a.width < c.breakpoint ? c.breakpointCenterArea : c.centerArea;
-            a._h ? (a.sliderWidth *= b, a._i7.css({
+            a.isHorizontal ? (a.sliderWidth *= b, a._i7.css({
                 height: a.sliderHeight,
                 width: a.sliderWidth / b
             }), a._d = a.sliderWidth * (1 - b) / 2 / b) : (a.sliderHeight *= b, a._i7.css({
                 height: a.sliderHeight / b,
                 width: a.sliderWidth
             }), a._d = a.sliderHeight * (1 - b) / 2 / b);
-            c.navigateByCenterClick || (a._q = a._h ? a.sliderWidth : a.sliderHeight);
-            c.center && a._e1.css("margin-" + (a._h ? "left" : "top"), a._d)
+            c.navigateByCenterClick || (a._q = a.isHorizontal ? a.sliderWidth : a.sliderHeight);
+            c.center && a._e1.css("margin-" + (a.isHorizontal ? "left" : "top"), a._d)
         }))
     };
 })(jQuery);
