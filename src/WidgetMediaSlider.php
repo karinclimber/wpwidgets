@@ -70,10 +70,10 @@ final class WidgetMediaSlider extends Widget
     const NAVIGATION_NONE = 'none';
 
     const SKIN = 'sliderSkin';
-    const SKIN_DEFAULT = 'rsDefault';
-    const SKIN_MINIMAL = 'rsMinimal';
-    const SKIN_INVERTED = 'rsInverted';
-    const SKIN_UNIVERSAL = 'rsUniversal';
+    const SKIN_DEFAULT = 'rsSkinDefault';
+    const SKIN_MINIMAL = 'rsSkinMinimal';
+    const SKIN_INVERTED = 'rsSkinInverted';
+    const SKIN_UNIVERSAL = 'rsSkinUniversal';
 
     const IMAGE_SCALE = 'sliderImageScale';
     const IMAGE_SCALE_FIT_IF_SMALLER = 'fit-if-smaller';
@@ -90,13 +90,16 @@ final class WidgetMediaSlider extends Widget
     function enqueueScriptsTheme()
     {
         $this->uriToDirLibs = WPUtils::getUriToLibsDir(__FILE__);
-        wp_enqueue_style('rslider', "{$this->uriToDirLibs}/rslider/rslider.css");
-        wp_enqueue_style('rslider-caption', "{$this->uriToDirLibs}/rslider/rslider-caption.css");
-        wp_enqueue_style(self::SKIN_DEFAULT, "{$this->uriToDirLibs}/rslider/rsDefault.css");
-        wp_enqueue_style(self::SKIN_MINIMAL, "{$this->uriToDirLibs}/rslider/rsMinimal.css");
-        wp_enqueue_style(self::SKIN_INVERTED, "{$this->uriToDirLibs}/rslider/rsInverted.css");
-        wp_enqueue_style(self::SKIN_UNIVERSAL, "{$this->uriToDirLibs}/rslider/rsUniversal.css");
-        wp_enqueue_script('rslider', "{$this->uriToDirLibs}/rslider/rslider.js", ['jquery'], null, true);
+        wp_register_style(self::SKIN_DEFAULT, "{$this->uriToDirLibs}/rslider/rsSkinDefault.css", ['rs']);
+        wp_register_style(self::SKIN_MINIMAL, "{$this->uriToDirLibs}/rslider/rsSkinMinimal.css", ['rs']);
+        wp_register_style(self::SKIN_INVERTED, "{$this->uriToDirLibs}/rslider/rsSkinInverted.css", ['rs']);
+        wp_register_style(self::SKIN_UNIVERSAL, "{$this->uriToDirLibs}/rslider/rsSkinUniversal.css", ['rs']);
+        wp_enqueue_style('rs', "{$this->uriToDirLibs}/rslider/rs.css");
+        wp_enqueue_script('rs', "{$this->uriToDirLibs}/rslider/rs.js", ['jquery'], null, true);
+        wp_register_script('rsautohidenav', "{$this->uriToDirLibs}/rslider/rsAutoHideNav.js", ['rs'], null, true);
+        wp_register_script('rsbullets', "{$this->uriToDirLibs}/rslider/rsBullets.js", ['rs'], null, true);
+        wp_register_script('rsthumbnails', "{$this->uriToDirLibs}/rslider/rsThumbnails.js", ['rs'], null, true);
+        wp_register_script('rstabs', "{$this->uriToDirLibs}/rslider/rsTabs.js", ['rs'], null, true);
     }
 
     function enqueueScriptsAdmin()
@@ -117,17 +120,17 @@ final class WidgetMediaSlider extends Widget
             __("Height"), [], '400px'));
         $this->addField(new WidgetField(WidgetField::IMAGES_WITH_URL, self::IMAGES, __("Images")));
         $this->addField(new WidgetField(WidgetField::SELECT, self::IMAGE_SCALE, __('Image Scale'), [
-            self::IMAGE_SCALE_FIT_IF_SMALLER => __('Fit if Smaller'),
             self::IMAGE_SCALE_FIT => __('Fit'),
+            self::IMAGE_SCALE_FIT_IF_SMALLER => __('Fit if Smaller'),
             self::IMAGE_SCALE_FILL => __('Fill'),
             self::IMAGE_SCALE_NONE => __('None')
         ], self::IMAGE_SCALE_FIT_IF_SMALLER));
         $this->addField(new WidgetField(WidgetField::SELECT, self::NAVIGATION, __('Navigation'), [
+            self::NAVIGATION_NONE => __('None'),
             self::NAVIGATION_BULLETS => __('Bullets'),
             self::NAVIGATION_THUMBNAILS => __('Thumbnails'),
-            self::NAVIGATION_TABS => __('Tabs'),
-            self::NAVIGATION_NONE => __('None')
-        ], self::NAVIGATION_BULLETS));
+            self::NAVIGATION_TABS => __('Tabs')
+        ], self::NAVIGATION_NONE));
         $this->addField(new WidgetField(WidgetField::RADIO, self::ORIENTATION, __('Orientation'), [
             self::ORIENTATION_HORIZONTAL => __('Horizontal'),
             self::ORIENTATION_VERTICAL => __('Vertical')
@@ -167,7 +170,7 @@ final class WidgetMediaSlider extends Widget
         $this->addField(new WidgetField(WidgetField::NUMBER, self::TRANSITION_SPEED,
             __("Transition speed"), [], 600));
         $this->addField(new WidgetField(WidgetField::NUMBER, self::IMAGE_SCALE_PADDING,
-            __("Image padding"), [], 4));
+            __("Image padding"), [], 0));
         $this->addField(new WidgetField(WidgetField::NUMBER, self::START_SLIDE_ID,
             __("First slide index"), [], 0));
         parent::initFields();
@@ -180,19 +183,23 @@ final class WidgetMediaSlider extends Widget
         if (isset($images)) {
             $attachmentIds = (array)$images;
             if (is_array($attachmentIds)) {
-                //TODO Export slide change delay to configuration for slide switching and for switching effect
                 foreach ($attachmentIds as $attachmentId => $attachmentLink) {
                     $attachmentUrl = wp_get_attachment_image_url($attachmentId, WPImages::FULL);
-                    $content .= "<div class='rsContent'><a class='rsImg' href='$attachmentUrl' data-href='$attachmentLink'></a>";
-                    if ($attachmentLink) {
-                        $content .= "<a class='rsLink' href='$attachmentLink'></a>";
-                    }
-                    $content .= "</div>";
+                    $content .= "<a class='rsImg' href='$attachmentUrl' data-href='$attachmentLink'></a>";
                 }
             }
             $skin = self::getInstanceValue($instance, self::SKIN, $this);
+            wp_enqueue_style($skin);
             //Arrows
             $arrowsOptions = self::getInstanceValue($instance, self::ARROWS_OPTIONS, $this);
+            $arrowsNavAutoHide = in_array(self::NAV_ARROWS_AUTO_HIDE, $arrowsOptions);
+            if ($arrowsNavAutoHide){
+                wp_enqueue_script('rsAutoHideNav');
+            }
+            $controlNavigation = self::getInstanceValue($instance, self::NAVIGATION, $this);
+            if ($controlNavigation !== self::NAVIGATION_NONE){
+                wp_enqueue_script('rs'.$controlNavigation);
+            }
             //Navigation
             $navigateOptions = self::getInstanceValue($instance, self::NAVIGATE_OPTIONS, $this);
             //Options
@@ -202,12 +209,12 @@ final class WidgetMediaSlider extends Widget
             //Content
             $sliderOptions = json_encode([
                 'imageScaleMode' => self::getInstanceValue($instance, self::IMAGE_SCALE, $this),
-                'controlNavigation' => self::getInstanceValue($instance, self::NAVIGATION, $this),
+                'controlNavigation' => $controlNavigation,
                 'slidesOrientation' => self::getInstanceValue($instance, self::ORIENTATION, $this),
                 'transitionType' => self::getInstanceValue($instance, self::TRANSITION, $this),
 
                 'arrowsNav' => in_array(self::NAV_ARROWS_SHOW, $arrowsOptions),
-                'arrowsNavAutoHide' => in_array(self::NAV_ARROWS_AUTO_HIDE, $arrowsOptions),
+                'arrowsNavAutoHide' => $arrowsNavAutoHide,
                 'arrowsNavHideOnTouch' => in_array(self::NAV_ARROWS_HIDE_ON_TOUCH, $arrowsOptions),
 
                 'navigateByClick' => in_array(self::NAVIGATE_BY_CLICK, $navigateOptions),
@@ -230,17 +237,17 @@ final class WidgetMediaSlider extends Widget
                 'transitionSpeed' => (int)self::getInstanceValue($instance, self::TRANSITION_SPEED, $this),
                 'imageScalePadding' => (int)self::getInstanceValue($instance, self::IMAGE_SCALE_PADDING, $this)
             ]);
-            $optionsName = $this->id_base.$this->number;
-            $sliderId = "#{$this->id} > .royalSlider";
-            $content = "<div class='royalSlider $skin' style='height:$sliderHeight;'>{$content}</div>
+            $optionsName = $this->id_base . $this->number;
+            $sliderId = "#{$this->id} > .rs";
+            $content = "<div class='rs $skin' style='height:$sliderHeight;'>{$content}</div>
             <script>var $optionsName = $sliderOptions;
-            if (typeof jQuery == 'undefined'){
-                window.addEventListener('DOMContentLoaded', function() { jQuery('$sliderId').royalSlider($optionsName);});
+            if (typeof jQuery === 'undefined'){
+                window.addEventListener('DOMContentLoaded', function() { jQuery('$sliderId').rs($optionsName);});
             } else {
-                if (jQuery.royalSlider){
-                    jQuery('$sliderId').royalSlider($optionsName);
+                if (jQuery.rs){
+                    jQuery('$sliderId').rs($optionsName);
                 } else {
-                    jQuery(document).ready(function () { jQuery('$sliderId').royalSlider($optionsName); });   
+                    jQuery(document).ready(function () { jQuery('$sliderId').rs($optionsName); });   
                 }
             }</script>";
         }
