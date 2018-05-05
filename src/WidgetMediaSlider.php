@@ -70,10 +70,10 @@ final class WidgetMediaSlider extends Widget
     const NAVIGATION_NONE = 'none';
 
     const SKIN = 'sliderSkin';
-    const SKIN_DEFAULT = 'rsSkinDefault';
-    const SKIN_MINIMAL = 'rsSkinMinimal';
-    const SKIN_INVERTED = 'rsSkinInverted';
-    const SKIN_UNIVERSAL = 'rsSkinUniversal';
+    const SKIN_DEFAULT = 'rsDefault';
+    const SKIN_MINIMAL = 'rsMinimal';
+    const SKIN_INVERTED = 'rsInverted';
+    const SKIN_UNIVERSAL = 'rsUniversal';
 
     const IMAGE_SCALE = 'sliderImageScale';
     const IMAGE_SCALE_FIT_IF_SMALLER = 'fit-if-smaller';
