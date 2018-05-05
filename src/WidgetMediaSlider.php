@@ -90,6 +90,12 @@ final class WidgetMediaSlider extends Widget
     function enqueueScriptsTheme()
     {
         $this->uriToDirLibs = WPUtils::getUriToLibsDir(__FILE__);
+        $enqueueStyle = 'wp_register_style';
+        $enqueueScript = 'wp_register_script';
+        if (is_customize_preview()) {
+            $enqueueStyle = 'wp_enqueue_style';
+            $enqueueScript = 'wp_enqueue_script';
+        }
         wp_register_style(self::SKIN_DEFAULT, "{$this->uriToDirLibs}/rslider/rsSkinDefault.css", ['rs']);
         wp_register_style(self::SKIN_MINIMAL, "{$this->uriToDirLibs}/rslider/rsSkinMinimal.css", ['rs']);
         wp_register_style(self::SKIN_INVERTED, "{$this->uriToDirLibs}/rslider/rsSkinInverted.css", ['rs']);
@@ -189,16 +195,18 @@ final class WidgetMediaSlider extends Widget
                 }
             }
             $skin = self::getInstanceValue($instance, self::SKIN, $this);
-            wp_enqueue_style($skin);
+            if (!is_customize_preview()) {
+                wp_enqueue_style($skin);
+            }
             //Arrows
             $arrowsOptions = self::getInstanceValue($instance, self::ARROWS_OPTIONS, $this);
             $arrowsNavAutoHide = in_array(self::NAV_ARROWS_AUTO_HIDE, $arrowsOptions);
-            if ($arrowsNavAutoHide){
+            if (!is_customize_preview() && $arrowsNavAutoHide) {
                 wp_enqueue_script('rsAutoHideNav');
             }
             $controlNavigation = self::getInstanceValue($instance, self::NAVIGATION, $this);
-            if ($controlNavigation !== self::NAVIGATION_NONE){
-                wp_enqueue_script('rs'.$controlNavigation);
+            if (!is_customize_preview() && $controlNavigation !== self::NAVIGATION_NONE) {
+                wp_enqueue_script('rs' . $controlNavigation);
             }
             //Navigation
             $navigateOptions = self::getInstanceValue($instance, self::NAVIGATE_OPTIONS, $this);
