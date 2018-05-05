@@ -3,7 +3,7 @@
     "use strict";
 
     /**
-     * RSlider Module: Thumbnails
+     * RS Module: Thumbnails
      * @version 1.0.8:
      */
     $.extend($.rsProto, {

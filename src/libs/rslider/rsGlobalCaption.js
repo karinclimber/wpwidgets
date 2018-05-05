@@ -3,7 +3,7 @@
 	"use strict";
 
     /**
-     * RSlider Module: Global Caption
+     * RS Module: Global Caption
      * @version 1.0.1:
      */
 	$.extend($.rsProto, {

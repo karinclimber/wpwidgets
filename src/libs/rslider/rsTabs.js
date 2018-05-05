@@ -3,7 +3,7 @@
     "use strict";
 
     /**
-     * RSlider Module: Tabs
+     * RS Module: Tabs
      * @version 1.0.2:
      */
     $.extend($.rsProto, {

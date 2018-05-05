@@ -3,7 +3,7 @@
 	"use strict";
 
 	/**
-     * RSlider Module: ActiveClass
+     * RS Module: ActiveClass
 	 * @version 1.0.1:
 	 */
 	$.rsProto._initActiveClass = function() {

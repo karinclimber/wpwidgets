@@ -3,7 +3,7 @@
 	"use strict";
 
 	/**
-     * RSlider Module: AutoPlay
+     * RS Module: AutoPlay
 	 * @version 1.0.5:
 	 */
 	$.extend($.rsProto, {

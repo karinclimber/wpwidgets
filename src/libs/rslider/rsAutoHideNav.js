@@ -3,7 +3,7 @@
     "use strict";
 
     /**
-     * RSlider Module: AutoHideNavigation
+     * RS Module: AutoHideNavigation
      * @version 1.0:
      */
     $.extend($.rsProto, {

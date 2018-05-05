@@ -3,7 +3,7 @@
 	"use strict";
 
 	/**
-     * RSlider Module: Animated Blocks
+     * RS Module: Animated Blocks
 	 * @version 1.0.7:
 	 */
 	$.extend($.rsProto, {

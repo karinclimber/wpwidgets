@@ -3,7 +3,7 @@
   "use strict";
 
 	/**
-     * RSlider Module: Deep Linking
+     * RS Module: Deep Linking
 	 * @version 1.0.7 and 1.0.6 + jQuery hashchange plugin v1.3 Copyright (c) 2010 Ben Alman:
 	 */
 	$.extend($.rsProto, {

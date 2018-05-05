@@ -3,7 +3,7 @@
     "use strict";
 
     /**
-     * RSlider Module: Video
+     * RS Module: Video
      * @version 1.1.3:
      */
     $.extend($.rsProto, {

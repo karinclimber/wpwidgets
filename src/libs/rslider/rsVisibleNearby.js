@@ -3,7 +3,7 @@
     "use strict";
 
     /**
-     * RSlider Module: VisibleNearby
+     * RS Module: VisibleNearby
      * @version 1.0.2:
      */
     $.rsProto._initVisibleNearby = function () {

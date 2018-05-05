@@ -3,7 +3,7 @@
 	"use strict";
 
 	/**
-     * RSlider Module: Bullets
+     * RS Module: Bullets
 	 * @version 1.0.1:
 	 */
 	$.extend($.rsProto, {

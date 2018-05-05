@@ -3,7 +3,7 @@
     "use strict";
 
     /**
-     * RSlider Module: Fullscreen
+     * RS Module: Fullscreen
      * @version 1.0.6:
      */
     $.extend($.rsProto, {

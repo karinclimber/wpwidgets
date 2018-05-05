@@ -3,7 +3,7 @@
     "use strict";
 
     /**
-     * RSlider Module: AutoHeight
+     * RS Module: AutoHeight
      * @version 1.0.3:
      */
     $.extend($.rsProto, {
