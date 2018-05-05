@@ -200,10 +200,7 @@ final class WidgetMediaSlider extends Widget
             }
             //Arrows
             $arrowsOptions = self::getInstanceValue($instance, self::ARROWS_OPTIONS, $this);
-            $arrowsNavAutoHide = in_array(self::NAV_ARROWS_AUTO_HIDE, $arrowsOptions);
-            if (!is_customize_preview() && $arrowsNavAutoHide) {
-                wp_enqueue_script('rsAutoHideNav');
-            }
+
             $controlNavigation = self::getInstanceValue($instance, self::NAVIGATION, $this);
             if (!is_customize_preview() && $controlNavigation !== self::NAVIGATION_NONE) {
                 wp_enqueue_script('rs' . $controlNavigation);
@@ -222,7 +219,7 @@ final class WidgetMediaSlider extends Widget
                 'transitionType' => self::getInstanceValue($instance, self::TRANSITION, $this),
 
                 'arrowsNav' => in_array(self::NAV_ARROWS_SHOW, $arrowsOptions),
-                'arrowsNavAutoHide' => $arrowsNavAutoHide,
+                'arrowsNavAutoHide' => in_array(self::NAV_ARROWS_AUTO_HIDE, $arrowsOptions),
                 'arrowsNavHideOnTouch' => in_array(self::NAV_ARROWS_HIDE_ON_TOUCH, $arrowsOptions),
 
                 'navigateByClick' => in_array(self::NAVIGATE_BY_CLICK, $navigateOptions),
