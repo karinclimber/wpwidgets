@@ -96,16 +96,16 @@ final class WidgetMediaSlider extends Widget
             $enqueueStyle = 'wp_enqueue_style';
             $enqueueScript = 'wp_enqueue_script';
         }
-        wp_register_style(self::SKIN_DEFAULT, "{$this->uriToDirLibs}/rslider/rsSkinDefault.css", ['rs']);
-        wp_register_style(self::SKIN_MINIMAL, "{$this->uriToDirLibs}/rslider/rsSkinMinimal.css", ['rs']);
-        wp_register_style(self::SKIN_INVERTED, "{$this->uriToDirLibs}/rslider/rsSkinInverted.css", ['rs']);
-        wp_register_style(self::SKIN_UNIVERSAL, "{$this->uriToDirLibs}/rslider/rsSkinUniversal.css", ['rs']);
+        $enqueueStyle(self::SKIN_DEFAULT, "{$this->uriToDirLibs}/rslider/rsSkinDefault.css", ['rs']);
+        $enqueueStyle(self::SKIN_MINIMAL, "{$this->uriToDirLibs}/rslider/rsSkinMinimal.css", ['rs']);
+        $enqueueStyle(self::SKIN_INVERTED, "{$this->uriToDirLibs}/rslider/rsSkinInverted.css", ['rs']);
+        $enqueueStyle(self::SKIN_UNIVERSAL, "{$this->uriToDirLibs}/rslider/rsSkinUniversal.css", ['rs']);
         wp_enqueue_style('rs', "{$this->uriToDirLibs}/rslider/rs.css");
         wp_enqueue_script('rs', "{$this->uriToDirLibs}/rslider/rs.js", ['jquery'], null, true);
-        wp_register_script('rsautohidenav', "{$this->uriToDirLibs}/rslider/rsAutoHideNav.js", ['rs'], null, true);
-        wp_register_script('rsbullets', "{$this->uriToDirLibs}/rslider/rsBullets.js", ['rs'], null, true);
-        wp_register_script('rsthumbnails', "{$this->uriToDirLibs}/rslider/rsThumbnails.js", ['rs'], null, true);
-        wp_register_script('rstabs', "{$this->uriToDirLibs}/rslider/rsTabs.js", ['rs'], null, true);
+        $enqueueScript('rsautohidenav', "{$this->uriToDirLibs}/rslider/rsAutoHideNav.js", ['rs'], null, true);
+        $enqueueScript('rsbullets', "{$this->uriToDirLibs}/rslider/rsBullets.js", ['rs'], null, true);
+        $enqueueScript('rsthumbnails', "{$this->uriToDirLibs}/rslider/rsThumbnails.js", ['rs'], null, true);
+        $enqueueScript('rstabs', "{$this->uriToDirLibs}/rslider/rsTabs.js", ['rs'], null, true);
     }
 
     function enqueueScriptsAdmin()
