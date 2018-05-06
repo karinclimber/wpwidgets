@@ -9,12 +9,12 @@
 	$.extend($.rsProto, {
 		_initGlobalCaption: function() {
 			var self = this;
-			if(self.st.globalCaption) {
+			if(self.settings.globalCaption) {
 				var setCurrCaptionHTML = function () {
 					self.globalCaption.html(self.currSlide.caption||'');
 				};
 				self.ev.on('rsAfterInit', function() {
-					self.globalCaption = $('<div class="rsGCaption"></div>').appendTo( !self.st.globalCaptionInside ? self.slider : self._sliderOverflow );
+					self.globalCaption = $('<div class="rsGCaption"></div>').appendTo( !self.settings.globalCaptionInside ? self.slider : self._sliderOverflow );
 					setCurrCaptionHTML();
 				});
 				self.ev.on('rsBeforeAnimStart' , function() {

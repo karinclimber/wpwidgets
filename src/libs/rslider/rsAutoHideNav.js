@@ -4,12 +4,13 @@
 
     /**
      * RS Module: AutoHideNavigation
+     * Auto hide Bullets, Thumbnails or Tabs
      * @version 1.0:
      */
     $.extend($.rsProto, {
         _initAutoHideControlNav: function () {
             var self = this;
-            if (self.st.navAutoHide && !self.hasTouch) {
+            if (self.settings.navAutoHide && !self.hasTouch) {
                 self.ev.one('rsAfterInit', function () {
                     if (self._controlNav) {
                         self._controlNav.addClass('rsHidden');

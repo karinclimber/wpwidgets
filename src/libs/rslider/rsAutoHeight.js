@@ -4,24 +4,25 @@
 
     /**
      * RS Module: AutoHeight
+     * Useful for http://dimsemenov.com/plugins/royal-slider/content-slider/
      * @version 1.0.3:
      */
     $.extend($.rsProto, {
         _initAutoHeight: function () {
             var self = this;
-            if (self.st.autoHeight) {
+            if (self.settings.autoHeight) {
                 var firstTime = true;
                 var updateHeight = function (animate) {
                     var currentSlide = self.slides[self.currSlideId];
                     var holder = currentSlide.holder;
                     if (holder) {
                         var holderHeight = holder.height();
-                        if (holderHeight && holderHeight > (self.st.minAutoHeight || 30)) {
+                        if (holderHeight && holderHeight > (self.settings.minAutoHeight || 30)) {
                             self._wrapHeight = holderHeight;
                             if (self._useCSS3Transitions || !animate) {
                                 self._sliderOverflow.css('height', holderHeight);
                             } else {
-                                self._sliderOverflow.stop(true, true).animate({height: holderHeight}, self.st.transitionSpeed);
+                                self._sliderOverflow.stop(true, true).animate({height: holderHeight}, self.settings.transitionSpeed);
                             }
                             self.ev.trigger('rsAutoHeightChange', holderHeight);
                             if (firstTime) {
@@ -30,7 +31,7 @@
                                     // force reflow
                                     setTimeout(function () {
                                         var cssPropName = self._vendorPref + 'transition';
-                                        var cssPropValue = 'height ' + self.st.transitionSpeed + 'ms ease-in-out';
+                                        var cssPropValue = 'height ' + self.settings.transitionSpeed + 'ms ease-in-out';
                                         self._sliderOverflow.css(cssPropName, cssPropValue);
                                     }, 16);
                                 }

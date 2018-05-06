@@ -9,7 +9,7 @@
     $.extend($.rsProto, {
         _initThumbs: function () {
             var self = this;
-            if (self.st.controlNavigation === 'thumbnails') {
+            if (self.settings.controlNavigation === 'thumbnails') {
                 self._thumbsDefaults = {
                     drag: true,
                     touch: true,
@@ -28,12 +28,12 @@
                     paddingTop: 0,
                     paddingBottom: 0
                 };
-                self.st.thumbs = $.extend({}, self._thumbsDefaults, self.st.thumbs);
+                self.settings.thumbs = $.extend({}, self._thumbsDefaults, self.settings.thumbs);
                 self._firstThumbMoved = true;
-                if (self.st.thumbs.firstMargin === false) {
-                    self.st.thumbs.firstMargin = 0;
-                } else if (self.st.thumbs.firstMargin === true) {
-                    self.st.thumbs.firstMargin = self.st.thumbs.spacing;
+                if (self.settings.thumbs.firstMargin === false) {
+                    self.settings.thumbs.firstMargin = 0;
+                } else if (self.settings.thumbs.firstMargin === true) {
+                    self.settings.thumbs.firstMargin = self.settings.thumbs.spacing;
                 }
                 self.ev.on('rsBeforeParseNode', function (e, content, obj) {
                     content = $(content);
@@ -106,7 +106,7 @@
         _createThumbs: function () {
             var self = this,
                 tText = 'rsThumbs',
-                thumbSt = self.st.thumbs,
+                thumbSt = self.settings.thumbs,
                 out = '',
                 style,
                 item,
@@ -166,13 +166,13 @@
                 self._thumbsArrowLeft.click(function () {
                     var viewportSize = Math.floor(self._thumbsViewportSize / self._thumbSize),
                         thumbId = Math.floor(self._thumbsPosition / self._thumbSize),
-                        newPos = (thumbId + self._visibleThumbsPerView) * self._thumbSize + self.st.thumbs.firstMargin;
+                        newPos = (thumbId + self._visibleThumbsPerView) * self._thumbSize + self.settings.thumbs.firstMargin;
                     self._animateThumbsTo(newPos > self._thumbsMinPosition ? self._thumbsMinPosition : newPos);
                 });
                 self._thumbsArrowRight.click(function () {
                     var viewportSize = Math.floor(self._thumbsViewportSize / self._thumbSize),
                         thumbId = Math.floor(self._thumbsPosition / self._thumbSize),
-                        newPos = (thumbId - self._visibleThumbsPerView) * self._thumbSize + self.st.thumbs.firstMargin;
+                        newPos = (thumbId - self._visibleThumbsPerView) * self._thumbSize + self.settings.thumbs.firstMargin;
                     self._animateThumbsTo(newPos < self._thumbsMaxPosition ? self._thumbsMaxPosition : newPos);
                 });
                 if (thumbSt.arrowsAutoHide && !self.hasTouch) {
@@ -207,7 +207,7 @@
             self._controlNavItems = self._thumbsContainer.children();
 
 
-            if (self.msEnabled && self.st.thumbs.navigation) {
+            if (self.msEnabled && self.settings.thumbs.navigation) {
                 self._thumbsContainer.css('-ms-touch-action', self._thumbsHorizontal ? 'pan-y' : 'pan-x');
             }
 
@@ -243,7 +243,7 @@
             self._thumbsContainerSize = numItems * self._thumbSize - self._thumbsSpacing;
             cssObj[self._thumbsHorizontal ? 'width' : 'height'] = self._thumbsContainerSize + self._thumbsSpacing;
             self._thumbsViewportSize = self._thumbsHorizontal ? self._controlNav.width() : (newHeight !== undefined ? newHeight : self._controlNav.height());
-            if (self._thumbsEnabled && (self.isFullscreen || self.st.thumbs.fitInViewport)) {
+            if (self._thumbsEnabled && (self.isFullscreen || self.settings.thumbs.fitInViewport)) {
                 if (self._thumbsHorizontal) {
                     self._wrapHeight = self._realWrapSize - self._controlNav.outerHeight();
                 } else {
@@ -253,16 +253,16 @@
             if (!self._thumbsViewportSize) {
                 return;
             }
-            self._thumbsMaxPosition = -(self._thumbsContainerSize - self._thumbsViewportSize) - (self.st.thumbs.firstMargin);
-            self._thumbsMinPosition = self.st.thumbs.firstMargin;
+            self._thumbsMaxPosition = -(self._thumbsContainerSize - self._thumbsViewportSize) - (self.settings.thumbs.firstMargin);
+            self._thumbsMinPosition = self.settings.thumbs.firstMargin;
             self._visibleThumbsPerView = Math.floor(self._thumbsViewportSize / self._thumbSize);
             if (self._thumbsContainerSize < self._thumbsViewportSize) {
-                if (self.st.thumbs.autoCenter) {
+                if (self.settings.thumbs.autoCenter) {
                     self._setThumbsPosition((self._thumbsViewportSize - self._thumbsContainerSize) / 2);
                 } else {
                     self._setThumbsPosition(self._thumbsMinPosition);
                 }
-                if (self.st.thumbs.arrows && self._thumbsArrowLeft) {
+                if (self.settings.thumbs.arrows && self._thumbsArrowLeft) {
                     var arrDisClass = 'rsThumbsArrowDisabled';
                     self._thumbsArrowLeft.addClass(arrDisClass);
                     self._thumbsArrowRight.addClass(arrDisClass);
@@ -271,9 +271,9 @@
                 self._thumbsDrag = false;
                 self._controlNav.off(self._downEvent);
 
-            } else if (self.st.thumbs.navigation && !self._thumbsNavigation) {
+            } else if (self.settings.thumbs.navigation && !self._thumbsNavigation) {
                 self._thumbsNavigation = true;
-                if ((!self.hasTouch && self.st.thumbs.drag) || (self.hasTouch && self.st.thumbs.touch)) {
+                if ((!self.hasTouch && self.settings.thumbs.drag) || (self.hasTouch && self.settings.thumbs.touch)) {
                     self._thumbsDrag = true;
                     self._controlNav.on(self._downEvent, function (e) {
                         self._onDragStart(e, true);
@@ -288,7 +288,7 @@
         setThumbsOrientation: function (newPlacement, dontUpdateSize) {
             var self = this;
             if (self._thumbsEnabled) {
-                self.st.thumbs.orientation = newPlacement;
+                self.settings.thumbs.orientation = newPlacement;
                 self._controlNav.remove();
                 self.slider.removeClass('rsWithThumbsHor rsWithThumbsVer');
                 self._createThumbs();
@@ -313,7 +313,7 @@
                 return;
             }
             if (!speed) {
-                speed = self.st.thumbs.transitionSpeed;
+                speed = self.settings.thumbs.transitionSpeed;
             }
             self._thumbsPosition = pos;
             if (self._thumbsAnimTimeout) {
@@ -329,10 +329,10 @@
             self._isThumbsAnimating = true;
             if (!self._useCSS3Transitions) {
                 animObj[self._thumbsHorizontal ? self._xProp : self._yProp] = pos + 'px';
-                self._thumbsContainer.animate(animObj, speed, outEasing ? 'easeOutCubic' : self.st.easeInOut);
+                self._thumbsContainer.animate(animObj, speed, outEasing ? 'easeOutCubic' : self.settings.easeInOut);
             } else {
                 animObj[(self._vendorPref + 'transition-duration')] = speed + 'ms';
-                animObj[(self._vendorPref + 'transition-timing-function')] = outEasing ? $.rsCSS3Easing[self.st.easeOut] : $.rsCSS3Easing[self.st.easeInOut];
+                animObj[(self._vendorPref + 'transition-timing-function')] = outEasing ? $.rsCSS3Easing[self.settings.easeOut] : $.rsCSS3Easing[self.settings.easeInOut];
                 self._thumbsContainer.css(animObj);
                 self._setThumbsPosition(pos);
             }

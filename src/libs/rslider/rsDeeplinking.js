@@ -19,12 +19,12 @@
 				prefix: ''
 			};
 
-			self.st.deeplinking = $.extend({}, self._hashDefaults, self.st.deeplinking);
+			self.settings.deeplinking = $.extend({}, self._hashDefaults, self.settings.deeplinking);
 
-			if(self.st.deeplinking.enabled) {
+			if(self.settings.deeplinking.enabled) {
 
-				var hashChange = self.st.deeplinking.change,
-            pText = self.st.deeplinking.prefix,
+				var hashChange = self.settings.deeplinking.change,
+            pText = self.settings.deeplinking.prefix,
 				    prefix = '#' + pText,
 				    getSlideIdByHash = function() {
     					var hash = window.location.hash;
@@ -40,7 +40,7 @@
 
 				var id = getSlideIdByHash();
 				if(id !== -1) {
-					self.st.startSlideId = id;
+					self.settings.startSlideId = id;
 				}
 
 				if(hashChange) {

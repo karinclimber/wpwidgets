@@ -19,7 +19,7 @@
                 vimeoCode: '<iframe src="https://player.vimeo.com/video/%id%?byline=0&portrait=0&autoplay=1" frameborder="no" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>'
             };
 
-            self.st.video = $.extend({}, self._videoDefaults, self.st.video);
+            self.settings.video = $.extend({}, self._videoDefaults, self.settings.video);
 
             self.ev.on('rsBeforeSizeSet', function () {
                 if (self._isVideoPlaying) {
@@ -42,7 +42,7 @@
                     hasVideo;
 
                 if (obj.videoURL) {
-                    if (self.st.video.disableCSS3inFF && !hasVideo && isFF) {
+                    if (self.settings.video.disableCSS3inFF && !hasVideo && isFF) {
                         hasVideo = true;
                         self._useCSS3Transitions = self._use3dTransform = false;
                     }
@@ -95,7 +95,7 @@
                     }
 
                     if (videoId !== undefined) {
-                        self._videoFrameHolder = self.st.video.youTubeCode.replace("%id%", videoId);
+                        self._videoFrameHolder = self.settings.video.youTubeCode.replace("%id%", videoId);
                     }
                 } else if (url.match(/vimeo\.com/i)) {
                     regExp = /(www\.)?vimeo.com\/(\d+)($|\/)/;
@@ -104,7 +104,7 @@
                         videoId = match[2];
                     }
                     if (videoId !== undefined) {
-                        self._videoFrameHolder = self.st.video.vimeoCode.replace("%id%", videoId);
+                        self._videoFrameHolder = self.settings.video.vimeoCode.replace("%id%", videoId);
                     }
                 }
                 self.videoObj = $(self._videoFrameHolder);
@@ -173,7 +173,7 @@
 
             var arr = [],
                 self = this,
-                vst = self.st.video;
+                vst = self.settings.video;
 
 
             if (vst.autoHideArrows) {

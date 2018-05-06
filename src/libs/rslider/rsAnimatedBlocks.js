@@ -19,7 +19,7 @@
 				easing:'easeOutSine',      
 				delay:200                 
 			};
-			self.st.block = $.extend({}, self._blockDefaults, self.st.block);
+			self.settings.block = $.extend({}, self._blockDefaults, self.settings.block);
 
 			self._blockAnimProps = [];
 			self._animatedBlockTimeouts = [];
@@ -45,7 +45,7 @@
 				if(slideObject.id === currId) {
 					setTimeout(function() {
 						runBlocks();
-					}, self.st.fadeinLoadedSlide ? 300 : 0);
+					}, self.settings.fadeinLoadedSlide ? 300 : 0);
 				}
 			});
 		
@@ -134,7 +134,7 @@
 
 					var moveOffset = item.attr('data-move-offset');
 					if(!moveOffset) {
-						moveOffset = self.st.block.moveOffset;
+						moveOffset = self.settings.block.moveOffset;
 					} else {
 						moveOffset = parseInt(moveOffset, 10);
 					}
@@ -146,13 +146,13 @@
 							if(moveEffect === 'none') {
 								moveEffect = false;
 							} else if(moveEffect !== 'left' && moveEffect !== 'top' && moveEffect !== 'bottom' && moveEffect !== 'right') {
-								moveEffect = self.st.block.moveEffect;
+								moveEffect = self.settings.block.moveEffect;
 								if(moveEffect === 'none') {
 									moveEffect = false;
 								}
 							}
 						} else {
-							moveEffect = self.st.block.moveEffect;
+							moveEffect = self.settings.block.moveEffect;
 						}
 						if(moveEffect && moveEffect !== 'none') {
 							var moveHorizontal;
@@ -223,7 +223,7 @@
 
 					var fadeEffect = item.attr('data-fade-effect');
 					if(!fadeEffect) {
-						fadeEffect = self.st.block.fadeEffect;
+						fadeEffect = self.settings.block.fadeEffect;
 					} else if(fadeEffect.toLowerCase() === 'none' || fadeEffect.toLowerCase() === 'false') {
 						fadeEffect = false;
 					}
@@ -242,17 +242,17 @@
 
 						transitionData.speed = item.data('speed');
 						if(isNaN(transitionData.speed)) {
-							transitionData.speed = self.st.block.speed;
+							transitionData.speed = self.settings.block.speed;
 						}
 						transitionData.easing = item.data('easing');
 						if(!transitionData.easing) {
-							transitionData.easing = self.st.block.easing;
+							transitionData.easing = self.settings.block.easing;
 						}
 						transitionData.css3Easing = $.rsCSS3Easing[transitionData.easing];
 
 						transitionData.delay =  item.data('delay');
 						if(isNaN(transitionData.delay)) {
-							transitionData.delay = self.st.block.delay * index;
+							transitionData.delay = self.settings.block.delay * index;
 						}
 
 					}

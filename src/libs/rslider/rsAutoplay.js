@@ -19,12 +19,12 @@
 			};
 
 			// fix deprecated name
-			if(!self.st.autoPlay && self.st.autoplay) {
-				self.st.autoPlay = self.st.autoplay;
+			if(!self.settings.autoPlay && self.settings.autoplay) {
+				self.settings.autoPlay = self.settings.autoplay;
 			}
-			self.st.autoPlay = $.extend({}, self._autoPlayDefaults, self.st.autoPlay);
+			self.settings.autoPlay = $.extend({}, self._autoPlayDefaults, self.settings.autoPlay);
 
-			if(self.st.autoPlay.enabled) {
+			if(self.settings.autoPlay.enabled) {
 				self.ev.on('rsBeforeParseNode', function(e, content, obj) {
 					content = $(content);
 					del = content.attr('data-rsDelay');
@@ -72,7 +72,7 @@
 			});
 			self.ev.on('rsDragStart', function() {
 				if(self._autoPlayEnabled) {
-					if(self.st.autoPlay.stopAtAction) {
+					if(self.settings.autoPlay.stopAtAction) {
 						self.stopAutoPlay();
 					} else {
 						self._autoPlayPaused = true;
@@ -82,7 +82,7 @@
 			});
 			self.ev.on('rsBeforeMove', function(e, type, userAction) {
 				if(self._autoPlayEnabled) {
-					if(userAction && self.st.autoPlay.stopAtAction) {
+					if(userAction && self.settings.autoPlay.stopAtAction) {
 						self.stopAutoPlay();
 					} else {
 						self._autoPlayPaused = true;
@@ -118,7 +118,7 @@
 				}
 			});
 
-			if(self.st.autoPlay.pauseOnHover) {
+			if(self.settings.autoPlay.pauseOnHover) {
 				self._pausedByHover = false;
 				self.slider.hover(
 					function() {
@@ -167,16 +167,16 @@
 				}
 				self._autoPlayTimeout = setTimeout(function() {
 					var changed;
-					if(!self._loop && !self.st.loopRewind) {
+					if(!self._loop && !self.settings.loopRewind) {
 						changed = true;
-						self.st.loopRewind = true;
+						self.settings.loopRewind = true;
 					}
 					self.next(true);
 					if(changed) {
 						changed = false;
-						self.st.loopRewind = false;
+						self.settings.loopRewind = false;
 					}
-				}, !self.currSlide.customDelay ? self.st.autoPlay.delay : self.currSlide.customDelay);
+				}, !self.currSlide.customDelay ? self.settings.autoPlay.delay : self.currSlide.customDelay);
 			}
 			
 		},

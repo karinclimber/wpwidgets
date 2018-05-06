@@ -17,9 +17,9 @@
                 nativeFS: false,
                 doubleTap: true
             };
-            self.st.fullscreen = $.extend({}, self._fullscreenDefaults, self.st.fullscreen);
+            self.settings.fullscreen = $.extend({}, self._fullscreenDefaults, self.settings.fullscreen);
 
-            if (self.st.fullscreen.enabled) {
+            if (self.settings.fullscreen.enabled) {
                 self.ev.one('rsBeforeSizeSet', function () {
                     self._setupFullscreen();
                 });
@@ -27,9 +27,9 @@
         },
         _setupFullscreen: function () {
             var self = this;
-            self._fsKeyboard = (!self.st.keyboardNavEnabled && self.st.fullscreen.keyboardNav);
+            self._fsKeyboard = (!self.settings.keyboardNavEnabled && self.settings.fullscreen.keyboardNav);
 
-            if (self.st.fullscreen.nativeFS) {
+            if (self.settings.fullscreen.nativeFS) {
                 // Thanks to John Dyer http://j.hn/
                 var fullScreenApi = {
                         supportsFullScreen: false,
@@ -90,7 +90,7 @@
             }
 
 
-            if (self.st.fullscreen.buttonFS) {
+            if (self.settings.fullscreen.buttonFS) {
                 self._fsBtn = $('<div class="rsFullscreenBtn"><div class="rsFullscreenIcn"></div></div>')
                     .appendTo(self._controlsContainer)
                     .on('click.rs', function () {

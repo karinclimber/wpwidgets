@@ -4,12 +4,13 @@
 
     /**
      * RS Module: Tabs
+     * Useful for http://dimsemenov.com/plugins/royal-slider/content-slider/
      * @version 1.0.2:
      */
     $.extend($.rsProto, {
         _initTabs: function () {
             var self = this;
-            if (self.st.controlNavigation === 'tabs') {
+            if (self.settings.controlNavigation === 'tabs') {
                 self.ev.on('rsBeforeParseNode', function (e, content, obj) {
                     content = $(content);
                     obj.thumbnail = content.find('.rsTmb').remove();

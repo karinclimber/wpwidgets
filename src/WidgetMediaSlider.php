@@ -9,7 +9,13 @@ namespace wp;
 final class WidgetMediaSlider extends Widget
 {
     const IMAGES = 'sliderImages';
-
+    //Slider Size
+    /** @const Automatically updates slider height based on base width. */
+    const AUTO_SCALE = 'sliderAutoScale';
+    /** @const  Base slider Width. Slider will auto calculate the ratio based on these value. */
+    const AUTO_SCALE_WIDTH = 'sliderAutoScaleWidth';
+    /** @const  Base slider Height. Slider will auto calculate the ratio based on these value. */
+    const AUTO_SCALE_HEIGHT = 'sliderAutoScaleHeight';
     //Arrows
     const ARROWS_OPTIONS = 'sliderArrowsOptions';
     /** @const Show direction arrows navigation. */
@@ -39,8 +45,6 @@ final class WidgetMediaSlider extends Widget
     /** @const Adds global caption element to slider. Grab an image caption from alt or element with (class rsCaption) */
     const GLOBAL_CAPTION = 'sliderGlobalCaption';
     //Values
-    /** @const Base slider height */
-    const HEIGHT = 'sliderAutoScaleHeightValue';
     /** @const Start slide index */
     const START_SLIDE_ID = 'sliderStartSlideId';
     /** @const Number of slides to preload on sides.
@@ -116,14 +120,18 @@ final class WidgetMediaSlider extends Widget
 
     function initFields()
     {
+        $this->addField(new WidgetField(WidgetField::CHECKBOX, self::AUTO_SCALE,
+            __("Auto Scale using Width and Height"), [], false));
+        $this->addField(new WidgetField(WidgetField::NUMBER, self::AUTO_SCALE_WIDTH,
+            __("Width")));
+        $this->addField(new WidgetField(WidgetField::NUMBER, self::AUTO_SCALE_HEIGHT,
+            __("Height")));
         $this->addField(new WidgetField(WidgetField::SELECT, self::SKIN, __('Skin'), [
             self::SKIN_DEFAULT => __('Default'),
             self::SKIN_MINIMAL => __('Minimal'),
             self::SKIN_INVERTED => __('Inverted'),
             self::SKIN_UNIVERSAL => __('Universal')
         ], self::SKIN_DEFAULT));
-        $this->addField(new WidgetField(WidgetField::TEXT, self::HEIGHT,
-            __("Height"), [], '400px'));
         $this->addField(new WidgetField(WidgetField::IMAGES_WITH_URL, self::IMAGES, __("Images")));
         $this->addField(new WidgetField(WidgetField::SELECT, self::IMAGE_SCALE, __('Image Scale'), [
             self::IMAGE_SCALE_FIT => __('Fit'),
@@ -186,40 +194,68 @@ final class WidgetMediaSlider extends Widget
     {
         $content = "";
         $images = self::getInstanceValue($instance, self::IMAGES, $this);
-        if (isset($images)) {
-            $attachmentIds = (array)$images;
-            if (is_array($attachmentIds)) {
-                foreach ($attachmentIds as $attachmentId => $attachmentLink) {
-                    $attachmentUrl = wp_get_attachment_image_url($attachmentId, WPImages::FULL);
-                    $content .= "<a class='rsImg' href='$attachmentUrl' data-href='$attachmentLink'></a>";
+        if (isset($images) && is_array($attachmentIds = (array)$images)) {
+            $controlNavigation = self::getInstanceValue($instance, self::NAVIGATION, $this);
+            if (!is_customize_preview() && $controlNavigation !== self::NAVIGATION_NONE) {
+                wp_enqueue_script('rs' . $controlNavigation);
+            }
+            $showThumbnails = ($controlNavigation == self::NAVIGATION_TABS || $controlNavigation == self::NAVIGATION_THUMBNAILS);
+            $imgWidth = '';
+            $imgHeight = '';
+            foreach ($attachmentIds as $attachmentId => $attachmentLink) {
+                $imgInfo = image_downsize($attachmentId, WPImages::FULL);
+                if (isset($imgInfo['0'])) {
+                    $imgWidth = $imgInfo['1'];
+                    $imgHeight = $imgInfo['2'];
+                    $content .= "<a class='rsImg' href='{$imgInfo['0']}' data-href='$attachmentLink'>";
+                    if ($showThumbnails) {
+                        $imgInfo = image_downsize($attachmentId, WPImages::THUMB);
+                        $content .= "<img src={$imgInfo['0']} width='96' height='72' class='rsTmb' />";
+                    }
+                    $content .= '</a>';
                 }
             }
+            //Size
+            $autoScaleSlider = self::getInstanceValue($instance, self::AUTO_SCALE, $this);
+            $autoScaleSliderWidth = (int)self::getInstanceValue($instance, self::AUTO_SCALE_WIDTH, $this);
+            if (!$autoScaleSliderWidth){
+                $autoScaleSliderWidth = $imgWidth;
+            }
+            $autoScaleSliderHeight = (int)self::getInstanceValue($instance, self::AUTO_SCALE_HEIGHT, $this);
+            if (!$autoScaleSliderHeight){
+                $autoScaleSliderHeight = $imgHeight;
+            }
+            //Skin
             $skin = self::getInstanceValue($instance, self::SKIN, $this);
             if (!is_customize_preview()) {
                 wp_enqueue_style($skin);
             }
             //Arrows
             $arrowsOptions = self::getInstanceValue($instance, self::ARROWS_OPTIONS, $this);
-
-            $controlNavigation = self::getInstanceValue($instance, self::NAVIGATION, $this);
-            if (!is_customize_preview() && $controlNavigation !== self::NAVIGATION_NONE) {
-                wp_enqueue_script('rs' . $controlNavigation);
+            $arrowsNavAutoHide = in_array(self::NAV_ARROWS_AUTO_HIDE, $arrowsOptions);
+            if (!is_customize_preview() && $arrowsNavAutoHide) {
+                wp_enqueue_script('rsAutoHideNav');
             }
             //Navigation
             $navigateOptions = self::getInstanceValue($instance, self::NAVIGATE_OPTIONS, $this);
             //Options
             $slideOptions = self::getInstanceValue($instance, self::SLIDE_OPTIONS, $this);
             //Values
-            $sliderHeight = self::getInstanceValue($instance, self::HEIGHT, $this);
+            $sliderHeight = self::getInstanceValue($instance, self::AUTO_SCALE_HEIGHT, $this);
             //Content
             $sliderOptions = json_encode([
+                'autoScaleSlider'=>$autoScaleSlider,
+                'autoScaleSliderWidth'=>$autoScaleSliderWidth,
+                'autoScaleSliderHeight'=>$autoScaleSliderHeight,
+                'imgWidth' => $imgWidth,
+                'imgHeight' => $imgHeight,
                 'imageScaleMode' => self::getInstanceValue($instance, self::IMAGE_SCALE, $this),
                 'controlNavigation' => $controlNavigation,
                 'slidesOrientation' => self::getInstanceValue($instance, self::ORIENTATION, $this),
                 'transitionType' => self::getInstanceValue($instance, self::TRANSITION, $this),
 
                 'arrowsNav' => in_array(self::NAV_ARROWS_SHOW, $arrowsOptions),
-                'arrowsNavAutoHide' => in_array(self::NAV_ARROWS_AUTO_HIDE, $arrowsOptions),
+                'arrowsNavAutoHide' => $arrowsNavAutoHide,
                 'arrowsNavHideOnTouch' => in_array(self::NAV_ARROWS_HIDE_ON_TOUCH, $arrowsOptions),
 
                 'navigateByClick' => in_array(self::NAVIGATE_BY_CLICK, $navigateOptions),

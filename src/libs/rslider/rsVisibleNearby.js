@@ -8,7 +8,7 @@
      */
     $.rsProto._initVisibleNearby = function () {
         var self = this;
-        if (self.st.visibleNearby && self.st.visibleNearby.enabled) {
+        if (self.settings.visibleNearby && self.settings.visibleNearby.enabled) {
             self._vnDefaults = {
                 enabled: true,
                 centerArea: 0.6, // Area of center image. By default 60% will get center image, 20% for each image on side
@@ -18,17 +18,17 @@
                 hiddenOverflow: true,
                 navigateByCenterClick: false
             };
-            self.st.visibleNearby = $.extend({}, self._vnDefaults, self.st.visibleNearby);
+            self.settings.visibleNearby = $.extend({}, self._vnDefaults, self.settings.visibleNearby);
             self.ev.one('rsAfterPropsSetup', function () {
                 self._sliderVisibleNearbyWrap = self._sliderOverflow.css('overflow', 'visible').wrap('<div class="rsVisibleNearbyWrap"></div>').parent();
-                if (!self.st.visibleNearby.hiddenOverflow) {
+                if (!self.settings.visibleNearby.hiddenOverflow) {
                     self._sliderVisibleNearbyWrap.css('overflow', 'visible');
                 }
-                self._controlsContainer = self.st.controlsInside ? self._sliderVisibleNearbyWrap : self.slider;
+                self._controlsContainer = self.settings.controlsInside ? self._sliderVisibleNearbyWrap : self.slider;
             });
 
             self.ev.on('rsAfterSizePropSet', function () {
-                var optionVisibleNearby = self.st.visibleNearby;
+                var optionVisibleNearby = self.settings.visibleNearby;
                 var centerRatio = optionVisibleNearby.centerArea;
                 if (optionVisibleNearby.breakpoint && self.width < optionVisibleNearby.breakpoint) {
                     centerRatio = optionVisibleNearby.breakpointCenterArea;
