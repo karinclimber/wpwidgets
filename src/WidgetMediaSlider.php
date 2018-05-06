@@ -200,14 +200,14 @@ final class WidgetMediaSlider extends Widget
                 wp_enqueue_script('rs' . $controlNavigation);
             }
             $showThumbnails = ($controlNavigation == self::NAVIGATION_TABS || $controlNavigation == self::NAVIGATION_THUMBNAILS);
-            $imgWidth = '';
-            $imgHeight = '';
+            $imgWidths = [];
+            $imgHeights = [];
             foreach ($attachmentIds as $attachmentId => $attachmentLink) {
                 $imgInfo = image_downsize($attachmentId, WPImages::FULL);
                 if (isset($imgInfo['0'])) {
-                    $imgWidth = $imgInfo['1'];
-                    $imgHeight = $imgInfo['2'];
-                    $content .= "<a class='rsImg' href='{$imgInfo['0']}' data-href='$attachmentLink'>";
+                    $imgWidths []= $imgWidth = $imgInfo['1'];
+                    $imgHeights []= $imgHeight = $imgInfo['2'];
+                    $content .= "<a class='rsImg' href='{$imgInfo['0']}' data-rsw='{$imgWidth}' data-rsh='{$imgHeight}' data-href='$attachmentLink'>";
                     if ($showThumbnails) {
                         $imgInfo = image_downsize($attachmentId, WPImages::THUMB);
                         $content .= "<img src={$imgInfo['0']} width='96' height='72' class='rsTmb' />";
@@ -219,11 +219,11 @@ final class WidgetMediaSlider extends Widget
             $autoScaleSlider = self::getInstanceValue($instance, self::AUTO_SCALE, $this);
             $autoScaleSliderWidth = (int)self::getInstanceValue($instance, self::AUTO_SCALE_WIDTH, $this);
             if (!$autoScaleSliderWidth){
-                $autoScaleSliderWidth = $imgWidth;
+                $autoScaleSliderWidth = max($imgWidths);
             }
             $autoScaleSliderHeight = (int)self::getInstanceValue($instance, self::AUTO_SCALE_HEIGHT, $this);
             if (!$autoScaleSliderHeight){
-                $autoScaleSliderHeight = $imgHeight;
+                $autoScaleSliderHeight = max($imgHeights);
             }
             //Skin
             $skin = self::getInstanceValue($instance, self::SKIN, $this);
@@ -247,8 +247,6 @@ final class WidgetMediaSlider extends Widget
                 'autoScaleSlider'=>$autoScaleSlider,
                 'autoScaleSliderWidth'=>$autoScaleSliderWidth,
                 'autoScaleSliderHeight'=>$autoScaleSliderHeight,
-                'imgWidth' => $imgWidth,
-                'imgHeight' => $imgHeight,
                 'imageScaleMode' => self::getInstanceValue($instance, self::IMAGE_SCALE, $this),
                 'controlNavigation' => $controlNavigation,
                 'slidesOrientation' => self::getInstanceValue($instance, self::ORIENTATION, $this),
