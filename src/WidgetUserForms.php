@@ -81,81 +81,6 @@ final class WidgetUserForms extends WidgetDialogBase
         return "text/html";
     }
 
-    /** AJAX reset password request handler     */
-    function ajaxForgot()
-    {
-        $result = json_encode(['success' => false]);
-        /**
-         * TODO Only If user has Email access can change password,
-         * fix case when someone will introduce agent email to change password
-         * also is posible to send to user the real email
-         */
-        if (check_ajax_referer(self::AJAX_FORGOT, self::AJAX_FORGOT) && isset($_POST[self::USER_EMAIL])) {
-            $userEmail = sanitize_email($_POST[self::USER_EMAIL]);
-            $errorMessage = "";
-            if (empty($userEmail)) {
-                $errorMessage = __('Provide a valid username or email address!', 'wptheme');
-            } else {
-                if (is_email($userEmail) && email_exists($userEmail)) {
-                    // Generate new random password
-                    $generatedPassword = wp_generate_password();
-                    // Get user data by field ( fields are id, slug, email or login )
-                    $target_user = get_user_by('email', $userEmail);
-                    $target_user->user_pass = $generatedPassword;
-                    $update_user = wp_update_user($target_user);
-                    // if  update_user return true then send user an email containing the new password
-                    if ($update_user) {
-                        $to = $target_user->user_email;
-                        $subject = sprintf(__('Your New Password For %s', 'wptheme'), WPOptions::getSiteName());
-                        $message = sprintf(__('Your new password is: %s', 'wptheme'), $generatedPassword);
-                        /** Email Headers ( Reply To and Content Type )*/
-                        if (wp_mail($to, $subject, $message, ["Content-Type: text/html; charset=UTF-8"])) {
-                            $success = __('Check your email for new password', 'wptheme');
-                        } else {
-                            $errorMessage = __('Failed to send you new password email!', 'wptheme');
-                        }
-                    } else {
-                        $errorMessage = __('Oops! Something went wrong while resetting your password!', 'wptheme');
-                    }
-                } else {
-                    $errorMessage = __('No user found for given email!', 'wptheme');
-                }
-            }
-            if (!empty($errorMessage)) {
-                $result = $this->getResultContent($errorMessage);
-            } elseif (!empty($success)) {
-                $result = $this->getResultContent($success, true);
-            }
-        }
-        echo $result;
-        die();
-    }
-
-    /** AJAX Request Handler: Login */
-    function ajaxLogin()
-    {
-        $result = json_encode(['success' => false]);
-        // First check the nonce, if it fails the function will break
-        if (check_ajax_referer(self::AJAX_LOGIN, self::AJAX_LOGIN)) {
-            $credentials = [self::USER_REMEMBER => true];
-            if (isset($_POST[self::USER_NAME]) && !empty($_POST[self::USER_NAME])) {
-                $credentials[self::USER_NAME] = sanitize_user($_POST[self::USER_NAME]);
-            }
-            if (isset($_POST[self::USER_PASSWORD]) && !empty($_POST[self::USER_PASSWORD])) {
-                $credentials[self::USER_PASSWORD] = $_POST[self::USER_PASSWORD];
-            }
-            $user = wp_signon($credentials, is_ssl());
-            if (is_wp_error($user)) {
-                $result = $this->getResultContent(__('Wrong username or password.', 'wptheme'));
-            } else {
-                wp_set_current_user($user->ID);
-                $result = $this->getResultContent("", true, $_POST[self::REDIRECT_LINK]);
-            }
-        }
-        echo $result;
-        die();
-    }
-
     function generateUserName()
     {
         $authors = get_users([
@@ -221,46 +146,121 @@ final class WidgetUserForms extends WidgetDialogBase
         die();
     }
 
+    /** AJAX Request Handler: Login */
+    function ajaxLogin()
+    {
+        $result = json_encode(['success' => false]);
+        // First check the nonce, if it fails the function will break
+        if (check_ajax_referer(self::AJAX_LOGIN, self::AJAX_LOGIN)) {
+            $credentials = [self::USER_REMEMBER => true];
+            if (isset($_POST[self::USER_NAME]) && !empty($_POST[self::USER_NAME])) {
+                $credentials[self::USER_NAME] = sanitize_user($_POST[self::USER_NAME]);
+            }
+            if (isset($_POST[self::USER_PASSWORD]) && !empty($_POST[self::USER_PASSWORD])) {
+                $credentials[self::USER_PASSWORD] = $_POST[self::USER_PASSWORD];
+            }
+            $user = wp_signon($credentials, is_ssl());
+            if (is_wp_error($user)) {
+                $result = $this->getResultContent(__('Wrong username or password.', 'wptheme'));
+            } else {
+                wp_set_current_user($user->ID);
+                $result = $this->getResultContent("", true, $_POST[self::REDIRECT_LINK]);
+            }
+        }
+        echo $result;
+        die();
+    }
+
+    /** AJAX Request Handler: Forgot Password */
+    function ajaxForgot()
+    {
+        $result = json_encode(['success' => false]);
+        /**
+         * TODO Only If user has Email access can change password,
+         * fix case when someone will introduce agent email to change password
+         * also is posible to send to user the real email
+         */
+        if (check_ajax_referer(self::AJAX_FORGOT, self::AJAX_FORGOT) && isset($_POST[self::USER_EMAIL])) {
+            $userEmail = sanitize_email($_POST[self::USER_EMAIL]);
+            $errorMessage = "";
+            if (empty($userEmail)) {
+                $errorMessage = __('Provide a valid username or email address!', 'wptheme');
+            } else {
+                if (is_email($userEmail) && email_exists($userEmail)) {
+                    // Generate new random password
+                    $generatedPassword = wp_generate_password();
+                    // Get user data by field ( fields are id, slug, email or login )
+                    $target_user = get_user_by('email', $userEmail);
+                    $target_user->user_pass = $generatedPassword;
+                    $update_user = wp_update_user($target_user);
+                    // if  update_user return true then send user an email containing the new password
+                    if ($update_user) {
+                        $to = $target_user->user_email;
+                        $subject = sprintf(__('Your New Password For %s', 'wptheme'), WPOptions::getSiteName());
+                        $message = sprintf(__('Your new password is: %s', 'wptheme'), $generatedPassword);
+                        /** Email Headers ( Reply To and Content Type )*/
+                        if (wp_mail($to, $subject, $message, ["Content-Type: text/html; charset=UTF-8"])) {
+                            $success = __('Check your email for new password', 'wptheme');
+                        } else {
+                            $errorMessage = __('Failed to send you new password email!', 'wptheme');
+                        }
+                    } else {
+                        $errorMessage = __('Oops! Something went wrong while resetting your password!', 'wptheme');
+                    }
+                } else {
+                    $errorMessage = __('No user found for given email!', 'wptheme');
+                }
+            }
+            if (!empty($errorMessage)) {
+                $result = $this->getResultContent($errorMessage);
+            } elseif (!empty($success)) {
+                $result = $this->getResultContent($success, true);
+            }
+        }
+        echo $result;
+        die();
+    }
+
     function getFormRegister($linkOfAdmin, $linkOfRedirect)
     {
         $markup = '<div id="sectionRegister" class="tab-pane" role="tabpanel">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title">
-                    <span>%1$s</span>
-                </h4>
-            </div>
-            <form id="formRegister" action="%2$s" method="post" enctype="multipart/form-data">
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="%3$s" class=""><span>%4$s</span></label>
-                    <input id="%3$s" name="%3$s" type="text" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="%5$s" class=""><span>%6$s</span></label>
-                    <input id="%5$s" name="%5$s" type="text" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="%7$s"><i class="fa fa-envelope"></i> <span>%8$s</span></label>
-                    <input id="%7$s" name="%7$s" type="text" class="form-control" required>
-                </div>
-            </div>
-            <div class="modal-footer">
-	            <a href="#sectionLogin" data-toggle="tab" class="btn btn-link pull-left">
+            <h4><span>%1$s</span><a type="button float-xs-right" href="#">×</a></h4>
+            <form method="post" enctype="multipart/form-data" action="%2$s" id="formRegister">
+            <label for="%3$s"><span>%4$s</span></label>
+            <input id="%3$s" name="%3$s" type="text" required>
+            <label for="%5$s"><span>%6$s</span></label>
+            <input id="%5$s" name="%5$s" type="text" required>
+            <label for="%7$s"><i class="fa fa-envelope"></i> <span>%8$s</span></label>
+            <input id="%7$s" name="%7$s" type="email" required>
+            <p>
+	            <a href="#sectionLogin" class="button float-xs-left">
 	            	<i class="fa fa-angle-left"></i> 
 	            	<span>%9$s</span>
 	            </a>
-	            <button id="btnRegister" class="btn btn-primary">
-	            	<span>%10$s</span>
-                </button>
+	            <button type="submit" id="btnRegister">
+	                <span>%10$s</span>
+	            </button>
 	            <input type="hidden" autocomplete="off" name="action"      value="%11$s">
 	            <input type="hidden" autocomplete="off" name="user-cookie" value="1">
-	            <input type="hidden" autocomplete="off" name="%12$s" value="%13$s">
+	            <input type="hidden" autocomplete="off" name="%12$s"       value="%13$s">
 	            %14$s
-            </div>
-            </form></div>';
+            </p></form></div>';
         $nonceFieldValue = WPUtils::getNonceField(self::AJAX_REGISTER, self::AJAX_REGISTER, true, false);
-        return sprintf($markup, __('Register', 'wptheme'), $linkOfAdmin, self::USER_FIRST_NAME, __('First Name', 'wptheme'), self::USER_LAST_NAME, __('Last Name', 'wptheme'), self::USER_EMAIL, __('Your Email', 'wptheme'), __('Login', 'wptheme'), __('Sign Up', 'wptheme'), self::AJAX_REGISTER, self::REDIRECT_LINK, $linkOfRedirect, $nonceFieldValue);
+        return sprintf($markup,
+            __('Register', 'wptheme'),
+            $linkOfAdmin,
+            self::USER_FIRST_NAME,
+            __('First Name', 'wptheme'),
+            self::USER_LAST_NAME,
+            __('Last Name', 'wptheme'),
+            self::USER_EMAIL,
+            __('Your Email', 'wptheme'),
+            __('Login', 'wptheme'),
+            __('Sign Up', 'wptheme'),
+            self::AJAX_REGISTER,
+            self::REDIRECT_LINK,
+            $linkOfRedirect,
+            $nonceFieldValue);
     }
 
     function getFormLogin($linkOfAdmin, $linkOfRedirect, $enableRegistration = false)
@@ -268,72 +268,76 @@ final class WidgetUserForms extends WidgetDialogBase
         $registrationButton = "";
         $btnResetPassword = "";
         if ($enableRegistration) {
-            $markup = '<a href="#sectionRegister" data-toggle="tab" class="btn btn-default pull-left">
+            $markup = '<a href="#sectionRegister" class="button float-xs-left">
 					<i class="fa fa-user-plus"></i> <span>%s</span></a>';
             $registrationButton = sprintf($markup, __('Register', 'wptheme'));
             /*$markup = '<a href="#sectionResetPassword" data-toggle="tab" class="btn btn-link"><span>%s</span></a>';
             $btnResetPassword = sprintf($markup,__( 'Reset Password', 'wptheme' ));*/
         }
-
         $markup = '<div id="sectionLogin" class="tab-pane active" role="tabpanel">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title"><span>%1$s</span></h4>
-            </div>
-            <form id="formLogin" action="%2$s" method="post" enctype="multipart/form-data">
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="%3$s"><i class="fa fa-user"></i> <span>%4$s</span></label>
-                    <input id="%3$s" name="%3$s" type="text" class="form-control" autofocus required>
-                </div>
-                <div class="form-group">
-                    <label for="%5$s"><i class="fa fa-key"></i> <span>%6$s</span></label>
-                    <input id="%5$s" name="%5$s" type="password" class="form-control" required>
-                </div>
-                <div class="text-center">%7$s</div>
-            </div>
-            <div class="modal-footer">
+            <h4><span>%1$s</span><a type="button float-xs-right" href="#">×</a></h4>
+            <form method="post" enctype="multipart/form-data" action="%2$s" id="formLogin">
+            <label for="%3$s"><i class="fa fa-user"></i> <span>%4$s</span></label>
+            <input id="%3$s" name="%3$s" type="text" autofocus required>
+            <label for="%5$s"><i class="fa fa-key"></i> <span>%6$s</span></label>
+            <input id="%5$s" name="%5$s" type="password" required>
+            <p>
             	%8$s
-	            <button id="btnLogin" type="submit" class="btn btn-primary" name="btnLogin" value="submit">
-	            <i class="fa fa-unlock"></i> <span>%9$s</span></button>
+	            <button type="submit" id="btnLogin">
+                    <i class="fa fa-unlock"></i>
+                    <span>%9$s</span>
+	            </button>
 	            <input type="hidden" autocomplete="off" name="action"      value="%10$s">
 	            <input type="hidden" autocomplete="off" name="user-cookie" value="1">
-	            <input type="hidden" autocomplete="off" name="%11$s" value="%12$s">
+	            <input type="hidden" autocomplete="off" name="%11$s"       value="%12$s">
 	            %13$s
-            </div>
-            </form></div>';
+            </p></form></div>';
         $nonceFieldValue = WPUtils::getNonceField(self::AJAX_LOGIN, self::AJAX_LOGIN, true, false);
-        return sprintf($markup, __('Login', 'wptheme'), $linkOfAdmin, self::USER_NAME, __('User Name', 'wptheme'), self::USER_PASSWORD, __('Password', 'wptheme'), $btnResetPassword, $registrationButton, __('Sign In', 'wptheme'), self::AJAX_LOGIN, self::REDIRECT_LINK, $linkOfRedirect, $nonceFieldValue);
+        return sprintf($markup,
+            __('Login', 'wptheme'),
+            $linkOfAdmin,
+            self::USER_NAME,
+            __('User Name', 'wptheme'),
+            self::USER_PASSWORD,
+            __('Password', 'wptheme'),
+            $btnResetPassword,
+            $registrationButton,
+            __('Sign In', 'wptheme'),
+            self::AJAX_LOGIN,
+            self::REDIRECT_LINK,
+            $linkOfRedirect,
+            $nonceFieldValue);
     }
 
     function getFormForgot($linkOfAdmin)
     {
         $markup = '<div id="sectionResetPassword" class="tab-pane" role="tabpanel">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title"><span>%1$s</span></h4>
-            </div>
-			<form id="formResetPassword" action="%2$s" method="post" enctype="multipart/form-data">
-			<div class="modal-body"><div class="form-group">
-                <label for="%3$s"><i class="fa fa-envelope"></i> <span>%4$s</span></label>
-                <input id="%3$s" name="%3$s" type="text" class="form-control" required>
-            </div></div>
-            <div class="modal-footer">
-	            <a href="#sectionLogin" data-toggle="tab" class="btn btn-link pull-left">
+            <h4 class="modal-title"><span>%1$s</span><a type="button float-xs-right" href="#">×</a></h4>
+			<form method="post" enctype="multipart/form-data" action="%2$s" id="formResetPassword">
+			<label for="%3$s"><i class="fa fa-envelope"></i> <span>%4$s</span></label>
+            <input id="%3$s" name="%3$s" type="text" class="form-control" required>
+            <p>
+	            <a href="#sectionLogin" data-toggle="tab" class="button float-xs-left">
 	                <i class="fa fa-angle-left"></i> 
 	                <span>%5$s</span>
 	            </a>
-	            <button id="btnResetPassword" type="submit" class="btn btn-primary">
+	            <button type="submit" id="btnResetPassword">
 	                <i class="fa fa-repeat"></i> 
 	                <span>%1$s</span>
 	            </button>
-	            <input type="hidden" name="action" value="ajaxForgot">
+	            <input type="hidden" name="action"      value="%6$s">
 	            <input type="hidden" name="user-cookie" value="1">
-	            %6$s
-            </div>
-            </form></div>';
+	            %7$s
+            </p></form></div>';
         $nonceFieldValue = WPUtils::getNonceField(self::AJAX_FORGOT, self::AJAX_FORGOT, true, false);
-        return sprintf($markup, __('Reset Password', 'wptheme'), $linkOfAdmin, self::USER_EMAIL, __('Email', 'wptheme'), __('Login', 'wptheme'), $nonceFieldValue);
+        return sprintf($markup,
+            __('Reset Password', 'wptheme'),
+            $linkOfAdmin,
+            self::USER_EMAIL,
+            __('Email', 'wptheme'),
+            __('Login', 'wptheme'),
+            self::AJAX_FORGOT,
+            $nonceFieldValue);
     }
 
     function getFloatingUserMenu()
@@ -357,7 +361,17 @@ final class WidgetUserForms extends WidgetDialogBase
 			            <li><a href="%s"><span>%s</span></a></li>
 			            <li><a href="%s"><span>%s</span></a></li>
 			        </ul></div>';
-        $content = sprintf($markup, $authorAvatar, $author->display_name, $urlAuthorPage, __('My Page', 'wptheme'), $urlAuthorPropertyAdd, __('Add Property', 'wptheme'), $urlAuthorEditProfile, __('Edit Profile', 'wptheme'), $urlLogout, __('Logout', 'wptheme'));
+        $content = sprintf($markup,
+            $authorAvatar,
+            $author->display_name,
+            $urlAuthorPage,
+            __('My Page', 'wptheme'),
+            $urlAuthorPropertyAdd,
+            __('Add Property', 'wptheme'),
+            $urlAuthorEditProfile,
+            __('Edit Profile', 'wptheme'),
+            $urlLogout,
+            __('Logout', 'wptheme'));
 
         return $content;
     }
