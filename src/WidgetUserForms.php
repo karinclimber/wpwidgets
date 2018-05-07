@@ -81,6 +81,42 @@ final class WidgetUserForms extends WidgetDialogBase
         return "text/html";
     }
 
+    function getFloatingUserMenu()
+    {
+        //TODO Check FORCE_SSL_ADMIN if is defined then redirect to SSL Page
+        $linkOfRedirect = add_query_arg('_', false);
+        $urlLogout = wp_logout_url($linkOfRedirect);
+        $authorId = get_current_user_id();
+        $author = get_userdata($authorId);
+        $authorAvatar = get_avatar($authorId, 32, "", "", ["class" => "media-object img-circle"]);
+        $urlAuthorPage = get_author_posts_url($authorId);
+        $urlAuthorPropertyAdd = admin_url('post-new.php?post_type=property');
+        $urlAuthorEditProfile = admin_url('profile.php');
+        $markup = '<div class="usermenu btn-group dropup">
+			        <figure class="btn btn-primary dropdown-toggle clearfix" data-toggle="dropdown" aria-haspopup="true"
+			                aria-expanded="false">%s<figcaption>%s</figcaption>
+			        </figure>
+			        <ul class="dropdown-menu dropdown-menu-right">
+			            <li><a href="%s"><span>%s</span></a></li>
+			            <li><a href="%s"><span>%s</span></a></li>
+			            <li><a href="%s"><span>%s</span></a></li>
+			            <li><a href="%s"><span>%s</span></a></li>
+			        </ul></div>';
+        $content = sprintf($markup,
+            $authorAvatar,
+            $author->display_name,
+            $urlAuthorPage,
+            __('My Page', 'wptheme'),
+            $urlAuthorPropertyAdd,
+            __('Add Property', 'wptheme'),
+            $urlAuthorEditProfile,
+            __('Edit Profile', 'wptheme'),
+            $urlLogout,
+            __('Logout', 'wptheme'));
+
+        return $content;
+    }
+
     function generateUserName()
     {
         $authors = get_users([
@@ -224,15 +260,21 @@ final class WidgetUserForms extends WidgetDialogBase
     function getFormRegister($linkOfAdmin, $linkOfRedirect)
     {
         $markup = '<div id="sectionRegister" class="tab-pane" role="tabpanel">
-            <h4><span>%1$s</span><a href="#%15$s" class="button float-xs-right">×</a></h4>
+            <h4><span>%1$s</span></h4>
             <form method="post" enctype="multipart/form-data" action="%2$s" id="formRegister">
-            <input id="%3$s" name="%3$s" type="text" required>
-            <label for="%3$s" class="label-float"><span>%4$s</span></label>
-            <input id="%5$s" name="%5$s" type="text" required>
-            <label for="%5$s" class="label-float"><span>%6$s</span></label>
-            <input id="%7$s" name="%7$s" type="email" required>
-            <label for="%7$s" class="label-float"><i class="fa fa-envelope"></i> <span>%8$s</span></label>
-            <p>
+            <fieldset>
+                <input id="%3$s" name="%3$s" type="text" required>
+                <label for="%3$s"><span>%4$s</span></label>
+            </fieldset>
+            <fieldset>
+                <input id="%5$s" name="%5$s" type="text" required>
+                <label for="%5$s"><span>%6$s</span></label>
+            </fieldset>
+            <fieldset>
+                <input id="%7$s" name="%7$s" type="email" required>
+                <label for="%7$s"><i class="fa fa-envelope"></i> <span>%8$s</span></label>
+            </fieldset>
+            <fieldset>
 	            <a href="#sectionLogin" class="button float-xs-left">
 	            	<i class="fa fa-angle-left"></i> 
 	            	<span>%9$s</span>
@@ -244,7 +286,7 @@ final class WidgetUserForms extends WidgetDialogBase
 	            <input type="hidden" autocomplete="off" name="user-cookie" value="1">
 	            <input type="hidden" autocomplete="off" name="%12$s"       value="%13$s">
 	            %14$s
-            </p></form></div>';
+            </fieldset></form></div>';
         $nonceFieldValue = WPUtils::getNonceField(self::AJAX_REGISTER, self::AJAX_REGISTER, true, false);
         return sprintf($markup,
             __('Register', 'wptheme'),
@@ -276,13 +318,17 @@ final class WidgetUserForms extends WidgetDialogBase
             $btnResetPassword = sprintf($markup,__( 'Reset Password', 'wptheme' ));*/
         }
         $markup = '<div id="sectionLogin" class="tab-pane active" role="tabpanel">
-            <h4><span>%1$s</span><a href="#%14$s" class="button float-xs-right">×</a></h4>
+            <h4><span>%1$s</span></h4>
             <form method="post" enctype="multipart/form-data" action="%2$s" id="formLogin">
-            <input id="%3$s" name="%3$s" type="text" autofocus required>
-            <label for="%3$s" class="label-float"><i class="fa fa-user"></i> <span>%4$s</span></label>
-            <input id="%5$s" name="%5$s" type="password" required>
-            <label for="%5$s" class="label-float"><i class="fa fa-key"></i> <span>%6$s</span></label>
-            <p>
+            <fieldset>
+                <input id="%3$s" name="%3$s" type="text" autofocus required>
+                <label for="%3$s"><i class="fa fa-user"></i> <span>%4$s</span></label>
+            </fieldset>
+            <fieldset>
+                <input id="%5$s" name="%5$s" type="password" required>
+                <label for="%5$s"><i class="fa fa-key"></i> <span>%6$s</span></label>
+            </fieldset>
+            <fieldset>
             	%8$s
 	            <button type="submit" id="btnLogin">
                     <i class="fa fa-unlock"></i>
@@ -292,7 +338,7 @@ final class WidgetUserForms extends WidgetDialogBase
 	            <input type="hidden" autocomplete="off" name="user-cookie" value="1">
 	            <input type="hidden" autocomplete="off" name="%11$s"       value="%12$s">
 	            %13$s
-            </p></form></div>';
+            </fieldset></form></div>';
         $nonceFieldValue = WPUtils::getNonceField(self::AJAX_LOGIN, self::AJAX_LOGIN, true, false);
         return sprintf($markup,
             __('Login', 'wptheme'),
@@ -307,18 +353,19 @@ final class WidgetUserForms extends WidgetDialogBase
             self::AJAX_LOGIN,
             self::REDIRECT_LINK,
             $linkOfRedirect,
-            $nonceFieldValue,
-            $this->modalDialogId);
+            $nonceFieldValue);
     }
 
     function getFormForgot($linkOfAdmin)
     {
         $markup = '<div id="sectionResetPassword" class="tab-pane" role="tabpanel">
-            <h4 class="modal-title"><span>%1$s</span><a href="#%8$s" class="button float-xs-right">×</a></h4>
+            <h4><span>%1$s</span></h4>
 			<form method="post" enctype="multipart/form-data" action="%2$s" id="formResetPassword">
-			<label for="%3$s"><i class="fa fa-envelope"></i> <span>%4$s</span></label>
-            <input id="%3$s" name="%3$s" type="text" class="form-control" required>
-            <p>
+			<fieldset>
+                <input id="%3$s" name="%3$s" type="text" class="form-control" required>
+                <label for="%3$s"><i class="fa fa-envelope"></i> <span>%4$s</span></label>
+            </fieldset>
+            <fieldset>
 	            <a href="#sectionLogin" data-toggle="tab" class="button float-xs-left">
 	                <i class="fa fa-angle-left"></i> 
 	                <span>%5$s</span>
@@ -330,7 +377,7 @@ final class WidgetUserForms extends WidgetDialogBase
 	            <input type="hidden" name="action"      value="%6$s">
 	            <input type="hidden" name="user-cookie" value="1">
 	            %7$s
-            </p></form></div>';
+            </fieldset></form></div>';
         $nonceFieldValue = WPUtils::getNonceField(self::AJAX_FORGOT, self::AJAX_FORGOT, true, false);
         return sprintf($markup,
             __('Reset Password', 'wptheme'),
@@ -339,44 +386,7 @@ final class WidgetUserForms extends WidgetDialogBase
             __('Email', 'wptheme'),
             __('Login', 'wptheme'),
             self::AJAX_FORGOT,
-            $nonceFieldValue,
-            $this->modalDialogId);
-    }
-
-    function getFloatingUserMenu()
-    {
-        //TODO Check FORCE_SSL_ADMIN if is defined then redirect to SSL Page
-        $linkOfRedirect = add_query_arg('_', false);
-        $urlLogout = wp_logout_url($linkOfRedirect);
-        $authorId = get_current_user_id();
-        $author = get_userdata($authorId);
-        $authorAvatar = get_avatar($authorId, 32, "", "", ["class" => "media-object img-circle"]);
-        $urlAuthorPage = get_author_posts_url($authorId);
-        $urlAuthorPropertyAdd = admin_url('post-new.php?post_type=property');
-        $urlAuthorEditProfile = admin_url('profile.php');
-        $markup = '<div class="usermenu btn-group dropup">
-			        <figure class="btn btn-primary dropdown-toggle clearfix" data-toggle="dropdown" aria-haspopup="true"
-			                aria-expanded="false">%s<figcaption>%s</figcaption>
-			        </figure>
-			        <ul class="dropdown-menu dropdown-menu-right">
-			            <li><a href="%s"><span>%s</span></a></li>
-			            <li><a href="%s"><span>%s</span></a></li>
-			            <li><a href="%s"><span>%s</span></a></li>
-			            <li><a href="%s"><span>%s</span></a></li>
-			        </ul></div>';
-        $content = sprintf($markup,
-            $authorAvatar,
-            $author->display_name,
-            $urlAuthorPage,
-            __('My Page', 'wptheme'),
-            $urlAuthorPropertyAdd,
-            __('Add Property', 'wptheme'),
-            $urlAuthorEditProfile,
-            __('Edit Profile', 'wptheme'),
-            $urlLogout,
-            __('Logout', 'wptheme'));
-
-        return $content;
+            $nonceFieldValue);
     }
 
     function widget($args, $instance)
