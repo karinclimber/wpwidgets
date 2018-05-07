@@ -224,14 +224,14 @@ final class WidgetUserForms extends WidgetDialogBase
     function getFormRegister($linkOfAdmin, $linkOfRedirect)
     {
         $markup = '<div id="sectionRegister" class="tab-pane" role="tabpanel">
-            <h4><span>%1$s</span><a type="button float-xs-right" href="#">×</a></h4>
+            <h4><span>%1$s</span><a href="#%15$s" class="button float-xs-right">×</a></h4>
             <form method="post" enctype="multipart/form-data" action="%2$s" id="formRegister">
-            <label for="%3$s"><span>%4$s</span></label>
             <input id="%3$s" name="%3$s" type="text" required>
-            <label for="%5$s"><span>%6$s</span></label>
+            <label for="%3$s" class="label-float"><span>%4$s</span></label>
             <input id="%5$s" name="%5$s" type="text" required>
-            <label for="%7$s"><i class="fa fa-envelope"></i> <span>%8$s</span></label>
+            <label for="%5$s" class="label-float"><span>%6$s</span></label>
             <input id="%7$s" name="%7$s" type="email" required>
+            <label for="%7$s" class="label-float"><i class="fa fa-envelope"></i> <span>%8$s</span></label>
             <p>
 	            <a href="#sectionLogin" class="button float-xs-left">
 	            	<i class="fa fa-angle-left"></i> 
@@ -260,7 +260,8 @@ final class WidgetUserForms extends WidgetDialogBase
             self::AJAX_REGISTER,
             self::REDIRECT_LINK,
             $linkOfRedirect,
-            $nonceFieldValue);
+            $nonceFieldValue,
+            $this->modalDialogId);
     }
 
     function getFormLogin($linkOfAdmin, $linkOfRedirect, $enableRegistration = false)
@@ -275,12 +276,12 @@ final class WidgetUserForms extends WidgetDialogBase
             $btnResetPassword = sprintf($markup,__( 'Reset Password', 'wptheme' ));*/
         }
         $markup = '<div id="sectionLogin" class="tab-pane active" role="tabpanel">
-            <h4><span>%1$s</span><a type="button float-xs-right" href="#">×</a></h4>
+            <h4><span>%1$s</span><a href="#%14$s" class="button float-xs-right">×</a></h4>
             <form method="post" enctype="multipart/form-data" action="%2$s" id="formLogin">
-            <label for="%3$s"><i class="fa fa-user"></i> <span>%4$s</span></label>
             <input id="%3$s" name="%3$s" type="text" autofocus required>
-            <label for="%5$s"><i class="fa fa-key"></i> <span>%6$s</span></label>
+            <label for="%3$s" class="label-float"><i class="fa fa-user"></i> <span>%4$s</span></label>
             <input id="%5$s" name="%5$s" type="password" required>
+            <label for="%5$s" class="label-float"><i class="fa fa-key"></i> <span>%6$s</span></label>
             <p>
             	%8$s
 	            <button type="submit" id="btnLogin">
@@ -306,13 +307,14 @@ final class WidgetUserForms extends WidgetDialogBase
             self::AJAX_LOGIN,
             self::REDIRECT_LINK,
             $linkOfRedirect,
-            $nonceFieldValue);
+            $nonceFieldValue,
+            $this->modalDialogId);
     }
 
     function getFormForgot($linkOfAdmin)
     {
         $markup = '<div id="sectionResetPassword" class="tab-pane" role="tabpanel">
-            <h4 class="modal-title"><span>%1$s</span><a type="button float-xs-right" href="#">×</a></h4>
+            <h4 class="modal-title"><span>%1$s</span><a href="#%8$s" class="button float-xs-right">×</a></h4>
 			<form method="post" enctype="multipart/form-data" action="%2$s" id="formResetPassword">
 			<label for="%3$s"><i class="fa fa-envelope"></i> <span>%4$s</span></label>
             <input id="%3$s" name="%3$s" type="text" class="form-control" required>
@@ -337,7 +339,8 @@ final class WidgetUserForms extends WidgetDialogBase
             __('Email', 'wptheme'),
             __('Login', 'wptheme'),
             self::AJAX_FORGOT,
-            $nonceFieldValue);
+            $nonceFieldValue,
+            $this->modalDialogId);
     }
 
     function getFloatingUserMenu()
