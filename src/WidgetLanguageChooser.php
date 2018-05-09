@@ -32,7 +32,6 @@ class WidgetLanguageChooser extends WidgetDialogBase
         $getSortedLanguages = 'qtranxf_getSortedLanguages';
         $convertLanguageUrl = 'qtranxf_convertURL';
         $getFlagLocation = 'qtranxf_flag_location';
-        $insertLanguageSelectOption = 'qtranxf_insertDropDownElement';
         if (function_exists($getSortedLanguages) &&
             function_exists($convertLanguageUrl) &&
             function_exists($getFlagLocation)) {
@@ -44,17 +43,22 @@ class WidgetLanguageChooser extends WidgetDialogBase
             }
             if ($languageChooserDisplay == self::DISPLAY_SELECT) {
                 foreach ($getSortedLanguages() as $language) {
+                    $languageName = $q_config['language_name'][$language];
                     $languageHref = $convertLanguageUrl($url, $language, false, true);
-                    $insertLanguageSelectOption($language, $languageHref, $this->id);
+                    $languageSelected = '';
+                    if ($language == $q_config['language']) {
+                        $languageSelected = ' selected';
+                    }
+                    $optionValue = addslashes(htmlspecialchars_decode($languageHref, ENT_NOQUOTES));
+                    $content .="<option value='$optionValue'{$languageSelected}>{$languageName}</option>";
                 }
-                $content = "<select id='languageChooser{$this->id}' onchange='document.location.href=this.value;'>$content</select>";
+                $content = "<select onchange='document.location.href=this.value;'>$content</select>";
             } else {
                 foreach ($getSortedLanguages() as $language) {
-                    $alt = $q_config['language_name'][$language] . ' (' . $language . ')';
-
                     $languageName = $q_config['language_name'][$language];
                     $languageHref = $convertLanguageUrl($url, $language, false, true);
                     $languageFlag = $getFlagLocation() . $q_config['flag'][$language];
+                    $alt = $q_config['language_name'][$language] . ' (' . $language . ')';
                     $cssClasses = "lang-$language";
                     if ($language == $q_config['language']) {
                         $cssClasses .= ' active';
