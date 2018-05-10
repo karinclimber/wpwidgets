@@ -70,7 +70,7 @@ class WidgetLanguageChooser extends WidgetDialogBase
                     }
                     /*$content .= "<a href='$languageHref' hreflang='$language' title='$languageName' class='language_{$language} $languageSelected'>
                     <img src='{$languageFlag}' alt='$languageName'><span>$languageName</span></a>";*/
-                    $content .= "<a href='$languageHref' hreflang='$language' title='$languageName' class='language_{$language} $languageSelected'>
+                    $content .= "<a href='$languageHref' hreflang='$language' title='$languageName' class='{$language}{$languageSelected}'>
                     <span>$languageName</span></a>";
                 }
                 $content = "<div>$content</div>";
