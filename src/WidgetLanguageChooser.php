@@ -37,10 +37,7 @@ class WidgetLanguageChooser extends WidgetDialogBase
         $content = "";
         $getSortedLanguages = 'qtranxf_getSortedLanguages';
         $convertLanguageUrl = 'qtranxf_convertURL';
-        $getFlagLocation = 'qtranxf_flag_location';
-        if (function_exists($getSortedLanguages) &&
-            function_exists($convertLanguageUrl) &&
-            function_exists($getFlagLocation)) {
+        if (function_exists($getSortedLanguages) && function_exists($convertLanguageUrl)) {
             $languageChooserDisplay = self::getInstanceValue($instance, self::DISPLAY, $this);
             global $q_config;
             $url = '';
@@ -63,13 +60,10 @@ class WidgetLanguageChooser extends WidgetDialogBase
                 foreach ($getSortedLanguages() as $language) {
                     $languageName = $q_config['language_name'][$language];
                     $languageHref = $convertLanguageUrl($url, $language, false, true);
-                    $languageFlag = $getFlagLocation() . $q_config['flag'][$language];
                     $languageSelected = '';
                     if ($language == $q_config['language']) {
                         $languageSelected = ' active';
                     }
-                    /*$content .= "<a href='$languageHref' hreflang='$language' title='$languageName' class='language_{$language} $languageSelected'>
-                    <img src='{$languageFlag}' alt='$languageName'><span>$languageName</span></a>";*/
                     $content .= "<a href='$languageHref' hreflang='$language' title='$languageName' class='{$language}{$languageSelected}'>
                     <span>$languageName</span></a>";
                 }
