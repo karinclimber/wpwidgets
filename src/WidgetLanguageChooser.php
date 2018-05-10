@@ -59,15 +59,15 @@ class WidgetLanguageChooser extends WidgetDialogBase
                     $languageHref = $convertLanguageUrl($url, $language, false, true);
                     $languageFlag = $getFlagLocation() . $q_config['flag'][$language];
                     $alt = $q_config['language_name'][$language] . ' (' . $language . ')';
-                    $cssClasses = "lang-$language";
+                    $languageSelected = '';
                     if ($language == $q_config['language']) {
-                        $cssClasses .= ' active';
+                        $languageSelected = 'active';
                     }
-                    $content .= "<li class='$cssClasses'>
-                    <a href='$languageHref' hreflang='$language' title='$alt' class='languageChooser_{$language}'>
+                    $content .= "<li class='$languageSelected'>
+                    <a href='$languageHref' hreflang='$language' title='$alt' class='language_{$language}'>
                     <img src='{$languageFlag}' alt='$alt'><span>$languageName</span></a></li>";
                 }
-                $content = "<ul id='languageChooser{$this->id}' class='languageChooser'>$content</ul>";
+                $content = "<ul>$content</ul>";
             }
 
         }
