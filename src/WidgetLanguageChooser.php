@@ -18,6 +18,12 @@ class WidgetLanguageChooser extends WidgetDialogBase
             __('Allows your visitors to choose a Language.', 'qtranslate'));
     }
 
+    function enqueueScriptsTheme()
+    {
+        $this->uriToDirLibs = WPUtils::getUriToLibsDir(__FILE__);
+        wp_enqueue_style('WidgetLanguageChooser', "{$this->uriToDirLibs}/WidgetLanguageChooser.css");
+    }
+
     function initFields()
     {
         $this->addField(new WidgetField(WidgetField::RADIO, self::DISPLAY, __('Display'), [
@@ -62,8 +68,10 @@ class WidgetLanguageChooser extends WidgetDialogBase
                     if ($language == $q_config['language']) {
                         $languageSelected = ' active';
                     }
+                    /*$content .= "<a href='$languageHref' hreflang='$language' title='$languageName' class='language_{$language} $languageSelected'>
+                    <img src='{$languageFlag}' alt='$languageName'><span>$languageName</span></a>";*/
                     $content .= "<a href='$languageHref' hreflang='$language' title='$languageName' class='language_{$language} $languageSelected'>
-                    <img src='{$languageFlag}' alt='$languageName'><span>$languageName</span></a>";
+                    <span>$languageName</span></a>";
                 }
                 $content = "<div>$content</div>";
             }
