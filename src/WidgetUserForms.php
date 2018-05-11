@@ -257,9 +257,10 @@ final class WidgetUserForms extends WidgetDialogBase
     function getFormRegister($linkOfAdmin, $linkOfRedirect)
     {
         // Register For This Site / Registration confirmation will be emailed to you. /  Please type your email address.
-        $markup = '<div id="sectionRegister" class="tab-pane" role="tabpanel">
-            <h4><span>%1$s</span></h4>
-            <p>%15$s</p>
+        $markup = '<input name="UserForm" type="radio" id="tabRegister">
+            <label for="tabRegister"><h4><span>%1$s</span></h4></label>
+            <div class="tab-content">
+            <p class="text-xs-center">%15$s</p>
             <form method="post" enctype="multipart/form-data" action="%2$s" id="formRegister">
             <fieldset>
                 <input id="%3$s" name="%3$s" type="text" required>
@@ -274,10 +275,6 @@ final class WidgetUserForms extends WidgetDialogBase
                 <label for="%7$s"><i class="fa fa-envelope"></i> <span>%8$s</span></label>
             </fieldset>
             <fieldset>
-	            <a href="#sectionLogin" class="button float-xs-left">
-	            	<i class="fa fa-angle-left"></i> 
-	            	<span>%9$s</span>
-	            </a>
 	            <button type="submit" id="btnRegister">
 	                <span>%10$s</span>
 	            </button>
@@ -288,7 +285,7 @@ final class WidgetUserForms extends WidgetDialogBase
             </fieldset></form></div>';
         $nonceFieldValue = WPUtils::getNonceField(self::AJAX_REGISTER, self::AJAX_REGISTER, true, false);
         return sprintf($markup,
-            __('Register For This Site'),
+            __('Register'),
             $linkOfAdmin,
             self::USER_FIRST_NAME,
             __('First Name'),
@@ -297,7 +294,7 @@ final class WidgetUserForms extends WidgetDialogBase
             self::USER_EMAIL,
             __('Email'),
             __('Log in'),
-            __('Register'),
+            __('Register For This Site'),
             self::AJAX_REGISTER,
             self::REDIRECT_LINK,
             $linkOfRedirect,
@@ -305,19 +302,13 @@ final class WidgetUserForms extends WidgetDialogBase
             __('Registration confirmation will be emailed to you.'));
     }
 
-    function getFormLogin($linkOfAdmin, $linkOfRedirect, $enableRegistration = false)
+    function getFormLogin($linkOfAdmin, $linkOfRedirect)
     {
         $registrationButton = "";
         $btnResetPassword = "";
-        if ($enableRegistration) {
-            $markup = '<a href="#sectionRegister" class="button float-xs-left">
-					<i class="fa fa-user-plus"></i> <span>%s</span></a>';
-            $registrationButton = sprintf($markup, __('Register'));
-            /*$markup = '<a href="#sectionResetPassword" data-toggle="tab" class="btn btn-link"><span>%s</span></a>';
-            $btnResetPassword = sprintf($markup,__( 'Reset Password', 'wptheme' ));*/
-        }
-        $markup = '<div id="sectionLogin" class="tab-pane active" role="tabpanel">
-            <h4><span>%1$s</span></h4>
+        $markup = '<input name="UserForm" type="radio" id="tabLogin" checked>
+            <label for="tabLogin"><h4><span>%1$s</span></h4></label>
+            <div class="tab-content">
             <form method="post" enctype="multipart/form-data" action="%2$s" id="formLogin">
             <fieldset>
                 <input id="%3$s" name="%3$s" type="text" autofocus required>
@@ -328,7 +319,6 @@ final class WidgetUserForms extends WidgetDialogBase
                 <label for="%5$s"><i class="fa fa-key"></i> <span>%6$s</span></label>
             </fieldset>
             <fieldset>
-            	%8$s
 	            <button type="submit" id="btnLogin">
                     <i class="fa fa-unlock"></i>
                     <span>%9$s</span>
@@ -340,7 +330,7 @@ final class WidgetUserForms extends WidgetDialogBase
             </fieldset></form></div>';
         $nonceFieldValue = WPUtils::getNonceField(self::AJAX_LOGIN, self::AJAX_LOGIN, true, false);
         return sprintf($markup,
-            __('Log In'),
+            __('Log in'),
             $linkOfAdmin,
             self::USER_NAME,
             __('Username or Email Address'),
@@ -348,7 +338,7 @@ final class WidgetUserForms extends WidgetDialogBase
             __('Password'),
             $btnResetPassword,
             $registrationButton,
-            __('Log in'),
+            __('Log In'),
             self::AJAX_LOGIN,
             self::REDIRECT_LINK,
             $linkOfRedirect,
@@ -357,20 +347,16 @@ final class WidgetUserForms extends WidgetDialogBase
 
     function getFormForgot($linkOfAdmin)
     {
-//
-        $markup = '<div id="sectionResetPassword" class="tab-pane" role="tabpanel">
-            <h4><span>%1$s</span></h4>
-            <p>%9$s</p>
+        $markup = '<input name="UserForm" type="radio" id="tabForgotPassword">
+            <label for="tabForgotPassword"><h4><span>%1$s</span></h4></label>
+            <div class="tab-content">
+            <p class="text-xs-center">%9$s</p>
 			<form method="post" enctype="multipart/form-data" action="%2$s" id="formResetPassword">
 			<fieldset>
                 <input id="%3$s" name="%3$s" type="text" class="form-control" required>
                 <label for="%3$s"><i class="fa fa-envelope"></i> <span>%4$s</span></label>
             </fieldset>
             <fieldset>
-	            <a href="#sectionLogin" data-toggle="tab" class="button float-xs-left">
-	                <i class="fa fa-angle-left"></i> 
-	                <span>%5$s</span>
-	            </a>
 	            <button type="submit" id="btnResetPassword">
 	                <i class="fa fa-repeat"></i> 
 	                <span>%6$s</span>
@@ -405,12 +391,12 @@ final class WidgetUserForms extends WidgetDialogBase
         } else {
             $linkOfAdmin = admin_url('admin-ajax.php');
             $enableRegistration = get_option(CustomizerSetting::SITE_REGISTRATION);
-            $content .= $this->getFormLogin($linkOfAdmin, $linkOfRedirect, $enableRegistration);
-            $content .= $this->getFormForgot($linkOfAdmin);
+            $content .= $this->getFormLogin($linkOfAdmin, $linkOfRedirect);
             if ($enableRegistration) {
                 $content .= $this->getFormRegister($linkOfAdmin, $linkOfRedirect);
+                $content .= $this->getFormForgot($linkOfAdmin);
             }
-            $content = sprintf('<div class="tab-content">%s</div>', $content);
+            $content = sprintf('<div><div class="tabs">%s</div></div>', $content);
         }
 
         $args[WPSidebar::CONTENT] = $content;
