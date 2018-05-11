@@ -40,9 +40,6 @@ final class WidgetUserForms extends WidgetDialogBase
     {
         $uriToDirLibs = WPUtils::getUriToLibsDir(__FILE__);
         wp_enqueue_script('WidgetUserForms', "{$uriToDirLibs}/WidgetUserForms.js", ['jquery-validate'], false, true);
-        // jQuery Validate
-//        wp_enqueue_script('jqform', includes_url('js/jquery/jquery.form.min.js'), ['jquery'], false, true);
-//        wp_enqueue_script('jqvalidate', $this->uriToLibs . 'jquery.validate.min.js', ['jquery'], false, true);
         parent::enqueueScriptsTheme();
     }
 
@@ -125,7 +122,7 @@ final class WidgetUserForms extends WidgetDialogBase
             QueryUsers::ORDER => WPOrder::DESC,
             QueryUsers::NUMBER => 1,
         ]);
-        $userName = "Agent";
+        $userName = "User";
         $lastRegisteredAuthor = $authors[0]; // the first user from the list
         if (isset($lastRegisteredAuthor)) {
             $userName .= $lastRegisteredAuthor->ID++;
@@ -313,7 +310,7 @@ final class WidgetUserForms extends WidgetDialogBase
         if ($enableRegistration) {
             $markup = '<a href="#sectionRegister" class="button float-xs-left">
 					<i class="fa fa-user-plus"></i> <span>%s</span></a>';
-            $registrationButton = sprintf($markup, __('Register', 'wptheme'));
+            $registrationButton = sprintf($markup, __('Register'));
             /*$markup = '<a href="#sectionResetPassword" data-toggle="tab" class="btn btn-link"><span>%s</span></a>';
             $btnResetPassword = sprintf($markup,__( 'Reset Password', 'wptheme' ));*/
         }
@@ -341,15 +338,15 @@ final class WidgetUserForms extends WidgetDialogBase
             </fieldset></form></div>';
         $nonceFieldValue = WPUtils::getNonceField(self::AJAX_LOGIN, self::AJAX_LOGIN, true, false);
         return sprintf($markup,
-            __('Login', 'wptheme'),
+            __('Login'),
             $linkOfAdmin,
             self::USER_NAME,
-            __('User Name', 'wptheme'),
+            __('Username or Email Address'),
             self::USER_PASSWORD,
-            __('Password', 'wptheme'),
+            __('Password'),
             $btnResetPassword,
             $registrationButton,
-            __('Sign In', 'wptheme'),
+            __('Log In'),
             self::AJAX_LOGIN,
             self::REDIRECT_LINK,
             $linkOfRedirect,
@@ -380,11 +377,11 @@ final class WidgetUserForms extends WidgetDialogBase
             </fieldset></form></div>';
         $nonceFieldValue = WPUtils::getNonceField(self::AJAX_FORGOT, self::AJAX_FORGOT, true, false);
         return sprintf($markup,
-            __('Reset Password', 'wptheme'),
+            __('Reset password'),
             $linkOfAdmin,
             self::USER_EMAIL,
-            __('Email', 'wptheme'),
-            __('Login', 'wptheme'),
+            __('Username or Email Address'),
+            __('Log In'),
             self::AJAX_FORGOT,
             $nonceFieldValue);
     }

@@ -4,27 +4,31 @@
 (function ($) {
     "use strict";
     $(document).ready(function () {
-        //Register Form
         if (jQuery().validate && jQuery().ajaxSubmit) {
             /** User Forms */
-            var closeAlert = function ($form) {
+            var alertClose = function ($form) {
                 $('.alert', $form).alert('close');
             };
-            var showAlert = function ($form, message) {
+            var alertShow = function ($form, message) {
                 var alertMessage = '<div class="alert alert-success alert-dismissible text-center" role="alert">' + message + '</div>';
                 $('.modal-body', $form).append(alertMessage);
-                // if (autoDissmis){ setTimeout(function(){ closeAlert($form); }, 8000); }
             };
+            $('.modal').on('hidden.bs.modal', function () {
+                alertClose($(this));
+            });
+            $('button[data-toggle="tab"]').on('shown.bs.tab', function () {
+                alertClose($formLogin);
+                alertClose($formRegister);
+                alertClose($formResetPassword);
+            });
             /** Login  */
-            var $formLogin = $('#formLogin'), $formRegister = $('#formRegister'), $formResetPassword = $('#formResetPassword');
+            var $formLogin = $('#formLogin');
+            var btnLogin = $('#btnLogin');
             $formLogin.validate({
                 submitHandler: function (form) {
-                    var btnLogin = $('#btnLogin');
-                    btnLogin.enable();
-                    $formLogin.ajaxSubmit({
+                    form.ajaxSubmit({
                         beforeSubmit: function () {
-                            console.log('Before Submit Form Login');
-                            closeAlert($formLogin);
+                            alertClose(form);
                             btnLogin.attr('disabled', 'disabled');
                         },
                         success: function (ajax_response, statusText, xhr, $form) {
@@ -34,51 +38,20 @@
                                 $form.resetForm();
                                 window.location.replace(response.redirect);
                             } else {
-                                showAlert($form, response.message);
+                                alertShow($form, response.message);
                             }
-                        }
-                    });
-                }
-            });
-            $('.modal').on('hidden.bs.modal', function (e) {
-                closeAlert($(this));
-            });
-            $('button[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-                closeAlert($formLogin);
-                closeAlert($formRegister);
-                closeAlert($formResetPassword);
-            });
-            /** Register  */
-            $formRegister.validate({
-                rules: {
-                    register_username: {required: true},
-                    register_email: {required: true, email: true}
-                },
-                submitHandler: function (form) {
-                    var btnRegister = $('#btnRegister');
-                    $formRegister.ajaxSubmit({
-                        beforeSubmit: function () {
-                            closeAlert($formRegister);
-                            btnRegister.attr('disabled', 'disabled');
-                        },
-                        success: function (ajax_response, statusText, xhr, $form) {
-                            var response = $.parseJSON(ajax_response);
-                            btnRegister.removeAttr('disabled');
-                            if (response.success) {
-                                $form.resetForm();
-                            }
-                            showAlert($form, response.message);
                         }
                     });
                 }
             });
             /**  Reset Password  */
+            var $formResetPassword = $('#formResetPassword');
+            var btnResetPassword = $('#btnResetPassword');
             $formResetPassword.validate({
                 submitHandler: function (form) {
-                    var btnResetPassword = $('#btnResetPassword');
-                    $formResetPassword.ajaxSubmit({
+                    form.ajaxSubmit({
                         beforeSubmit: function () {
-                            closeAlert($formResetPassword);
+                            alertClose(form);
                             btnResetPassword.attr('disabled', 'disabled');
                         },
                         success: function (ajax_response, statusText, xhr, $form) {
@@ -87,7 +60,32 @@
                             if (response.success) {
                                 $form.resetForm();
                             }
-                            showAlert($form, response.message);
+                            alertShow($form, response.message);
+                        }
+                    });
+                }
+            });
+            /** Register  */
+            var $formRegister = $('#formRegister');
+            var btnRegister = $('#btnRegister');
+            $formRegister.validate({
+                rules: {
+                    register_username: {required: true},
+                    register_email: {required: true, email: true}
+                },
+                submitHandler: function (form) {
+                    form.ajaxSubmit({
+                        beforeSubmit: function () {
+                            alertClose(form);
+                            btnRegister.attr('disabled', 'disabled');
+                        },
+                        success: function (ajax_response, statusText, xhr, $form) {
+                            var response = $.parseJSON(ajax_response);
+                            btnRegister.removeAttr('disabled');
+                            if (response.success) {
+                                $form.resetForm();
+                            }
+                            alertShow($form, response.message);
                         }
                     });
                 }
