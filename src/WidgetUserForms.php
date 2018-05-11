@@ -256,8 +256,10 @@ final class WidgetUserForms extends WidgetDialogBase
 
     function getFormRegister($linkOfAdmin, $linkOfRedirect)
     {
+        // Register For This Site / Registration confirmation will be emailed to you. /  Please type your email address.
         $markup = '<div id="sectionRegister" class="tab-pane" role="tabpanel">
             <h4><span>%1$s</span></h4>
+            <p>%15$s</p>
             <form method="post" enctype="multipart/form-data" action="%2$s" id="formRegister">
             <fieldset>
                 <input id="%3$s" name="%3$s" type="text" required>
@@ -286,21 +288,21 @@ final class WidgetUserForms extends WidgetDialogBase
             </fieldset></form></div>';
         $nonceFieldValue = WPUtils::getNonceField(self::AJAX_REGISTER, self::AJAX_REGISTER, true, false);
         return sprintf($markup,
-            __('Register', 'wptheme'),
+            __('Register For This Site'),
             $linkOfAdmin,
             self::USER_FIRST_NAME,
-            __('First Name', 'wptheme'),
+            __('First Name'),
             self::USER_LAST_NAME,
-            __('Last Name', 'wptheme'),
+            __('Last Name'),
             self::USER_EMAIL,
-            __('Your Email', 'wptheme'),
-            __('Login', 'wptheme'),
-            __('Sign Up', 'wptheme'),
+            __('Email'),
+            __('Log in'),
+            __('Register'),
             self::AJAX_REGISTER,
             self::REDIRECT_LINK,
             $linkOfRedirect,
             $nonceFieldValue,
-            $this->modalDialogId);
+            __('Registration confirmation will be emailed to you.'));
     }
 
     function getFormLogin($linkOfAdmin, $linkOfRedirect, $enableRegistration = false)
@@ -338,7 +340,7 @@ final class WidgetUserForms extends WidgetDialogBase
             </fieldset></form></div>';
         $nonceFieldValue = WPUtils::getNonceField(self::AJAX_LOGIN, self::AJAX_LOGIN, true, false);
         return sprintf($markup,
-            __('Login'),
+            __('Log In'),
             $linkOfAdmin,
             self::USER_NAME,
             __('Username or Email Address'),
@@ -346,7 +348,7 @@ final class WidgetUserForms extends WidgetDialogBase
             __('Password'),
             $btnResetPassword,
             $registrationButton,
-            __('Log In'),
+            __('Log in'),
             self::AJAX_LOGIN,
             self::REDIRECT_LINK,
             $linkOfRedirect,
@@ -355,8 +357,10 @@ final class WidgetUserForms extends WidgetDialogBase
 
     function getFormForgot($linkOfAdmin)
     {
+//
         $markup = '<div id="sectionResetPassword" class="tab-pane" role="tabpanel">
             <h4><span>%1$s</span></h4>
+            <p>%9$s</p>
 			<form method="post" enctype="multipart/form-data" action="%2$s" id="formResetPassword">
 			<fieldset>
                 <input id="%3$s" name="%3$s" type="text" class="form-control" required>
@@ -369,21 +373,23 @@ final class WidgetUserForms extends WidgetDialogBase
 	            </a>
 	            <button type="submit" id="btnResetPassword">
 	                <i class="fa fa-repeat"></i> 
-	                <span>%1$s</span>
+	                <span>%6$s</span>
 	            </button>
-	            <input type="hidden" name="action"      value="%6$s">
+	            <input type="hidden" name="action"      value="%7$s">
 	            <input type="hidden" name="user-cookie" value="1">
-	            %7$s
+	            %8$s
             </fieldset></form></div>';
         $nonceFieldValue = WPUtils::getNonceField(self::AJAX_FORGOT, self::AJAX_FORGOT, true, false);
         return sprintf($markup,
-            __('Reset password'),
+            __('Lost your password?'),
             $linkOfAdmin,
             self::USER_EMAIL,
             __('Username or Email Address'),
             __('Log In'),
+            __('Get New Password'),
             self::AJAX_FORGOT,
-            $nonceFieldValue);
+            $nonceFieldValue,
+            __('Please enter your username or email address. You will receive a link to create a new password via email.'));
     }
 
     function widget($args, $instance)
@@ -392,7 +398,9 @@ final class WidgetUserForms extends WidgetDialogBase
         $linkOfRedirect = add_query_arg('_', false);
         if (is_user_logged_in()) {
             $urlLogout = wp_logout_url($linkOfRedirect);
-            $content = sprintf('<a href="%s"><i class="fa fa-sign-out"></i><span>%s</span></a>', $urlLogout, __('Logout', 'wptheme'));
+            $content = sprintf('<a href="%s"><i class="fa fa-sign-out"></i><span>%s</span></a>',
+                $urlLogout,
+                __('Log Out'));
             $instance[self::FORM_TYPE] = self::INLINE;
         } else {
             $linkOfAdmin = admin_url('admin-ajax.php');
