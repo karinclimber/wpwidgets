@@ -257,8 +257,8 @@ final class WidgetUserForms extends WidgetDialogBase
     function getFormRegister($linkOfAdmin, $linkOfRedirect)
     {
         // Register For This Site / Registration confirmation will be emailed to you. /  Please type your email address.
-        $markup = '<input name="UserForm" type="radio" id="tabRegister">
-            <label for="tabRegister"><h4><span>%1$s</span></h4></label>
+        $markup = '<input name="UserForm" type="radio" id="tabRegister%15$s">
+            <label for="tabRegister%15$s"><h4><span>%1$s</span></h4></label>
             <div class="tab-content">
             <p class="text-xs-center">%15$s</p>
             <form method="post" enctype="multipart/form-data" action="%2$s" id="formRegister">
@@ -271,7 +271,7 @@ final class WidgetUserForms extends WidgetDialogBase
                 <label for="%5$s"><span>%6$s</span></label>
             </fieldset>
             <fieldset>
-                <input id="%7$s" name="%7$s" type="email" required>
+                <input id="%7$s" name="%7$s" type="email" value="" oninput="this.setAttribute(\'value\', this.value);" required>
                 <label for="%7$s"><i class="fa fa-envelope"></i> <span>%8$s</span></label>
             </fieldset>
             <fieldset>
@@ -299,15 +299,16 @@ final class WidgetUserForms extends WidgetDialogBase
             self::REDIRECT_LINK,
             $linkOfRedirect,
             $nonceFieldValue,
-            __('Registration confirmation will be emailed to you.'));
+            __('Registration confirmation will be emailed to you.'),
+            $this->id);
     }
 
     function getFormLogin($linkOfAdmin, $linkOfRedirect)
     {
         $registrationButton = "";
         $btnResetPassword = "";
-        $markup = '<input name="UserForm" type="radio" id="tabLogin" checked>
-            <label for="tabLogin"><h4><span>%1$s</span></h4></label>
+        $markup = '<input name="UserForm" type="radio" id="tabLogin%14$s" checked>
+            <label for="tabLogin%14$s"><h4><span>%1$s</span></h4></label>
             <div class="tab-content">
             <form method="post" enctype="multipart/form-data" action="%2$s" id="formLogin">
             <fieldset>
@@ -342,13 +343,14 @@ final class WidgetUserForms extends WidgetDialogBase
             self::AJAX_LOGIN,
             self::REDIRECT_LINK,
             $linkOfRedirect,
-            $nonceFieldValue);
+            $nonceFieldValue,
+            $this->id);
     }
 
     function getFormForgot($linkOfAdmin)
     {
-        $markup = '<input name="UserForm" type="radio" id="tabForgotPassword">
-            <label for="tabForgotPassword"><h4><span>%1$s</span></h4></label>
+        $markup = '<input name="UserForm" type="radio" id="tabForgotPassword%9$s">
+            <label for="tabForgotPassword%9$s"><h4><span>%1$s</span></h4></label>
             <div class="tab-content">
             <p class="text-xs-center">%9$s</p>
 			<form method="post" enctype="multipart/form-data" action="%2$s" id="formResetPassword">
@@ -375,7 +377,8 @@ final class WidgetUserForms extends WidgetDialogBase
             __('Get New Password'),
             self::AJAX_FORGOT,
             $nonceFieldValue,
-            __('Please enter your username or email address. You will receive a link to create a new password via email.'));
+            __('Please enter your username or email address. You will receive a link to create a new password via email.'),
+            $this->id);
     }
 
     function widget($args, $instance)
