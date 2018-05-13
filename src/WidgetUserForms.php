@@ -56,21 +56,25 @@ final class WidgetUserForms extends WidgetDialogBase
         if (is_email($adminEmailAddress)) {
             $siteName = WPOptions::getSiteName();
             $messageSubject = sprintf(__('New user registration on your site %s:', 'wptheme'), $siteName);
-            $textUsername = sprintf(__('Username: %s', 'wptheme'), $user->user_login);
+            $textUserName = sprintf(__('Username: %s', 'wptheme'), $user->user_login);
             $textUserEmail = sprintf(__('Email: %s', 'wptheme'), $user->user_email);
-            $message = "$messageSubject<br>$textUsername<br>$textUserEmail";
+            $message = "$messageSubject<br>$textUserName<br>$textUserEmail";
             wp_mail($adminEmailAddress, $messageSubject, $message, self::getHeaderContentTypeHtml());
         }
     }
 
-    function sendMailAboutNewUser($user_id, $user_password)
+    function sendMailAboutNewUser(\WP_User $user)
     {
-        $user = get_userdata($user_id);
-        $siteName = WPOptions::getSiteName();
         /** Email to Registered User*/
-        $messageSubject = sprintf(__('Welcome to %s', 'wptheme'), $siteName);
-        $message = sprintf('%1$s<br> %2$s<br> %3$s<br> %4$s<br>', $messageSubject, sprintf(__('Your username is: %s', 'wptheme'), "<strong>$user->user_login</strong>"), sprintf(__('Your password is: %s', 'wptheme'), "<strong>$user_password</strong>"), __('Your User Account was sent to the site administrator for approval', 'wptheme'));
-        wp_mail($user->user_email, $messageSubject, $message, self::getHeaderContentTypeHtml());
+        if (is_email($user->user_email)) {
+            $siteName = WPOptions::getSiteName();
+            $messageSubject = sprintf(__('Welcome to %s', 'wptheme'), $siteName);
+            $textUserName = sprintf(__('Your username is: %s', 'wptheme'), "<strong>$user->user_login</strong>");
+            $textUserPassword = sprintf(__('Your password is: %s', 'wptheme'), "<strong>$user->user_pass</strong>");
+            $textUserInfo = __('Your User Account was sent to the site administrator for approval', 'wptheme');
+            $message =  "$messageSubject<br> $textUserName<br> $textUserPassword<br> $textUserInfo";
+            wp_mail($user->user_email, $messageSubject, $message, self::getHeaderContentTypeHtml());
+        }
 
     }
 
@@ -151,21 +155,13 @@ final class WidgetUserForms extends WidgetDialogBase
 
             $userdata[self::USER_EMAIL] = sanitize_email($_POST[self::USER_EMAIL]);
             $userdata[self::USER_PASS] = wp_generate_password(12);
-            $user_register = wp_insert_user($userdata);
-            if (is_wp_error($user_register)) {
-                $error = $user_register->get_error_codes();
-                if (in_array('empty_user_login', $error)) {
-                    $result = $this->getResultContent(__($user_register->get_error_message('empty_user_login')));
-                } elseif (in_array('existing_user_login', $error)) {
-                    $result = $this->getResultContent(__('This username already exists.', 'wptheme'));
-                } elseif (in_array('existing_user_email', $error)) {
-                    $result = $this->getResultContent(__('This email is already registered.', 'wptheme'));
-                } else {
-                    $result = $this->getResultContent($user_register->get_error_message());
-                }
+            $userInsertResult = wp_insert_user($userdata);
+            if (is_wp_error($userInsertResult)) {
+                $result = $this->getResultContent($userInsertResult->get_error_message());
             } else {
-                $this->sendMailAboutNewUser($user_register, $userdata[self::USER_PASS]);
-                $result = $this->getResultContent(__('Registration is complete. Check your email for details!', 'wptheme'), true);
+                $user = get_userdata($userInsertResult);
+                $this->sendMailAboutNewUser($user);
+                $result = $this->getResultContent(__('Registration complete. Please check your email.'), true);
             }
         }
         echo $result;
@@ -185,30 +181,30 @@ final class WidgetUserForms extends WidgetDialogBase
         $fieldUserEmail = self::USER_EMAIL;
         $fieldAjaxRegister = self::AJAX_REGISTER;
         $fieldNonce = WPUtils::getNonceField(self::AJAX_REGISTER, self::AJAX_REGISTER, true, false);
-        $formIdFull = "formRegister{$formId}";
         return "<input name='UserForm{$this->number}' type='radio' id='tabRegister{$formId}'>
         <label for='tabRegister{$formId}'>
             <h4><span>{$textRegister}</span></h4>
         </label>
         <div class='tab-content'>
         <p class='text-xs-center'>{$textRegisterInfo}</p>
-        <form method='post' enctype='multipart/form-data' action='{$linkOfAdmin}' id='{$formIdFull}'>
+        <form method='post' enctype='multipart/form-data' action='{$linkOfAdmin}'  data-bind='submit: handleOnSubmit'>
         <fieldset>
-            <input id='{$fieldUserFirstName}{$formId}' name='{$fieldUserFirstName}' type='text' 
-                   autocomplete='given-name' required>
+            <input id='{$fieldUserFirstName}{$formId}' name='{$fieldUserFirstName}' data-bind='textInput: userFirstName' 
+                   type='text' autocomplete='given-name' required>
             <label for='{$fieldUserFirstName}{$formId}' class='label-float'>
                 <span>{$textFirstName}</span>
             </label>
         </fieldset>
         <fieldset>
-            <input id='{$fieldUserLastName}{$formId}' name='{$fieldUserLastName}' type='text' 
-                   autocomplete='family-name' required>
+            <input id='{$fieldUserLastName}{$formId}' name='{$fieldUserLastName}' data-bind='textInput: userLastName' 
+                   type='text' autocomplete='family-name' required>
             <label for='{$fieldUserLastName}{$formId}' class='label-float'>
                 <span>{$textLastName}</span>
             </label>
         </fieldset>
         <fieldset>
-            <input id='{$fieldUserEmail}{$formId}' name='{$fieldUserEmail}' type='email' autocomplete='email' 
+            <input id='{$fieldUserEmail}{$formId}' name='{$fieldUserEmail}' data-bind='textInput: userEmail' 
+                   type='email' autocomplete='email' 
                    oninput='this.setAttribute(\"value\", this.value);' value=''  required>
             <label for='{$fieldUserEmail}{$formId}' class='label-float'>
                 <i class='fa fa-envelope'></i> 
@@ -216,7 +212,7 @@ final class WidgetUserForms extends WidgetDialogBase
             </label>
         </fieldset>
         <fieldset>
-            <button type='submit'>
+            <button type='submit' data-bind='enable:hasUserData'>
                 <i class='fa fa-user-plus'></i>
                 <span>{$textRegisterOnSite}</span>
             </button>
@@ -241,7 +237,7 @@ final class WidgetUserForms extends WidgetDialogBase
             }
             $user = wp_signon($credentials, is_ssl());
             if (is_wp_error($user)) {
-                $result = $this->getResultContent(__('Wrong username or password.', 'wptheme'));
+                $result = $this->getResultContent($user->get_error_message());
             } else {
                 wp_set_current_user($user->ID);
                 $result = $this->getResultContent("", true, $_POST[self::REDIRECT_LINK]);
@@ -255,26 +251,24 @@ final class WidgetUserForms extends WidgetDialogBase
     {
         $textLogin = __('Log in');
         $textLogIn = __('Log In');
-        $textUsername = __('Username or Email Address');
-        $textPassword = __('Password');
+        $textUserName = __('Username or Email Address');
+        $textUserPassword = __('Password');
         $fieldUserName = self::USER_NAME;
         $fieldUserPassword = self::USER_PASSWORD;
         $fieldAjaxLogin = self::AJAX_LOGIN;
         $fieldNonce = WPUtils::getNonceField(self::AJAX_LOGIN, self::AJAX_LOGIN, true, false);
-        $formIdFull = "formLogin{$formId}";
         return "<input name='UserForm{$this->number}' type='radio' id='tabLogin{$formId}' checked='checked'>
         <label for='tabLogin{$formId}'>
             <h4><span>{$textLogin}</span></h4>
         </label>
         <div class='tab-content'>
-        <form method='post' enctype='multipart/form-data' action='{$linkOfAdmin}' id='{$formIdFull}'
-              data-bind='submit: handleOnSubmit'>
+        <form method='post' enctype='multipart/form-data' action='{$linkOfAdmin}' data-bind='submit: handleOnSubmit'>
         <fieldset>
             <input id='{$fieldUserName}{$formId}' name='{$fieldUserName}' data-bind='textInput: userName'
                    type='text' autocomplete='on' autofocus required>
             <label for='{$fieldUserName}{$formId}' class='label-float'>
                 <i class='fa fa-user'></i> 
-                <span>{$textUsername}</span>
+                <span>{$textUserName}</span>
             </label>
         </fieldset>
         <fieldset>
@@ -282,7 +276,7 @@ final class WidgetUserForms extends WidgetDialogBase
                    type='password' autocomplete='on' required>
             <label for='{$fieldUserPassword}{$formId}' class='label-float'>
                 <i class='fa fa-key'></i> 
-                <span>{$textPassword}</span>
+                <span>{$textUserPassword}</span>
             </label>
         </fieldset>
         <fieldset>
@@ -352,26 +346,26 @@ final class WidgetUserForms extends WidgetDialogBase
         $textGetNewPassInfo = __('Please enter your username or email address. You will receive a link to create a new password via email.');
         $textUsername = __('Username or Email Address');
         $textGetNewPass = __('Get New Password');
-        $fieldUserEmail = self::USER_EMAIL;
+        $fieldUserName = self::USER_EMAIL;
         $fieldAjaxForgot = self::AJAX_FORGOT;
         $fieldNonce = WPUtils::getNonceField(self::AJAX_FORGOT, self::AJAX_FORGOT, true, false);
-        $formIdFull = "formResetPassword{$formId}";
         return "<input name='UserForm{$this->number}' type='radio' id='tabForgotPassword{$formId}'>
         <label for='tabForgotPassword{$formId}'>
             <h4><span>{$textLostPass}</span></h4>
         </label>
         <div class='tab-content'>
         <p class='text-xs-center'>{$textGetNewPassInfo}</p>
-        <form method='post' enctype='multipart/form-data' action='{$linkOfAdmin}' id='$formIdFull'>
+        <form method='post' enctype='multipart/form-data' action='{$linkOfAdmin}' data-bind='submit: handleOnSubmit'>
         <fieldset>
-            <input id='{$fieldUserEmail}{$formId}' name='{$fieldUserEmail}' type='text' required>
-            <label for='{$fieldUserEmail}{$formId}' class='label-float'>
+            <input id='{$fieldUserName}{$formId}' name='{$fieldUserName}'  data-bind='textInput: userName'
+                   type='text' required>
+            <label for='{$fieldUserName}{$formId}' class='label-float'>
                 <i class='fa fa-envelope'></i> 
                 <span>{$textUsername}</span>
             </label>
         </fieldset>
         <fieldset>
-            <button type='submit'>
+            <button type='submit' data-bind='enable:hasUserName'>
                 <i class='fa fa-repeat'></i> 
                 <span>{$textGetNewPass}</span>
             </button>
