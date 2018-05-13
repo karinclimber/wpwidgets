@@ -20,26 +20,23 @@ final class WidgetUserForms extends WidgetDialogBase
     const AJAX_LOGIN = "ajaxLogin";
     const AJAX_REGISTER = "ajaxRegister";
     const AJAX_FORGOT = "ajaxForgot";
-    const REDIRECT_LINK = "rtHref";
+    const REDIRECT_LINK = "_wp_http_referer";
 
     function __construct()
     {
         parent::__construct(__('Login Form', 'wptheme'), __('This widget displays a Login Form.', 'wptheme'));
-        /** Enable the user with no privileges to request */
         //TODO Set this handler in concordance with Widget Configuration
         WPActions::addAjaxHandler([$this, self::AJAX_LOGIN]);
-        /** Ajax Login */
         WPActions::addAjaxHandler([$this, self::AJAX_REGISTER]);
-        /** Ajax Register */
         WPActions::addAjaxHandler([$this, self::AJAX_FORGOT]);
-        /** Ajax Password Reset */
         $this->iconModalToggle = "fa-sign-in";
     }
 
     function enqueueScriptsTheme()
     {
         $uriToDirLibs = WPUtils::getUriToLibsDir(__FILE__);
-        wp_enqueue_script('WidgetUserForms', "{$uriToDirLibs}/WidgetUserForms.js", ['jquery-validate'], false, true);
+        wp_enqueue_script('WidgetUserForms', "{$uriToDirLibs}/WidgetUserForms.js", ['jquery-validate'],
+            false, true);
         parent::enqueueScriptsTheme();
     }
 
@@ -53,13 +50,17 @@ final class WidgetUserForms extends WidgetDialogBase
         ]);
     }
 
-    /** Email to Admin*/
-    function sendMailToAdmin($user)
+    function sendMailToAdmin(\WP_User $user)
     {
-        $siteName = WPOptions::getSiteName();
-        $messageSubject = sprintf(__('New user registration on your site %s:', 'wptheme'), $siteName);
-        $message = sprintf('%1$s<br>%2$s<br>%3$s', $messageSubject, sprintf(__('Username: %s', 'wptheme'), $user->user_login), sprintf(__('Email: %s', 'wptheme'), $user->user_email));
-        wp_mail(get_option(WPOptions::ADMIN_EMAIL), $messageSubject, $message);
+        $adminEmailAddress = get_option(WPOptions::ADMIN_EMAIL);
+        if (is_email($adminEmailAddress)) {
+            $siteName = WPOptions::getSiteName();
+            $messageSubject = sprintf(__('New user registration on your site %s:', 'wptheme'), $siteName);
+            $textUsername = sprintf(__('Username: %s', 'wptheme'), $user->user_login);
+            $textUserEmail = sprintf(__('Email: %s', 'wptheme'), $user->user_email);
+            $message = "$messageSubject<br>$textUsername<br>$textUserEmail";
+            wp_mail($adminEmailAddress, $messageSubject, $message, self::getHeaderContentTypeHtml());
+        }
     }
 
     function sendMailAboutNewUser($user_id, $user_password)
@@ -69,13 +70,13 @@ final class WidgetUserForms extends WidgetDialogBase
         /** Email to Registered User*/
         $messageSubject = sprintf(__('Welcome to %s', 'wptheme'), $siteName);
         $message = sprintf('%1$s<br> %2$s<br> %3$s<br> %4$s<br>', $messageSubject, sprintf(__('Your username is: %s', 'wptheme'), "<strong>$user->user_login</strong>"), sprintf(__('Your password is: %s', 'wptheme'), "<strong>$user_password</strong>"), __('Your User Account was sent to the site administrator for approval', 'wptheme'));
-        wp_mail($user->user_email, $messageSubject, $message, ['Content-Type: text/html; charset=UTF-8']);
+        wp_mail($user->user_email, $messageSubject, $message, self::getHeaderContentTypeHtml());
 
     }
 
-    function set_html_content_type()
+    static function getHeaderContentTypeHtml()
     {
-        return "text/html";
+        return ['Content-Type: text/html; charset=UTF-8'];
     }
 
     function getFloatingUserMenu()
@@ -86,32 +87,24 @@ final class WidgetUserForms extends WidgetDialogBase
         $authorId = get_current_user_id();
         $author = get_userdata($authorId);
         $authorAvatar = get_avatar($authorId, 32, "", "", ["class" => "media-object img-circle"]);
+        $authorDisplayName = $author->display_name;
         $urlAuthorPage = get_author_posts_url($authorId);
         $urlAuthorPropertyAdd = admin_url('post-new.php?post_type=property');
         $urlAuthorEditProfile = admin_url('profile.php');
-        $markup = '<div class="usermenu btn-group dropup">
-			        <figure class="btn btn-primary dropdown-toggle clearfix" data-toggle="dropdown" aria-haspopup="true"
-			                aria-expanded="false">%s<figcaption>%s</figcaption>
-			        </figure>
-			        <ul class="dropdown-menu dropdown-menu-right">
-			            <li><a href="%s"><span>%s</span></a></li>
-			            <li><a href="%s"><span>%s</span></a></li>
-			            <li><a href="%s"><span>%s</span></a></li>
-			            <li><a href="%s"><span>%s</span></a></li>
-			        </ul></div>';
-        $content = sprintf($markup,
-            $authorAvatar,
-            $author->display_name,
-            $urlAuthorPage,
-            __('My Page', 'wptheme'),
-            $urlAuthorPropertyAdd,
-            __('Add Property', 'wptheme'),
-            $urlAuthorEditProfile,
-            __('Edit Profile', 'wptheme'),
-            $urlLogout,
-            __('Logout', 'wptheme'));
-
-        return $content;
+        $textMyPage = __('My Page', 'wptheme');
+        $textAddProperty = __('Add Property', 'wptheme');
+        $textEditProfile = __('Edit Profile', 'wptheme');
+        $textLogOut = __('Logout', 'wptheme');
+        return "<div class='usermenu btn-group dropup'>
+        <figure class='btn btn-primary dropdown-toggle clearfix' data-toggle='dropdown' aria-haspopup='true'
+                aria-expanded='false'>{$authorAvatar}<figcaption>{$authorDisplayName}</figcaption>
+        </figure>
+        <ul class='dropdown-menu dropdown-menu-right'>
+            <li><a href='{$urlAuthorPage}'><span>{$textMyPage}</span></a></li>
+            <li><a href='{$urlAuthorPropertyAdd}'><span>{$textAddProperty}</span></a></li>
+            <li><a href='{$urlAuthorEditProfile}'><span>{$textEditProfile}</span></a></li>
+            <li><a href='{$urlLogout}'><span>{$textLogOut}</span></a></li>
+        </ul></div>";
     }
 
     function generateUserName()
@@ -139,7 +132,7 @@ final class WidgetUserForms extends WidgetDialogBase
         return $userName;
     }
 
-    /** AJAX Request Handler: Register */
+    /** Register */
     function ajaxRegister()
     {
         $result = json_encode(['success' => false]);
@@ -179,7 +172,61 @@ final class WidgetUserForms extends WidgetDialogBase
         die();
     }
 
-    /** AJAX Request Handler: Login */
+    function getFormRegister($linkOfAdmin, $formId)
+    {
+        $textRegister = __('Register');
+        $textRegisterInfo = __('Registration confirmation will be emailed to you.');
+        $textFirstName = __('First Name');
+        $textLastName = __('Last Name');
+        $textEmail = __('Email');
+        $textRegisterOnSite = __('Register For This Site');
+        $fieldUserFirstName = self::USER_FIRST_NAME;
+        $fieldUserLastName = self::USER_LAST_NAME;
+        $fieldUserEmail = self::USER_EMAIL;
+        $fieldAjaxRegister = self::AJAX_REGISTER;
+        $fieldNonce = WPUtils::getNonceField(self::AJAX_REGISTER, self::AJAX_REGISTER, true, false);
+        $formIdFull = "formRegister{$formId}";
+        return "<input name='UserForm{$this->number}' type='radio' id='tabRegister{$formId}'>
+        <label for='tabRegister{$formId}'>
+            <h4><span>{$textRegister}</span></h4>
+        </label>
+        <div class='tab-content'>
+        <p class='text-xs-center'>{$textRegisterInfo}</p>
+        <form method='post' enctype='multipart/form-data' action='{$linkOfAdmin}' id='{$formIdFull}'>
+        <fieldset>
+            <input id='{$fieldUserFirstName}{$formId}' name='{$fieldUserFirstName}' type='text' 
+                   autocomplete='given-name' required>
+            <label for='{$fieldUserFirstName}{$formId}' class='label-float'>
+                <span>{$textFirstName}</span>
+            </label>
+        </fieldset>
+        <fieldset>
+            <input id='{$fieldUserLastName}{$formId}' name='{$fieldUserLastName}' type='text' 
+                   autocomplete='family-name' required>
+            <label for='{$fieldUserLastName}{$formId}' class='label-float'>
+                <span>{$textLastName}</span>
+            </label>
+        </fieldset>
+        <fieldset>
+            <input id='{$fieldUserEmail}{$formId}' name='{$fieldUserEmail}' type='email' autocomplete='email' 
+                   oninput='this.setAttribute(\"value\", this.value);' value=''  required>
+            <label for='{$fieldUserEmail}{$formId}' class='label-float'>
+                <i class='fa fa-envelope'></i> 
+                <span>{$textEmail}</span>
+            </label>
+        </fieldset>
+        <fieldset>
+            <button type='submit'>
+                <i class='fa fa-user-plus'></i>
+                <span>{$textRegisterOnSite}</span>
+            </button>
+            <input type='hidden' name='user-cookie' value='1'>
+            <input type='hidden' name='action'      value='{$fieldAjaxRegister}'>
+            {$fieldNonce}
+        </fieldset></form></div>";
+    }
+
+    /** Login */
     function ajaxLogin()
     {
         $result = json_encode(['success' => false]);
@@ -204,7 +251,52 @@ final class WidgetUserForms extends WidgetDialogBase
         die();
     }
 
-    /** AJAX Request Handler: Forgot Password */
+    function getFormLogin($linkOfAdmin, $formId)
+    {
+        $textLogin = __('Log in');
+        $textLogIn = __('Log In');
+        $textUsername = __('Username or Email Address');
+        $textPassword = __('Password');
+        $fieldUserName = self::USER_NAME;
+        $fieldUserPassword = self::USER_PASSWORD;
+        $fieldAjaxLogin = self::AJAX_LOGIN;
+        $fieldNonce = WPUtils::getNonceField(self::AJAX_LOGIN, self::AJAX_LOGIN, true, false);
+        $formIdFull = "formLogin{$formId}";
+        return "<input name='UserForm{$this->number}' type='radio' id='tabLogin{$formId}' checked='checked'>
+        <label for='tabLogin{$formId}'>
+            <h4><span>{$textLogin}</span></h4>
+        </label>
+        <div class='tab-content'>
+        <form method='post' enctype='multipart/form-data' action='{$linkOfAdmin}' id='{$formIdFull}'
+              data-bind='submit: handleOnSubmit'>
+        <fieldset>
+            <input id='{$fieldUserName}{$formId}' name='{$fieldUserName}' data-bind='textInput: userName'
+                   type='text' autocomplete='on' autofocus required>
+            <label for='{$fieldUserName}{$formId}' class='label-float'>
+                <i class='fa fa-user'></i> 
+                <span>{$textUsername}</span>
+            </label>
+        </fieldset>
+        <fieldset>
+            <input id='{$fieldUserPassword}{$formId}' name='{$fieldUserPassword}' data-bind='textInput: userPassword'
+                   type='password' autocomplete='on' required>
+            <label for='{$fieldUserPassword}{$formId}' class='label-float'>
+                <i class='fa fa-key'></i> 
+                <span>{$textPassword}</span>
+            </label>
+        </fieldset>
+        <fieldset>
+            <button type='submit' data-bind='enable:hasCredentials'>
+                <i class='fa fa-unlock'></i>
+                <span>{$textLogIn}</span>
+            </button>
+            <input type='hidden' name='user-cookie' value='1'>
+            <input type='hidden' name='action'      value='{$fieldAjaxLogin}'>
+            {$fieldNonce}
+        </fieldset></form></div>";
+    }
+
+    /** Forgot Password */
     function ajaxForgot()
     {
         $result = json_encode(['success' => false]);
@@ -254,154 +346,63 @@ final class WidgetUserForms extends WidgetDialogBase
         die();
     }
 
-    function getFormRegister($linkOfAdmin, $linkOfRedirect)
+    function getFormForgot($linkOfAdmin, $formId)
     {
-        // Register For This Site / Registration confirmation will be emailed to you. /  Please type your email address.
-        $markup = '<input name="UserForm" type="radio" id="tabRegister%15$s">
-            <label for="tabRegister%15$s"><h4><span>%1$s</span></h4></label>
-            <div class="tab-content">
-            <p class="text-xs-center">%15$s</p>
-            <form method="post" enctype="multipart/form-data" action="%2$s" id="formRegister">
-            <fieldset>
-                <input id="%3$s" name="%3$s" type="text" required>
-                <label for="%3$s"><span>%4$s</span></label>
-            </fieldset>
-            <fieldset>
-                <input id="%5$s" name="%5$s" type="text" required>
-                <label for="%5$s"><span>%6$s</span></label>
-            </fieldset>
-            <fieldset>
-                <input id="%7$s" name="%7$s" type="email" value="" oninput="this.setAttribute(\'value\', this.value);" required>
-                <label for="%7$s"><i class="fa fa-envelope"></i> <span>%8$s</span></label>
-            </fieldset>
-            <fieldset>
-	            <button type="submit" id="btnRegister">
-	                <span>%10$s</span>
-	            </button>
-	            <input type="hidden" autocomplete="off" name="action"      value="%11$s">
-	            <input type="hidden" autocomplete="off" name="user-cookie" value="1">
-	            <input type="hidden" autocomplete="off" name="%12$s"       value="%13$s">
-	            %14$s
-            </fieldset></form></div>';
-        $nonceFieldValue = WPUtils::getNonceField(self::AJAX_REGISTER, self::AJAX_REGISTER, true, false);
-        return sprintf($markup,
-            __('Register'),
-            $linkOfAdmin,
-            self::USER_FIRST_NAME,
-            __('First Name'),
-            self::USER_LAST_NAME,
-            __('Last Name'),
-            self::USER_EMAIL,
-            __('Email'),
-            __('Log in'),
-            __('Register For This Site'),
-            self::AJAX_REGISTER,
-            self::REDIRECT_LINK,
-            $linkOfRedirect,
-            $nonceFieldValue,
-            __('Registration confirmation will be emailed to you.'),
-            $this->id);
-    }
-
-    function getFormLogin($linkOfAdmin, $linkOfRedirect)
-    {
-        $registrationButton = "";
-        $btnResetPassword = "";
-        $markup = '<input name="UserForm" type="radio" id="tabLogin%14$s" checked>
-            <label for="tabLogin%14$s"><h4><span>%1$s</span></h4></label>
-            <div class="tab-content">
-            <form method="post" enctype="multipart/form-data" action="%2$s" id="formLogin">
-            <fieldset>
-                <input id="%3$s" name="%3$s" type="text" autofocus required>
-                <label for="%3$s"><i class="fa fa-user"></i> <span>%4$s</span></label>
-            </fieldset>
-            <fieldset>
-                <input id="%5$s" name="%5$s" type="password" required>
-                <label for="%5$s"><i class="fa fa-key"></i> <span>%6$s</span></label>
-            </fieldset>
-            <fieldset>
-	            <button type="submit" id="btnLogin">
-                    <i class="fa fa-unlock"></i>
-                    <span>%9$s</span>
-	            </button>
-	            <input type="hidden" autocomplete="off" name="action"      value="%10$s">
-	            <input type="hidden" autocomplete="off" name="user-cookie" value="1">
-	            <input type="hidden" autocomplete="off" name="%11$s"       value="%12$s">
-	            %13$s
-            </fieldset></form></div>';
-        $nonceFieldValue = WPUtils::getNonceField(self::AJAX_LOGIN, self::AJAX_LOGIN, true, false);
-        return sprintf($markup,
-            __('Log in'),
-            $linkOfAdmin,
-            self::USER_NAME,
-            __('Username or Email Address'),
-            self::USER_PASSWORD,
-            __('Password'),
-            $btnResetPassword,
-            $registrationButton,
-            __('Log In'),
-            self::AJAX_LOGIN,
-            self::REDIRECT_LINK,
-            $linkOfRedirect,
-            $nonceFieldValue,
-            $this->id);
-    }
-
-    function getFormForgot($linkOfAdmin)
-    {
-        $markup = '<input name="UserForm" type="radio" id="tabForgotPassword%9$s">
-            <label for="tabForgotPassword%9$s"><h4><span>%1$s</span></h4></label>
-            <div class="tab-content">
-            <p class="text-xs-center">%9$s</p>
-			<form method="post" enctype="multipart/form-data" action="%2$s" id="formResetPassword">
-			<fieldset>
-                <input id="%3$s" name="%3$s" type="text" class="form-control" required>
-                <label for="%3$s"><i class="fa fa-envelope"></i> <span>%4$s</span></label>
-            </fieldset>
-            <fieldset>
-	            <button type="submit" id="btnResetPassword">
-	                <i class="fa fa-repeat"></i> 
-	                <span>%6$s</span>
-	            </button>
-	            <input type="hidden" name="action"      value="%7$s">
-	            <input type="hidden" name="user-cookie" value="1">
-	            %8$s
-            </fieldset></form></div>';
-        $nonceFieldValue = WPUtils::getNonceField(self::AJAX_FORGOT, self::AJAX_FORGOT, true, false);
-        return sprintf($markup,
-            __('Lost your password?'),
-            $linkOfAdmin,
-            self::USER_EMAIL,
-            __('Username or Email Address'),
-            __('Log In'),
-            __('Get New Password'),
-            self::AJAX_FORGOT,
-            $nonceFieldValue,
-            __('Please enter your username or email address. You will receive a link to create a new password via email.'),
-            $this->id);
+        $textLostPass = __('Lost your password?');
+        $textGetNewPassInfo = __('Please enter your username or email address. You will receive a link to create a new password via email.');
+        $textUsername = __('Username or Email Address');
+        $textGetNewPass = __('Get New Password');
+        $fieldUserEmail = self::USER_EMAIL;
+        $fieldAjaxForgot = self::AJAX_FORGOT;
+        $fieldNonce = WPUtils::getNonceField(self::AJAX_FORGOT, self::AJAX_FORGOT, true, false);
+        $formIdFull = "formResetPassword{$formId}";
+        return "<input name='UserForm{$this->number}' type='radio' id='tabForgotPassword{$formId}'>
+        <label for='tabForgotPassword{$formId}'>
+            <h4><span>{$textLostPass}</span></h4>
+        </label>
+        <div class='tab-content'>
+        <p class='text-xs-center'>{$textGetNewPassInfo}</p>
+        <form method='post' enctype='multipart/form-data' action='{$linkOfAdmin}' id='$formIdFull'>
+        <fieldset>
+            <input id='{$fieldUserEmail}{$formId}' name='{$fieldUserEmail}' type='text' required>
+            <label for='{$fieldUserEmail}{$formId}' class='label-float'>
+                <i class='fa fa-envelope'></i> 
+                <span>{$textUsername}</span>
+            </label>
+        </fieldset>
+        <fieldset>
+            <button type='submit'>
+                <i class='fa fa-repeat'></i> 
+                <span>{$textGetNewPass}</span>
+            </button>
+            <input type='hidden' name='user-cookie' value='1'>
+            <input type='hidden' name='action'      value='{$fieldAjaxForgot}'>
+            {$fieldNonce}
+        </fieldset></form></div>";
     }
 
     function widget($args, $instance)
     {
         $content = "";
-        $linkOfRedirect = add_query_arg('_', false);
         if (is_user_logged_in()) {
+            $textLogOut = __('Log Out');
+            $linkOfRedirect = add_query_arg('_', false);
             $urlLogout = wp_logout_url($linkOfRedirect);
-            $content = sprintf('<a href="%s"><i class="fa fa-sign-out"></i><span>%s</span></a>',
-                $urlLogout,
-                __('Log Out'));
+            $content = "<a href='{$urlLogout}'><i class='fa fa-sign-out'></i><span>{$textLogOut}</span></a>";
             $instance[self::FORM_TYPE] = self::INLINE;
         } else {
             $linkOfAdmin = admin_url('admin-ajax.php');
             $enableRegistration = get_option(CustomizerSetting::SITE_REGISTRATION);
-            $content .= $this->getFormLogin($linkOfAdmin, $linkOfRedirect);
+            $content .= $this->getFormLogin($linkOfAdmin, $this->number . '1');
             if ($enableRegistration) {
-                $content .= $this->getFormRegister($linkOfAdmin, $linkOfRedirect);
-                $content .= $this->getFormForgot($linkOfAdmin);
+                $content .= $this->getFormRegister($linkOfAdmin, $this->number . '2');
+                $content .= $this->getFormForgot($linkOfAdmin, $this->number . '3');
             }
-            $content = sprintf('<div><div class="tabs">%s</div></div>', $content);
+            $content = "<div class='tabs'>{$content}</div><script>
+            window.addEventListener('DOMContentLoaded', function(){
+                ko.applyBindings(new WidgetUserForms(),document.getElementById('{$this->id}'));
+            });</script>";
         }
-
         $args[WPSidebar::CONTENT] = $content;
         parent::widget($args, $instance);
     }
