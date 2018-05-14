@@ -35,9 +35,17 @@ final class WidgetPosts extends WidgetPostBase
             }
         } else {
             $postsCount = intval(self::getInstanceValue($instance, QueryPost::PER_PAGE, $this));
-            if (is_category() || is_tag()){
+            if (is_archive()){
                 //TODO Add a widget options to spcify when make this auto changes for case when on sam category page want to display some tiles of post Ex. Recent
-                $instance[Widget::CUSTOM_TITLE] = get_the_title();
+                $pageTitle = '';
+                if (is_category()){
+                    $pageTitle = single_cat_title();
+                } else if (is_tag()){
+                    $pageTitle = single_tag_title();
+                } else if (is_tax()){
+                    $pageTitle = single_term_title();
+                }
+                $instance[Widget::CUSTOM_TITLE] = $pageTitle;
                 $postsCount = -1;
             }
             $sortCriteria = self::getInstanceValue($instance, self::SORT_CRITERIA, $this);
