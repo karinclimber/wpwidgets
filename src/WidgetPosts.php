@@ -18,11 +18,11 @@ final class WidgetPosts extends WidgetPostBase
         $content = "";
         if (is_singular()) {
             $instance[Widget::CUSTOM_TITLE] = get_the_title();
-            $dateTitle = sprintf('<small class="text-center">%s %s %s %s</small>',
-                __('Posted on', 'wptheme'),
-                get_the_time('d M Y'),
-                __('in', 'wptheme'),
-                get_the_category_list(', '));
+            $textPostedOn = __('Posted on');
+            $textTime = get_the_time('d M Y');
+            $textIn = __('in');
+            $textCategoryList = get_the_category_list(', ');
+            $dateTitle = "<small class='text-center'>{$textPostedOn} {$textTime} {$textIn} {$textCategoryList}</small>";
             if (have_posts()) {
                 while (have_posts()) {
                     the_post();
@@ -59,7 +59,7 @@ final class WidgetPosts extends WidgetPostBase
             if ($postsCount > 0) {
                 $linkToDefaultCategory = get_category_link(get_option('default_category'));
                 $textViewAll = __("See All");
-                $this->titleAddition = "<small class='pull-right'><a href='{$linkToDefaultCategory}'>{$textViewAll}</a></small>";
+                $this->titleAddition = "<a href='{$linkToDefaultCategory}' class='pull-right small'>{$textViewAll}</a>";
             }
             $content = WPUtils::renderTemplate($queryArgs, PostBase::TYPE, $layoutType);
         }
