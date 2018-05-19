@@ -273,7 +273,7 @@ final class WidgetMediaSlider extends Widget
             if (!$autoScaleSliderHeight && count($imgHeights)) {
                 $sliderOptions['autoScaleSliderHeight'] = max($imgHeights);
             }
-            $sliderOptionsEncoded = json_encode($slideOptions);
+            $sliderOptionsEncoded = json_encode($sliderOptions);
             $optionsName = $this->id_base . $this->number;
             $sliderId = "#{$this->id} > .rs";
             $content = "<div class='rs $skin' style='height:$sliderHeight;'>{$content}</div>
