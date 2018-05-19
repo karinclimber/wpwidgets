@@ -205,8 +205,8 @@ final class WidgetMediaSlider extends Widget
             foreach ($attachmentIds as $attachmentId => $attachmentLink) {
                 $imgInfo = image_downsize($attachmentId, WPImages::FULL);
                 if (isset($imgInfo['0'])) {
-                    $imgWidths []= $imgWidth = $imgInfo['1'];
-                    $imgHeights []= $imgHeight = $imgInfo['2'];
+                    $imgWidths [] = $imgWidth = $imgInfo['1'];
+                    $imgHeights [] = $imgHeight = $imgInfo['2'];
                     $content .= "<a class='rsImg' href='{$imgInfo['0']}' data-rsw='{$imgWidth}' data-rsh='{$imgHeight}' data-href='$attachmentLink'>";
                     if ($showThumbnails) {
                         $imgInfo = image_downsize($attachmentId, WPImages::THUMB);
@@ -214,16 +214,6 @@ final class WidgetMediaSlider extends Widget
                     }
                     $content .= '</a>';
                 }
-            }
-            //Size
-            $autoScaleSlider = self::getInstanceValue($instance, self::AUTO_SCALE, $this);
-            $autoScaleSliderWidth = (int)self::getInstanceValue($instance, self::AUTO_SCALE_WIDTH, $this);
-            if (!$autoScaleSliderWidth){
-                $autoScaleSliderWidth = max($imgWidths);
-            }
-            $autoScaleSliderHeight = (int)self::getInstanceValue($instance, self::AUTO_SCALE_HEIGHT, $this);
-            if (!$autoScaleSliderHeight){
-                $autoScaleSliderHeight = max($imgHeights);
             }
             //Skin
             $skin = self::getInstanceValue($instance, self::SKIN, $this);
@@ -243,10 +233,8 @@ final class WidgetMediaSlider extends Widget
             //Values
             $sliderHeight = self::getInstanceValue($instance, self::AUTO_SCALE_HEIGHT, $this);
             //Content
-            $sliderOptions = json_encode([
-                'autoScaleSlider'=>$autoScaleSlider,
-                'autoScaleSliderWidth'=>$autoScaleSliderWidth,
-                'autoScaleSliderHeight'=>$autoScaleSliderHeight,
+            $sliderOptions = [
+                'autoScaleSlider' => self::getInstanceValue($instance, self::AUTO_SCALE, $this),
                 'imageScaleMode' => self::getInstanceValue($instance, self::IMAGE_SCALE, $this),
                 'controlNavigation' => $controlNavigation,
                 'slidesOrientation' => self::getInstanceValue($instance, self::ORIENTATION, $this),
@@ -275,11 +263,21 @@ final class WidgetMediaSlider extends Widget
                 'minSlideOffset' => (int)self::getInstanceValue($instance, self::MIN_SLIDES_OFFSET, $this),
                 'transitionSpeed' => (int)self::getInstanceValue($instance, self::TRANSITION_SPEED, $this),
                 'imageScalePadding' => (int)self::getInstanceValue($instance, self::IMAGE_SCALE_PADDING, $this)
-            ]);
+            ];
+            //Size
+            $autoScaleSliderWidth = (int)self::getInstanceValue($instance, self::AUTO_SCALE_WIDTH, $this);
+            if (!$autoScaleSliderWidth && count($imgWidths)) {
+                $sliderOptions['autoScaleSliderWidth'] = max($imgWidths);
+            }
+            $autoScaleSliderHeight = (int)self::getInstanceValue($instance, self::AUTO_SCALE_HEIGHT, $this);
+            if (!$autoScaleSliderHeight && count($imgHeights)) {
+                $sliderOptions['autoScaleSliderHeight'] = max($imgHeights);
+            }
+            $sliderOptionsEncoded = json_encode($slideOptions);
             $optionsName = $this->id_base . $this->number;
             $sliderId = "#{$this->id} > .rs";
             $content = "<div class='rs $skin' style='height:$sliderHeight;'>{$content}</div>
-            <script>var $optionsName = $sliderOptions;
+            <script>var $optionsName = $sliderOptionsEncoded;
             if (typeof jQuery === 'undefined'){
                 window.addEventListener('DOMContentLoaded', function() { jQuery('$sliderId').rs($optionsName);});
             } else {
