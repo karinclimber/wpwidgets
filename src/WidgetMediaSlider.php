@@ -275,7 +275,7 @@ final class WidgetMediaSlider extends Widget
             if (!$autoScaleSliderHeight && count($imgHeights)) {
                 $sliderOptions['autoScaleSliderHeight'] = max($imgHeights);
             } else {
-                $sliderOptions['autoScaleSliderWidth'] = $autoScaleSliderWidth;
+                $sliderOptions['autoScaleSliderHeight'] = $autoScaleSliderHeight;
             }
             $sliderOptionsEncoded = json_encode($sliderOptions);
             $optionsName = $this->id_base . $this->number;
