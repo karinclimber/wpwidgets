@@ -268,10 +268,14 @@ final class WidgetMediaSlider extends Widget
             $autoScaleSliderWidth = (int)self::getInstanceValue($instance, self::AUTO_SCALE_WIDTH, $this);
             if (!$autoScaleSliderWidth && count($imgWidths)) {
                 $sliderOptions['autoScaleSliderWidth'] = max($imgWidths);
+            } else {
+                $sliderOptions['autoScaleSliderWidth'] = $autoScaleSliderWidth;
             }
             $autoScaleSliderHeight = (int)self::getInstanceValue($instance, self::AUTO_SCALE_HEIGHT, $this);
             if (!$autoScaleSliderHeight && count($imgHeights)) {
                 $sliderOptions['autoScaleSliderHeight'] = max($imgHeights);
+            } else {
+                $sliderOptions['autoScaleSliderWidth'] = $autoScaleSliderWidth;
             }
             $sliderOptionsEncoded = json_encode($sliderOptions);
             $optionsName = $this->id_base . $this->number;
