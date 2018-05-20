@@ -20,16 +20,18 @@ final class WidgetSiteBranding extends Widget
         $siteName = get_bloginfo('name', 'display');
         $siteDescription = get_bloginfo('description', 'display');
         $siteHomeUrl = esc_url(home_url('/'));
-        $siteLogoId = get_theme_mod(Customizer::SITE_LOGO);
+        $siteLogoId = get_theme_mod(WPOptions::SITE_LOGO);
         $siteNameStyle = '';
         $imageMarkup = '';
         if ($siteLogoId) {
             $image = wp_get_attachment_image_src($siteLogoId, WPImages::FULL);
             if ($image) {
                 list($src, $width, $height) = $image;
-                $hwstring = image_hwstring($width, $height);
-                $imageMarkup = "<img $hwstring src='$src' class='custom-logo' usemap='#custom-logo' alt='$siteName' />
-                <map name='custom-logo'><area shape='rect' coords='0,0,$width,$height' href='$siteHomeUrl' alt='$siteName'></map>";
+                $hwData = image_hwstring($width, $height);
+                $cssSiteLogo = WPOptions::SITE_LOGO;
+                $imageMarkup = "<img src='{$src}' class='{$cssSiteLogo}' usemap='#{$cssSiteLogo}' alt='{$siteName}' {$hwData}>
+                <map name='{$cssSiteLogo}'>
+                <area shape='rect' coords='0,0,$width,$height' href='$siteHomeUrl' alt='$siteName'></map>";
                 $siteNameStyle = "style='display:none;'";
             }
         }

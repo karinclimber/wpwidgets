@@ -20,8 +20,8 @@ class WidgetLanguageChooser extends WidgetDialogBase
 
     function enqueueScriptsTheme()
     {
-        $this->uriToDirLibs = WPUtils::getUriToLibsDir(__FILE__);
-        wp_enqueue_style('WidgetLanguageChooser', "{$this->uriToDirLibs}/WidgetLanguageChooser.css");
+        $uriToDirLibs = WPUtils::getUriToLibsDir(__FILE__);
+        wp_enqueue_style('WidgetLanguageChooser', "{$uriToDirLibs}/WidgetLanguageChooser.css");
     }
 
     function initFields()
@@ -50,10 +50,10 @@ class WidgetLanguageChooser extends WidgetDialogBase
                     $languageHref = $convertLanguageUrl($url, $language, false, true);
                     $languageSelected = '';
                     if ($language == $q_config['language']) {
-                        $languageSelected = ' selected';
+                        $languageSelected = 'selected';
                     }
                     $optionValue = addslashes(htmlspecialchars_decode($languageHref, ENT_NOQUOTES));
-                    $content .="<option value='$optionValue'{$languageSelected}>{$languageName}</option>";
+                    $content .="<option value='$optionValue' {$languageSelected}>{$languageName}</option>";
                 }
                 $content = "<select onchange='document.location.href=this.value;'>$content</select>";
             } else {
