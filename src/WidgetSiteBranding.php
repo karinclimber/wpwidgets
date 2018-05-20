@@ -17,31 +17,24 @@ final class WidgetSiteBranding extends Widget
 
     function handleCustomLogo()
     {
-        $siteName = get_bloginfo('name', 'display');
-        $siteDescription = get_bloginfo('description', 'display');
         $siteHomeUrl = esc_url(home_url('/'));
-        $siteLogoId = get_theme_mod('custom_logo');
-        $siteNameStyle = '';
-        $imageMarkup = '';
-        if ($siteLogoId) {
-            $image = wp_get_attachment_image_src($siteLogoId, WPImages::FULL);
-            if ($image) {
-                list($src, $width, $height) = $image;
-                $hwData = image_hwstring($width, $height);
-                $cssSiteLogo = WPOptions::SITE_LOGO;
-                $imageMarkup = "<img src='{$src}' class='{$cssSiteLogo}' usemap='#{$cssSiteLogo}' alt='{$siteName}' {$hwData}>
-                <map name='{$cssSiteLogo}'>
-                <area shape='rect' coords='0,0,$width,$height' href='$siteHomeUrl' alt='$siteName'></map>";
-                $siteNameStyle = "style='display:none;'";
-            }
-        }
+        $siteName = get_bloginfo('name', 'display');
         $cssSiteName = WPOptions::SITE_NAME;
+        $siteDescription = get_bloginfo('description', 'display');
         $cssSiteDescription = WPOptions::SITE_DESCRIPTION;
-        return "<figure style='display: inline-block;' rel='home'>{$imageMarkup}
-        <figcaption {$siteNameStyle}><a href='{$siteHomeUrl}'>
-            <span class='{$cssSiteName}'>{$siteName}</span><br>
-            <small class='{$cssSiteDescription} hidden-xs'>{$siteDescription}</small>
-        </a></figcaption></figure>";
+        $cssSiteLogo = WPOptions::SITE_LOGO;
+        $siteLogoId = get_theme_mod('custom_logo');
+        if ($siteLogoId && $image = wp_get_attachment_image_src($siteLogoId, WPImages::FULL)) {
+            list($src, $width, $height) = $image;
+            $hwData = image_hwstring($width, $height);
+            /*$imageMarkup = "<img src='{$src}' class='{$cssSiteLogo}' usemap='#{$cssSiteLogo}' alt='{$siteName}' {$hwData}>
+            <map name='{$cssSiteLogo}'>
+            <area shape='rect' coords='0,0,$width,$height' href='$siteHomeUrl' alt='$siteName'></map>";*/
+            return "<a href='{$siteHomeUrl}' class='{$cssSiteLogo}-link' rel='home'><img src='{$src}' class='{$cssSiteLogo}' alt='{$siteName}' {$hwData}></a>";
+        } else {
+            return "<div style='display: inline-block;'><a href='{$siteHomeUrl}' class='{$cssSiteName}'>{$siteName}</a><br>
+            <small class='{$cssSiteDescription} hidden-xs'>{$siteDescription}</small></div>";
+        }
     }
 
     function widget($args, $instance)
