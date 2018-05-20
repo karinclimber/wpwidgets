@@ -29,7 +29,7 @@ final class WidgetSiteBranding extends Widget
                 list($src, $width, $height) = $image;
                 $hwData = image_hwstring($width, $height);
                 $cssSiteLogo = WPOptions::SITE_LOGO;
-                $imageMarkup = "<img src='{$src}' class='{$cssSiteLogo}' usemap='#{$cssSiteLogo}' alt='{$siteName}' {$hwData}>
+                $imageMarkup = "<img src='{$src}' class='custom-logo' usemap='#{$cssSiteLogo}' alt='{$siteName}' {$hwData}>
                 <map name='{$cssSiteLogo}'>
                 <area shape='rect' coords='0,0,$width,$height' href='$siteHomeUrl' alt='$siteName'></map>";
                 $siteNameStyle = "style='display:none;'";
