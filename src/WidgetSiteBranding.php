@@ -17,29 +17,29 @@ final class WidgetSiteBranding extends Widget
 
     function handleCustomLogo()
     {
-        $siteTitle = get_bloginfo('name', 'display');
+        $siteName = get_bloginfo('name', 'display');
         $siteDescription = get_bloginfo('description', 'display');
         $siteHomeUrl = esc_url(home_url('/'));
         $siteLogoId = get_theme_mod(CustomizerSetting::SITE_LOGO);
-        $siteNameStyle = "";
-        $imageMarkup = "";
+        $siteNameStyle = '';
+        $imageMarkup = '';
         if ($siteLogoId) {
             $image = wp_get_attachment_image_src($siteLogoId, WPImages::FULL);
-            if ( $image ) {
+            if ($image) {
                 list($src, $width, $height) = $image;
                 $hwstring = image_hwstring($width, $height);
-                $imageMarkup = "<img $hwstring src='$src' class='custom-logo' usemap='#custom-logo' alt='$siteTitle' />
-                <map name='custom-logo'><area shape='rect' coords='0,0,$width,$height' href='$siteHomeUrl' alt='$siteTitle'></map>";
+                $imageMarkup = "<img $hwstring src='$src' class='custom-logo' usemap='#custom-logo' alt='$siteName' />
+                <map name='custom-logo'><area shape='rect' coords='0,0,$width,$height' href='$siteHomeUrl' alt='$siteName'></map>";
                 $siteNameStyle = "style='display:none;'";
             }
         }
-        return "<figure style='display: inline-block;' rel='home'>
-        $imageMarkup
-        <figcaption $siteNameStyle><a href='$siteHomeUrl'>
-            <span class='site-title'>$siteTitle</span><br>
-            <small class='site-description hidden-xs'>$siteDescription</small>
-        </a></figcaption>
-       </figure>";
+        $cssSiteName = WPOptions::SITE_NAME;
+        $cssSiteDescription = WPOptions::SITE_DESCRIPTION;
+        return "<figure style='display: inline-block;' rel='home'>{$imageMarkup}
+        <figcaption {$siteNameStyle}><a href='{$siteHomeUrl}'>
+            <span class='{$cssSiteName}'>{$siteName}</span><br>
+            <small class='{$cssSiteDescription} hidden-xs'>{$siteDescription}</small>
+        </a></figcaption></figure>";
     }
 
     function widget($args, $instance)
