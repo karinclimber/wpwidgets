@@ -20,7 +20,7 @@ final class WidgetSiteBranding extends Widget
         $siteName = get_bloginfo('name', 'display');
         $siteDescription = get_bloginfo('description', 'display');
         $siteHomeUrl = esc_url(home_url('/'));
-        $siteLogoId = get_theme_mod(CustomizerSetting::SITE_LOGO);
+        $siteLogoId = get_theme_mod(Customizer::SITE_LOGO);
         $siteNameStyle = '';
         $imageMarkup = '';
         if ($siteLogoId) {

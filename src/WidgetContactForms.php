@@ -79,10 +79,10 @@ final class WidgetContactForms extends WidgetDialogBase
                 $emailHeaders[] = "Reply-To: $contactName <$contactEmail>";
                 $emailHeaders[] = "Content-Type: text/html; charset=UTF-8";
                 // Send copy of message to Admin
-                $sendMessageCopy = get_option(CustomizerSetting::AGENTS_EMAIL_CC_ENABLE);
+                $sendMessageCopy = get_option(Customizer::AGENTS_EMAIL_CC_ENABLE);
                 if ($sendMessageCopy == 'true') {
                     //TODO Check if admin email is not the same as the form email
-                    $emailsCc = (array)get_option(CustomizerSetting::AGENTS_EMAIL_CC);
+                    $emailsCc = (array)get_option(Customizer::AGENTS_EMAIL_CC);
                     if (!empty($emailsCc)) {
                         foreach ($emailsCc as $emailCc) {
                             $emailCc = sanitize_email($emailCc);
@@ -126,7 +126,7 @@ final class WidgetContactForms extends WidgetDialogBase
         $icon = self::getInstanceValue($instance, self::MODAL_TOGGLE_ICON, $this);
         $formEmail = "";
         if ($recipient == self::RECIPIENT_SITE) {
-            $formEmail = get_option(CustomizerSetting::SITE_EMAIL);
+            $formEmail = get_option(Customizer::SITE_EMAIL);
         } else if ($recipient == self::RECIPIENT_AUTHOR) {
             $formEmail = get_the_author_meta('email');
         }

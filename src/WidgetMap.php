@@ -32,7 +32,7 @@ class WidgetMap extends Widget
          */
         $mapArgs = [];
         $mapArgs['language'] = urlencode(get_locale());
-        $apiKey = get_option(CustomizerSetting::GOOGLE_MAP_API);
+        $apiKey = get_option(Customizer::GOOGLE_MAP_API);
         if (!empty($apiKey)) {
             $mapArgs['key'] = urlencode($apiKey);
         }

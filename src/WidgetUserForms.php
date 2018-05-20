@@ -386,7 +386,7 @@ final class WidgetUserForms extends WidgetDialogBase
             $instance[self::FORM_TYPE] = self::INLINE;
         } else {
             $linkOfAdmin = admin_url('admin-ajax.php');
-            $enableRegistration = get_option(CustomizerSetting::SITE_REGISTRATION);
+            $enableRegistration = get_option(Customizer::SITE_REGISTRATION);
             $content .= $this->getFormLogin($linkOfAdmin, $this->number . '1');
             if ($enableRegistration) {
                 $content .= $this->getFormRegister($linkOfAdmin, $this->number . '2');

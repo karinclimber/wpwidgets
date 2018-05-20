@@ -18,7 +18,7 @@ final class WidgetContacts extends Widget
     function initFields()
     {
         $this->addField(new WidgetField(WidgetField::SELECT_MULTIPLE, WidgetContacts::SITE_CONTACTS,
-            __("Site Contacts", 'wptheme'), CustomizerSetting::getSiteContacts(), ""));
+            __("Site Contacts", 'wptheme'), Customizer::getSiteContacts(), ""));
         parent::initFields();
     }
 
@@ -27,34 +27,34 @@ final class WidgetContacts extends Widget
         $content = "";
         $contacts = (array)$instance[self::SITE_CONTACTS];
         if (count($contacts) == 0) {
-            $contacts = array_keys(CustomizerSetting::getSiteContacts());
+            $contacts = array_keys(Customizer::getSiteContacts());
         }
         foreach ($contacts as $key) {
             $contactValue = get_option($key);
             if ($contactValue) {
-                if ($key == CustomizerSetting::SITE_PHONES) {
+                if ($key == Customizer::SITE_PHONES) {
                     $phones = explode(",", $contactValue);
                     foreach ($phones as $contactValue) {
                         $phone = preg_replace('/[^0-9]/', '', $contactValue);
                         $content .= sprintf('<a href="%1$s%2$s" class="%3$s btn-custom" rel="nofollow"><i class="%4$s"></i><span>%5$s</span></a>',
-                            CustomizerSetting::getReferencePrefixes($key),
+                            Customizer::getReferencePrefixes($key),
                             $phone,
                             $key,
-                            CustomizerSetting::getSettingsIconFa($key),
+                            Customizer::getSettingsIconFa($key),
                             $contactValue);
                     }
-                } else if ($key == CustomizerSetting::SITE_ADDRESS) {
+                } else if ($key == Customizer::SITE_ADDRESS) {
                     $content .= sprintf('<a href="%1$s" class="%2$s btn-custom"><i class="%3$s"></i><span>%4$s</span></a>',
-                        CustomizerSetting::getReferencePrefixes($key),
+                        Customizer::getReferencePrefixes($key),
                         $key,
-                        CustomizerSetting::getSettingsIconFa($key),
+                        Customizer::getSettingsIconFa($key),
                         $contactValue);
                 } else {
                     $content .= sprintf('<a href="%1$s%2$s" class="%3$s btn-custom" rel="nofollow"><i class="%4$s"></i><span>%2$s</span></a>',
-                        CustomizerSetting::getReferencePrefixes($key),
+                        Customizer::getReferencePrefixes($key),
                         $contactValue,
                         $key,
-                        CustomizerSetting::getSettingsIconFa($key));
+                        Customizer::getSettingsIconFa($key));
                 }
             }
         }
