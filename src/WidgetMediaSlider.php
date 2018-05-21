@@ -295,8 +295,11 @@ final class WidgetMediaSlider extends Widget
         }
         $sliderOptionsEncoded = json_encode($sliderOptions);
         $optionsName = $this->id_base . $this->number;
+        if (is_integer($this->number) == false) {
+            $optionsName = $this->id_base . 9999;
+        }
         $sliderId = "#{$this->id} > .rs";
-        $content = "<div class='rs $skin' style='height:$sliderHeight;'>{$content}</div>
+        $content = "<div class='rs {$skin}' style='height:{$sliderHeight};'>{$content}</div>
             <script>var $optionsName = $sliderOptionsEncoded;
             if (typeof jQuery === 'undefined'){
                 window.addEventListener('DOMContentLoaded', function() { jQuery('$sliderId').rs($optionsName);});
