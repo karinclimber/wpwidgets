@@ -51,7 +51,7 @@ final class WidgetPosts extends WidgetPostBase
             if ($postsCount > 0) {
                 $linkToCategory = get_category_link(get_option('default_category'));
                 $textViewAll = __("See All");
-                $this->titleAddition = "<a href='{$linkToCategory}' class='widget_title_addition'>{$textViewAll}</a>";
+                $this->titleAddition = "<a href='{$linkToCategory}' class='widgettitle_addition arrow-right'>{$textViewAll}</a>";
             }
             $content = WPUtils::renderTemplate($queryArgs, PostBase::TYPE, $layoutType);
         }
