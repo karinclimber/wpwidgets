@@ -145,15 +145,15 @@ final class WidgetMediaSlider extends Widget
             self::NAVIGATION_THUMBNAILS => __('Thumbnails'),
             self::NAVIGATION_TABS => __('Tabs')
         ], self::NAVIGATION_NONE));
-        $this->addField(new WidgetField(WidgetField::RADIO, self::ORIENTATION, __('Orientation'), [
+        $this->addField(new WidgetField(WidgetField::SELECT, self::ORIENTATION, __('Orientation'), [
             self::ORIENTATION_HORIZONTAL => __('Horizontal'),
             self::ORIENTATION_VERTICAL => __('Vertical')
         ], self::ORIENTATION_HORIZONTAL));
-        $this->addField(new WidgetField(WidgetField::RADIO, self::TRANSITION, __('Transition'), [
+        $this->addField(new WidgetField(WidgetField::SELECT, self::TRANSITION, __('Transition'), [
             self::TRANSITION_MOVE => __('Move'),
             self::TRANSITION_FADE => __('Fade')
         ], self::TRANSITION_MOVE));
-        $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::SLIDE_OPTIONS,
+        $this->addField(new WidgetField(WidgetField::SELECT_MULTIPLE, self::SLIDE_OPTIONS,
             __("Show slides:"), [
                 self::LOOP => __("In Cycle"),
                 self::RANDOMIZE_SLIDES => __("In Random order"),
@@ -161,14 +161,14 @@ final class WidgetMediaSlider extends Widget
                 self::USE_PRELOADER => __("With Preloader")
 
             ], [self::USE_PRELOADER]));
-        $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::NAVIGATE_OPTIONS,
+        $this->addField(new WidgetField(WidgetField::SELECT_MULTIPLE, self::NAVIGATE_OPTIONS,
             __("Change slide with:"), [
                 self::NAVIGATE_BY_CLICK => __("Click"),
                 self::NAVIGATE_BY_DRAG => __("Drag"),
                 self::NAVIGATE_BY_TOUCH => __("Touch"),
                 self::NAV_WITH_KEYBOARD => __("Keyboard Arrows"),
             ], [self::NAVIGATE_BY_CLICK, self::NAVIGATE_BY_DRAG, self::NAVIGATE_BY_TOUCH]));
-        $this->addField(new WidgetField(WidgetField::CHECKBOX_MULTIPLE, self::ARROWS_OPTIONS,
+        $this->addField(new WidgetField(WidgetField::SELECT_MULTIPLE, self::ARROWS_OPTIONS,
             __("Arrows for slide change:"), [
                 self::NAV_ARROWS_SHOW => __("Show"),
                 self::NAV_ARROWS_AUTO_HIDE => __("Auto-hide"),
