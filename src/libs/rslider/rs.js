@@ -116,7 +116,6 @@
         // parse all slides
         self.slides = [];
         self._idCount = 0;
-        var returnVal;
         var ts = self.settings.slides ? $(self.settings.slides) : self.slider.children().detach();
 
         ts.each(function () {
@@ -139,7 +138,6 @@
 
         self._newSlideId = self.staticSlideId = self.currSlideId = self._realId = self.settings.startSlideId;
         self.currSlide = self.slides[self.currSlideId];
-
         self._accelerationPos = 0;
         self.pointerMultitouch = false;
         self.slider.addClass((self._slidesHorizontal ? 'rsHor' : 'rsVer') + (self._isMove ? '' : ' rsFade'));
@@ -147,7 +145,6 @@
         var sliderHTML = '<div class="rsOverflow"><div class="rsContainer">';
         self.slidesSpacing = self.settings.slidesSpacing;
         self._slideSize = (self._slidesHorizontal ? self.slider.width() : self.slider.height()) + self.settings.slidesSpacing;
-
         self._preload = Boolean(self._numPreloadImages > 0);
 
         if (self.numSlides <= 1) {
@@ -155,7 +152,6 @@
         }
         var loopHelpers = (self._loop && self._isMove) ? (self.numSlides === 2 ? 1 : 2) : 0;
         self._loopHelpers = loopHelpers;
-
         self._maxImages = self.numSlides < 6 ? self.numSlides : 6;
         self._currBlockIndex = 0;
 
@@ -237,17 +233,13 @@
         addCursors();
 
         self.slider.html(sliderHTML);
-
-
         self._controlsContainer = self.settings.controlsInside ? self._sliderOverflow : self.slider;
-
         self._slidesContainer = self._sliderOverflow.children('.rsContainer');
         if (self.pointerEnabled) {
             self._slidesContainer.css((nPointerEnabled ? '' : '-ms-') + 'touch-action', self._slidesHorizontal ? 'pan-y' : 'pan-x');
         }
         self._preloader = $('<div class="rsPreloader"></div>');
         var slides = self._slidesContainer.children('.rsSlide');
-
         self._currHolder = self.slidesJQ[self.currSlideId];
         self._selectedSlideHolder = 0;
 
@@ -409,8 +401,8 @@
     $.rsProto = RS.prototype = {
         constructor: RS,
         _mouseNext: function (e) {
-            var self = this,
-                relativePos = e[self._slidesHorizontal ? 'pageX' : 'pageY'] - self._sliderOffset;
+            var self = this;
+            var relativePos = e[self._slidesHorizontal ? 'pageX' : 'pageY'] - self._sliderOffset;
 
             if (relativePos >= self._nextSlidePos) {
                 self.next();
@@ -419,9 +411,8 @@
             }
         },
         _refreshNumPreloadImages: function () {
-            var self = this,
-                n;
-            n = self.settings.numImagesToPreload;
+            var self = this;
+            var n = self.settings.numImagesToPreload;
             self._loop = self.settings.loop;
 
             if (self._loop) {
@@ -445,13 +436,7 @@
             self._numPreloadImages = n;
         },
         _parseNode: function (content, pushToSlides) {
-            var self = this,
-                hasImg,
-                isRoot,
-                hasCover,
-                obj = {},
-                tempEl,
-                first = true;
+            var self = this, hasImg, isRoot, hasCover, obj = {}, tempEl, first = true;
             content = $(content);
             self._currContent = content;
             self.ev.trigger('rsBeforeParseNode', [content, obj]);
@@ -464,7 +449,6 @@
             self._idCount++;
             obj.images = [];
             obj.isBig = false;
-
             if (!obj.hasCover) {
                 if (content.hasClass('rsImg')) {
                     tempEl = content;
@@ -481,16 +465,16 @@
                     tempEl.each(function () {
                         var item = $(this);
                         if (item.is('a')) {
-                            parseEl(item, 'href');
+                            parseItemElementMarkup(item, 'href');
                         } else if (item.is('img')) {
-                            parseEl(item, 'src');
+                            parseItemElementMarkup(item, 'src');
                         } else {
-                            parseEl(item);
+                            parseItemElementMarkup(item);
                         }
                     });
                 } else if (content.is('img')) {
                     content.addClass('rsImg rsMainSlideImage');
-                    parseEl(content, 'src');
+                    parseItemElementMarkup(content, 'src');
                 }
             }
             tempEl = content.find('.rsCaption');
@@ -498,24 +482,26 @@
                 obj.caption = tempEl.remove();
             }
             obj.content = content;
-
             self.ev.trigger('rsAfterParseNode', [content, obj]);
-
-            function parseEl(el, s) {
-                if (s) {
-                    obj.images.push(el.attr(s));
+            function parseItemElementMarkup(slideElement, imgSrcAttr) {
+                if (imgSrcAttr) {
+                    obj.images.push(slideElement.attr(imgSrcAttr));
                 } else {
-                    obj.images.push(el.text());
+                    obj.images.push(slideElement.text());
                 }
                 if (first) {
                     first = false;
-                    obj.caption = (s === 'src') ? el.attr('alt') : el.contents();
+                    if (imgSrcAttr === 'src'){
+                        obj.caption = slideElement.attr('alt');
+                    } else if (imgSrcAttr === 'href'){
+                        obj.caption = slideElement.contents();
+                    } else {
+                        obj.caption = slideElement.contents();
+                    }
                     obj.image = obj.images[0];
-                    obj.videoURL = el.attr('data-rsVideo');
-
-
-                    var wAtt = el.attr('data-rsw'),
-                        hAtt = el.attr('data-rsh');
+                    obj.videoURL = slideElement.attr('data-rsVideo');
+                    var wAtt = slideElement.attr('data-rsw');
+                    var hAtt = slideElement.attr('data-rsh');
                     if (typeof wAtt !== 'undefined' && wAtt !== false && typeof hAtt !== 'undefined' && hAtt !== false) {
                         obj.iW = parseInt(wAtt, 10);
                         obj.iH = parseInt(hAtt, 10);
@@ -578,11 +564,7 @@
                     interval = null;
                 }
             });
-
-
         },
-
-
         goTo: function (id, notUserAction) {
             var self = this;
             if (id !== self.currSlideId) {
@@ -608,32 +590,17 @@
             self.ev = null;
         },
         _updateBlocksContent: function (beforeTransition, getId) {
-            var self = this,
-                item,
-                i,
-                n,
-                pref,
-                group,
-                groupId,
-                slideCode,
-                loop = self._loop,
-                numSlides = self.numSlides;
+            var self = this, item, i, loop = self._loop, numSlides = self.numSlides;
             if (!isNaN(getId)) {
                 return getCorrectLoopedId(getId);
             }
-
-
             var id = self.currSlideId;
             var groupOffset;
-
             var itemsOnSide = beforeTransition ? (Math.abs(self._prevSlideId - self.currSlideId) >= self.numSlides - 1 ? 0 : 1) : self._numPreloadImages;
             var itemsToCheck = Math.min(2, itemsOnSide);
-
             var updateAfter = false;
             var updateBefore = false;
             var tempId;
-
-
             for (i = id; i < id + 1 + itemsToCheck; i++) {
                 tempId = getCorrectLoopedId(i);
                 item = self.slides[tempId];
@@ -671,13 +638,9 @@
                 }
             }
             if (!beforeTransition) {
-                var start = id;
-                var distance = itemsOnSide;
                 var min = getCorrectLoopedId(id - itemsOnSide);
                 var max = getCorrectLoopedId(id + itemsOnSide);
-
                 var nmin = min > max ? 0 : min;
-
                 for (i = 0; i < numSlides; i++) {
                     if (min > max) {
                         if (i > min - 1) {
@@ -693,10 +656,7 @@
                     }
                 }
             }
-
-
             function updateItem(item, i, slideCode) {
-
                 if (!item.isAdded) {
                     if (!slideCode)
                         slideCode = self.slidesJQ[i];
@@ -709,8 +669,6 @@
                     }
 
                     item.appendOnLoaded = false;
-
-
                     updatePos(i, item, slideCode);
                     addContent(i, item);
                     self._addBlockToContainer(item, slideCode, beforeTransition);
@@ -742,7 +700,6 @@
             }
 
             function getCorrectLoopedId(index) {
-                var changed = false;
                 if (loop) {
                     if (index > numSlides - 1) {
                         return getCorrectLoopedId(index - numSlides);
@@ -784,13 +741,12 @@
                 }
                 if (el && !el.is('img')) {
                     el.each(function () {
-                        var item = $(this),
-                            newEl = '<img class="rsImg" src="' + (item.is('a') ? item.attr('href') : item.text()) + '" />';
-
+                        var item = $(this);
+                        var slideImgElement = '<img class="rsImg" src="' + (item.is('a') ? item.attr('href') : item.text()) + '">';
                         if (!isRoot) {
-                            item.replaceWith(newEl);
+                            item.replaceWith(slideImgElement);
                         } else {
-                            currSlideObject.content = $(newEl);
+                            currSlideObject.content = $(slideImgElement);
                         }
                     });
                 }
@@ -807,8 +763,6 @@
                 }
 
                 currSlideObject.isLoading = true;
-                var newEl;
-
                 var eNames = 'load.rs error.rs';
                 if (currSlideObject.isBig) {
                     $('<img />').on(eNames, function (e) {
@@ -973,25 +927,15 @@
             }
 
         },
-        _addBlockToContainer: function (slideObject, content, dontFade) {
+        _addBlockToContainer: function (slideObject) {
             var self = this;
-            var holder = slideObject.holder;
-            var bId = slideObject.id - self._newSlideId;
-            var visibleNearby = false;
-
-            self._slidesContainer.append(holder);
+            self._slidesContainer.append(slideObject.holder);
             slideObject.appendOnLoaded = false;
         },
 
         _onDragStart: function (e, isThumbs) {
-            var self = this,
-                point,
-                wasAnimating,
-                isTouch = (e.type === 'touchstart');
-
-
+            var self = this, point, wasAnimating, isTouch = (e.type === 'touchstart');
             self._isTouchGesture = isTouch;
-
             self.ev.trigger('rsDragStart');
             if ($(e.target).closest('.rsNoDrag', self._currHolder).length) {
                 self.dragSuccess = false;
@@ -1041,22 +985,17 @@
             self._isDragging = true;
             self._doc.on(self._moveEvent, function (e) {
                 self._onDragMove(e, isThumbs);
-            })
-                .on(self._upEvent, function (e) {
-                    self._onDragRelease(e, isThumbs);
-                });
-
+            }).on(self._upEvent, function (e) {
+                self._onDragRelease(e, isThumbs);
+            });
             self._currMoveAxis = '';
             self._hasMoved = false;
             self._pageX = point.pageX;
             self._pageY = point.pageY;
             self._startPagePos = self._accelerationPos = (!isThumbs ? self._slidesHorizontal : self._thumbsHorizontal) ? point.pageX : point.pageY;
-
             self._horDir = 0;
             self._verDir = 0;
-
             self._currRenderPosition = !isThumbs ? self._sPosition : self._thumbsPosition;
-
             self._startTime = new Date().getTime();
             if (isTouch) {
                 self._sliderOverflow.on(self._cancelEvent, function (e) {
@@ -1534,22 +1473,19 @@
          * @param  {int} index    (optional) Index where item should be added (last item is removed of not specified)
          */
         appendSlide: function (htmltext, index) {
-            var self = this,
-                parsedSlide = self._parseNode(htmltext);
-
+            var self = this;
+            var parsedSlide = self._parseNode(htmltext);
             if (isNaN(index) || index > self.numSlides) {
                 index = self.numSlides;
             }
             self.slides.splice(index, 0, parsedSlide);
             self.slidesJQ.splice(index, 0, $('<div style="' + (self._isMove ? 'position:absolute;' : self._opacityCSS) + '" class="rsSlide"></div>'));
-
+            console.log(self.slidesJQ);
             if (index <= self.currSlideId) {
                 self.currSlideId++;
             }
             self.ev.trigger('rsOnAppendSlide', [parsedSlide, index]);
-
             self._refreshSlides(index);
-
             if (index === self.currSlideId) {
                 self.ev.trigger('rsAfterSlideChange');
             }

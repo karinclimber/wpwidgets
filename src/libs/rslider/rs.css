@@ -8,6 +8,11 @@
 }
 .rs > * {
     float: left;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
 }
 .rs > .rsContent,
 .rs > .rsSlideRoot {
@@ -258,4 +263,19 @@ a.rsLink {
 }
 .abTextAlignCenter {
     text-align: center;
+}
+a.rsImg > .rsCaptionContent {
+    display: none;
+}
+.rsGCaption.rsGCaptionInside {
+    background: none !important;
+    top: 50% !important;
+    left: 50% !important;
+    bottom: initial !important;
+    transform: translate(-50%, -50%);
+    width: 70% !important;
+}
+.rsGCaption.rsGCaptionInside > *{
+    cursor: grab;
+    font-weight: bold;
 }

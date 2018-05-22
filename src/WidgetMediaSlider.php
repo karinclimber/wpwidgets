@@ -115,6 +115,7 @@ final class WidgetMediaSlider extends Widget
         $enqueueScript('rsbullets', "{$uriToDirLibs}/rslider/rsBullets.js", ['rs'], null, true);
         $enqueueScript('rsthumbnails', "{$uriToDirLibs}/rslider/rsThumbnails.js", ['rs'], null, true);
         $enqueueScript('rstabs', "{$uriToDirLibs}/rslider/rsTabs.js", ['rs'], null, true);
+        $enqueueScript('rsGlobalCaption', "{$uriToDirLibs}/rslider/rsGlobalCaption.js", ['rs'], null, true);
     }
 
     function enqueueScriptsAdmin()
@@ -224,6 +225,17 @@ final class WidgetMediaSlider extends Widget
     function widget($args, $instance)
     {
         $content = '';
+        //Navigation
+        $navigateOptions = self::getInstanceValue($instance, self::NAVIGATE_OPTIONS, $this);
+        //Values
+        $sliderHeight = self::getInstanceValue($instance, self::AUTO_SCALE_HEIGHT, $this);
+        //Options
+        $slideOptions = self::getInstanceValue($instance, self::SLIDE_OPTIONS, $this);
+        //Caption
+        $showCaption = in_array(self::GLOBAL_CAPTION, $slideOptions);
+        if (!is_customize_preview() && $showCaption) {
+            wp_enqueue_script('rsGlobalCaption');
+        }
         //Navigation Control
         $controlNavigation = self::getInstanceValue($instance, self::NAVIGATION, $this);
         $showThumbnails = ($controlNavigation == self::NAVIGATION_TABS || $controlNavigation == self::NAVIGATION_THUMBNAILS);
@@ -272,6 +284,10 @@ final class WidgetMediaSlider extends Widget
                 $imgWidths [] = $imgWidth = $imgInfo['1'];
                 $imgHeights [] = $imgHeight = $imgInfo['2'];
                 $content .= "<a class='rsImg' href='{$imgInfo['0']}' data-rsw='{$imgWidth}' data-rsh='{$imgHeight}' data-href='{$imageLink}'>";
+                if ($showCaption && is_singular()) {
+                    $caption = get_the_title();
+                    $content .= "<h1 class='rsCaptionContent text-xs-center'>$caption</h1>";
+                }
                 if ($showThumbnails) {
                     $imgInfo = image_downsize($imageId, WPImages::THUMB);
                     $content .= "<img src={$imgInfo['0']} width='96' height='72' class='rsTmb' />";
@@ -291,12 +307,6 @@ final class WidgetMediaSlider extends Widget
             if (!is_customize_preview() && $arrowsNavAutoHide) {
                 wp_enqueue_script('rsAutoHideNav');
             }
-            //Navigation
-            $navigateOptions = self::getInstanceValue($instance, self::NAVIGATE_OPTIONS, $this);
-            //Options
-            $slideOptions = self::getInstanceValue($instance, self::SLIDE_OPTIONS, $this);
-            //Values
-            $sliderHeight = self::getInstanceValue($instance, self::AUTO_SCALE_HEIGHT, $this);
             //Content
             $sliderOptions = [
                 'autoScaleSlider' => self::getInstanceValue($instance, self::AUTO_SCALE, $this),
@@ -320,7 +330,8 @@ final class WidgetMediaSlider extends Widget
 
                 'randomizeSlides' => in_array(self::RANDOMIZE_SLIDES, $slideOptions),
                 'usePreloader' => in_array(self::USE_PRELOADER, $slideOptions),
-                'globalCaption' => in_array(self::GLOBAL_CAPTION, $slideOptions),
+                'globalCaption' => $showCaption,
+                'globalCaptionInside' => true,
 
                 'startSlideId' => (int)self::getInstanceValue($instance, self::START_SLIDE_ID, $this),
                 'numImagesToPreload' => (int)self::getInstanceValue($instance, self::IMAGES_TO_PRELOAD, $this),
