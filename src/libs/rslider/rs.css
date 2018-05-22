@@ -276,6 +276,8 @@ a.rsImg > .rsCaptionContent {
     width: 70% !important;
 }
 .rsGCaption.rsGCaptionInside > *{
+    font-family:'Roboto Slab', serif;
+    text-shadow:rgba(0, 0, 0, 0.3) 0px 1px 1px;
+    font-weight:700 !important;
     cursor: grab;
-    font-weight: bold;
 }
