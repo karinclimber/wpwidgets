@@ -8,15 +8,29 @@
 namespace wp;
 final class WidgetPosts extends WidgetPostBase
 {
+    const CHANGE_CONTENT_BY_PAGE = 'widgetPostsChangeContentByPage';
+    const TYPE = 'widgetPostsType';
+
     function __construct()
     {
-        parent::__construct(__('Posts', 'wptheme'));
+        parent::__construct(__('Posts'));
+    }
+
+    function initFields()
+    {
+        $this->addField(new WidgetField(WidgetField::CHECKBOX, self::CHANGE_CONTENT_BY_PAGE,
+            __('Change content by page type'), [], false));
+        $posts = Widget::getPagesOfPosts();
+        $this->addField(new WidgetField(WidgetField::SELECT, self::TYPE,
+            __('Content Type'), $posts, PostBase::TYPE));
+        parent::initFields();
     }
 
     function widget($args, $instance)
     {
-        $content = "";
-        if (is_singular()) {
+        $content = '';
+        $changeContentByPage = intval(self::getInstanceValue($instance, self::CHANGE_CONTENT_BY_PAGE, $this));
+        if ($changeContentByPage && is_singular()) {
             $instance[Widget::CUSTOM_TITLE] = get_the_title();
             $textPostedOn = __('Posted on');
             $textTime = get_the_time('d M Y');
@@ -34,26 +48,38 @@ final class WidgetPosts extends WidgetPostBase
                 }
             }
         } else {
-            $postsCount = intval(self::getInstanceValue($instance, QueryPost::PER_PAGE, $this));
-            if (is_archive()){
-                //TODO Add a widget options to spcify when make this auto changes for case when on sam category page want to display some tiles of post Ex. Recent
-                $instance[Widget::CUSTOM_TITLE] = single_term_title('',false);
-                $postsCount = -1;
-            }
+            $postType = self::getInstanceValue($instance, self::TYPE, $this);
             $sortCriteria = self::getInstanceValue($instance, self::SORT_CRITERIA, $this);
             $queryArgs = [
-                QueryPost::TYPE => WPostTypes::POST,
-                QueryPost::PER_PAGE => $postsCount,
+                QueryPost::TYPE => $postType,
                 QueryPost::ORDER_BY => $this->getPostOrderBy($sortCriteria, false),
                 QueryPost::ORDER => $this->getPostOrder($sortCriteria, false),
             ];
-            $layoutType = self::getInstanceValue($instance, self::LAYOUT, $this);
+            $postsCount = intval(self::getInstanceValue($instance, QueryPost::PER_PAGE, $this));
+            if ($changeContentByPage && is_archive()) {
+                $instance[Widget::CUSTOM_TITLE] = single_term_title('', false);
+                $postsCount = -1;
+                /**
+                 * @var $currentTax \WP_Term
+                 */
+                $currentTax = get_queried_object();
+                if ($currentTax->term_id > 0) {
+                    $queryArgs[QueryTaxonomy::DEFINITION] = [QueryTaxonomy::RELATION => QueryRelations::_AND,
+                        [
+                            QueryTaxonomy::NAME => $currentTax->taxonomy,
+                            QueryTaxonomy::TERMS => $currentTax->term_id
+                        ]];
+                }
+            }
+            $queryArgs[QueryPost::PER_PAGE] = $postsCount;
             if ($postsCount > 0) {
                 $linkToCategory = get_category_link(get_option('default_category'));
                 $textViewAll = __("See All");
                 $this->titleAddition = "<a href='{$linkToCategory}' class='widgettitle_addition arrow-right'>{$textViewAll}</a>";
             }
-            $content = WPUtils::renderTemplate($queryArgs, PostBase::TYPE, $layoutType);
+            $layoutType = self::getInstanceValue($instance, self::LAYOUT, $this);
+            $templatePath = WPUtils::locatePostTemplate(strtolower($postType), $layoutType,__DIR__);
+            $content = WPUtils::renderTemplate($queryArgs, $templatePath);
         }
 
         $args[WPSidebar::CONTENT] = $content;
