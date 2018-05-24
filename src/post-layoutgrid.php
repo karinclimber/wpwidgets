@@ -1,11 +1,10 @@
 <div class="col-md-4 col-sm-6 col-xs-12">
     <div class="card card-plain card-blog">
         <div class="card-image">
-            <a href="<?= get_the_permalink(); ?>">
+            <a href="<?= get_the_permalink(); ?>" class="d-xs-block">
                 <?= \wp\WPUtils::getThumbnail(\wp\WPImages::THUMB,
                     ["class" => "img img-raised", "alt" => get_the_title(), "title" => get_the_title()]); ?>
             </a>
-            <div class="ripple-container"></div>
         </div>
         <div class="card-content">
             <?php //TODO Here If current category is same as post Show the Tags instead or Disable link  ?>
@@ -26,11 +25,6 @@
                 <time datetime="<?= get_the_modified_time('c'); ?>">
                     <?= get_the_modified_time('d M Y'); ?>
                 </time>
-                <a href="<?= get_the_permalink(); ?>">
-                    <span class="float-xs-right">
-                        <?= __('Know More', 'wptheme'); ?>
-                    </span>
-                </a>
             </div>
         </div>
     </div>

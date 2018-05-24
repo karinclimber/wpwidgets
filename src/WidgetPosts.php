@@ -29,14 +29,15 @@ final class WidgetPosts extends WidgetPostBase
     function widget($args, $instance)
     {
         $content = '';
+        $customTitle = '';
         $changeContentByPage = intval(self::getInstanceValue($instance, self::CHANGE_CONTENT_BY_PAGE, $this));
         if ($changeContentByPage && is_singular()) {
-            $instance[Widget::CUSTOM_TITLE] = get_the_title();
+            /*$customTitle .= get_the_title();
             $textPostedOn = __('Posted on');
             $textTime = get_the_time('d M Y');
             $textIn = __('in');
             $textCategoryList = get_the_category_list(', ');
-            $dateTitle = "<small class='text-center'>{$textPostedOn} {$textTime} {$textIn} {$textCategoryList}</small>";
+            $dateTitle = "<small class='text-center'>{$textPostedOn} {$textTime} {$textIn} {$textCategoryList}</small>";*/
             if (have_posts()) {
                 while (have_posts()) {
                     the_post();
@@ -48,6 +49,7 @@ final class WidgetPosts extends WidgetPostBase
                 }
             }
         } else {
+            $customTitle .= self::getInstanceValue($instance, self::CUSTOM_TITLE, $this);
             $postType = self::getInstanceValue($instance, self::TYPE, $this);
             $sortCriteria = self::getInstanceValue($instance, self::SORT_CRITERIA, $this);
             $queryArgs = [
@@ -55,13 +57,14 @@ final class WidgetPosts extends WidgetPostBase
                 QueryPost::ORDER_BY => $this->getPostOrderBy($sortCriteria, false),
                 QueryPost::ORDER => $this->getPostOrder($sortCriteria, false),
             ];
+            if ($postType == WPostTypes::ATTACHMENT){
+                $queryArgs [QueryPost::STATUS] = WPostStatus::INHERIT;
+            }
             $postsCount = intval(self::getInstanceValue($instance, QueryPost::PER_PAGE, $this));
             if ($changeContentByPage && is_archive()) {
-                $instance[Widget::CUSTOM_TITLE] = single_term_title('', false);
+                $customTitle = single_term_title('', false);
                 $postsCount = -1;
-                /**
-                 * @var $currentTax \WP_Term
-                 */
+                /** @var $currentTax \WP_Term */
                 $currentTax = get_queried_object();
                 if ($currentTax->term_id > 0) {
                     $queryArgs[QueryTaxonomy::DEFINITION] = [QueryTaxonomy::RELATION => QueryRelations::_AND,
@@ -70,18 +73,26 @@ final class WidgetPosts extends WidgetPostBase
                             QueryTaxonomy::TERMS => $currentTax->term_id
                         ]];
                 }
+            } else if ($customTitle == '') {
+                $currentPostType = get_post_type_object($postType);
+                $customTitle = $currentPostType->labels->name;
             }
             $queryArgs[QueryPost::PER_PAGE] = $postsCount;
-            if ($postsCount > 0) {
-                $linkToCategory = get_category_link(get_option('default_category'));
-                $textViewAll = __("See All");
-                $this->titleAddition = "<a href='{$linkToCategory}' class='widgettitle_addition arrow-right'>{$textViewAll}</a>";
-            }
             $layoutType = self::getInstanceValue($instance, self::LAYOUT, $this);
-            $templatePath = WPUtils::locatePostTemplate(strtolower($postType), $layoutType,__DIR__);
-            $content = WPUtils::renderTemplate($queryArgs, $templatePath);
+            $templatePath = WPUtils::locatePostTemplate(strtolower($postType), $layoutType, __DIR__);
+            $content .= WPUtils::renderTemplate($queryArgs, $templatePath, $postsCountResult);
+            $queryArgs[QueryPost::PER_PAGE] = -1;
+            $postsQuery = new \WP_Query($queryArgs);
+            if ($postsCount > 0 && $postsCountResult < $postsQuery->post_count) {
+                $linkToCategory = get_post_type_archive_link($postType);
+                if (!empty($linkToCategory)) {
+                    $textViewAll = __('See All');
+                    $args[WPSidebar::BEFORE_TITLE_ADDITION] = "<a href='{$linkToCategory}' title='{$textViewAll}'>";
+                    $args[WPSidebar::AFTER_TITLE_ADDITION] = "</a>";
+                }
+            }
         }
-
+        $instance[Widget::CUSTOM_TITLE] = $customTitle;
         $args[WPSidebar::CONTENT] = $content;
         parent::widget($args, $instance);
     }
