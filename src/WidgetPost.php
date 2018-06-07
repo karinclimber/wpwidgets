@@ -22,19 +22,30 @@ final class WidgetPost extends Widget
     {
         $content = '';
         $customTitle = '';
-        if (is_singular()) {
+        $titleAddition = '';
+        //TODO Add Tags, Next /Previous Post, Featured Image, Gallery Image, Options to choose that to display
+        if (is_single()) {
             $customTitle .= get_the_title();
-            $textPostedOn = WPUtils::getPostAuthorAndDate(false);
-            $textIn = __('in');
+            $textPublishDate = WPUtils::getPostAuthorAndDate(false);
             $textCategoryList = get_the_category_list(', ');
-            $args[WPSidebar::AFTER_TITLE_ADDITION] = "<small class='text-center'>{$textPostedOn} {$textIn} {$textCategoryList}</small>";
-            $pageContent = get_the_content();
-            $pageContent = apply_filters('the_content', $pageContent);
-            $pageContent = str_replace(']]>', ']]&gt;', $pageContent);
-            $pageClass = implode(' ', get_post_class('', get_the_ID()));
-            $content .= "<div class='$pageClass'>$pageContent</div>";
+            $textCategory = '';
+            if ($textCategoryList){
+                $textCategory = sprintf(__('Category: %s'),$textCategoryList);
+            }
+            $titleAddition = "<p class='no-gap'><small class='col-xs-5'>{$textCategory}</small><small class='col-xs-7 text-xs-right'>{$textPublishDate}</small></p>";
+            if (have_posts()) {
+                while (have_posts()) {
+                    the_post();
+                    $pageContent = get_the_content();
+                    $pageContent = apply_filters('the_content', $pageContent);
+                    $pageContent = str_replace(']]>', ']]&gt;', $pageContent);
+                    $pageClass = implode(' ', get_post_class('', get_the_ID()));
+                    $content .= "<div class='$pageClass'>$pageContent</div>";
+                }
+            }
         }
         $instance[Widget::CUSTOM_TITLE] = $customTitle;
+        $args[WPSidebar::AFTER_TITLE_ADDITION] = $titleAddition;
         $args[WPSidebar::CONTENT] = $content;
         parent::widget($args, $instance);
     }

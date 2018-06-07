@@ -8,6 +8,11 @@
         </div>
         <div class="card-content">
             <?php //TODO Here If current category is same as post Show the Tags instead or Disable link  ?>
+            <h5 class="card-title text-hide-overflow">
+                <a href="<?= get_the_permalink(); ?>">
+                    <?= get_the_title(); ?>
+                </a>
+            </h5>
             <h6 class="category">
                 <?php
                 foreach ((get_the_category()) as $category): ?>
@@ -16,11 +21,6 @@
                     </a>
                 <?php endforeach; ?>
             </h6>
-            <h5 class="card-title text-hide-overflow">
-                <a href="<?= get_the_permalink(); ?>">
-                    <?= get_the_title(); ?>
-                </a>
-            </h5>
             <div class="card-description">
                 <time datetime="<?= get_the_modified_time('c'); ?>">
                     <?= \wp\WPUtils::getPostAuthorAndDate(); ?>

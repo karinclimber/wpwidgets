@@ -16,6 +16,7 @@ final class WidgetPosts extends Widget
     const LAYOUT = "layout";
     const LAYOUT_LIST = "layoutList";
     const LAYOUT_GRID = "layoutGrid";
+    const CHANGE_CONTENT_BY_PAGE = 'widgetPostsChangeContentByPage';
 
     function __construct()
     {
@@ -25,6 +26,8 @@ final class WidgetPosts extends Widget
     function initFields()
     {
         $posts = Widget::getPagesOfPosts();
+        $this->addField(new WidgetField(WidgetField::CHECKBOX, self::CHANGE_CONTENT_BY_PAGE,
+            __('Change content by page type'), [], false));
         $this->addField(new WidgetField(WidgetField::SELECT, self::TYPE,
             __('Content Type'), $posts, PostBase::TYPE));
         $this->addField(new WidgetField(WidgetField::SELECT, self::SORT_CRITERIA,
@@ -129,7 +132,8 @@ final class WidgetPosts extends Widget
             $queryArgs [QueryPost::STATUS] = WPostStatus::INHERIT;
         }
         $postsCount = intval(self::getInstanceValue($instance, QueryPost::PER_PAGE, $this));
-        if (is_archive()) {
+        $changeContentByPage = intval(self::getInstanceValue($instance, self::CHANGE_CONTENT_BY_PAGE, $this));
+        if ($changeContentByPage && is_archive()) {
             $customTitle = single_term_title('', false);
             $postsCount = -1;
             /** @var $currentTax \WP_Term */
