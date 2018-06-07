@@ -24,11 +24,10 @@ final class WidgetPost extends Widget
         $customTitle = '';
         if (is_singular()) {
             $customTitle .= get_the_title();
-            $textPostedOn = __('Posted on');
-            $textTime = get_the_time('d M Y');
+            $textPostedOn = WPUtils::getPostAuthorAndDate(false);
             $textIn = __('in');
             $textCategoryList = get_the_category_list(', ');
-            $dateTitle = "<small class='text-center'>{$textPostedOn} {$textTime} {$textIn} {$textCategoryList}</small>";
+            $args[WPSidebar::AFTER_TITLE_ADDITION] = "<small class='text-center'>{$textPostedOn} {$textIn} {$textCategoryList}</small>";
             $pageContent = get_the_content();
             $pageContent = apply_filters('the_content', $pageContent);
             $pageContent = str_replace(']]>', ']]&gt;', $pageContent);

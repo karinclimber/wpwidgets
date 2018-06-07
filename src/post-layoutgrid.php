@@ -23,7 +23,7 @@
             </h5>
             <div class="card-description">
                 <time datetime="<?= get_the_modified_time('c'); ?>">
-                    <?= get_the_modified_time('d M Y'); ?>
+                    <?= \wp\WPUtils::getPostAuthorAndDate(); ?>
                 </time>
             </div>
         </div>

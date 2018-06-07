@@ -33,19 +33,7 @@
         </p>
         <p class="card-author">
             <time datetime="<?= get_the_modified_time('c'); ?>">
-                <?php
-                $author = get_the_author_meta('display_name');
-                $byAuthor = sprintf(__('By %s'), "<strong>$author</strong>");
-                $authorId = get_the_author_meta('ID');
-                $authorAvatar = "";
-                echo sprintf(
-                /* translators: post revision title: 1: author avatar, 2: author name, 3: time ago, 4: date */
-                    __('%1$s %2$s, %3$s ago (%4$s)'),
-                    $authorAvatar,
-                    $byAuthor,
-                    human_time_diff(get_the_modified_time('U'), current_time('timestamp')),
-                    get_the_modified_time('d M Y')
-                ); ?>
+                <?=\wp\WPUtils::getPostAuthorAndDate();?>
             </time>
         </p>
     </div>
