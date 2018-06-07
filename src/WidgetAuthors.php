@@ -9,10 +9,13 @@ namespace wp;
 
 use WP_User;
 
-final class WidgetAuthors extends WidgetLayoutBase
+final class WidgetAuthors extends Widget
 {
     const SHOW_POST_AUTHOR = "showPostAuthor";
     const SHOW_CALL_BUTTON = "showCallButton";
+    const LAYOUT = "layout";
+    const LAYOUT_LIST = "layoutList";
+    const LAYOUT_GRID = "layoutGrid";
 
     function __construct()
     {
@@ -28,6 +31,11 @@ final class WidgetAuthors extends WidgetLayoutBase
             __('Show Call Button', 'wptheme'), [], false));
         $this->addField(new WidgetField(WidgetField::NUMBER, QueryUsers::NUMBER,
             __('Number of Agents', 'wptheme'), [], 3));
+        $field = new WidgetField(WidgetField::SELECT, self::LAYOUT, __('Layout'), [
+            self::LAYOUT_LIST => __('List'),
+            self::LAYOUT_GRID => __('Grid'),
+        ], self::LAYOUT_LIST);
+        $this->addField($field);
         parent::initFields();
     }
 
