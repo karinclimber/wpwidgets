@@ -42,9 +42,12 @@ final class WidgetPost extends Widget
         //TODO Add Tags, Next /Previous Post, Featured Image, Gallery Image, Options to choose that to display
         if (is_archive() || is_tax()) {
 
-        } else if (is_front_page() || is_home() || is_page()) {
-
-        } else if (is_single()) {
+        } else if (is_front_page() || is_page()) {
+            if ($customTitle == '') {
+                $customTitle = get_the_title();
+            }
+            $content = $this->getPostContent();
+        } else if (is_single() && !is_home()) {
             if ($customTitle == '') {
                 $customTitle = get_the_title();
             }
@@ -57,12 +60,8 @@ final class WidgetPost extends Widget
             $titleAddition = "<p class='no-gap'><small class='col-xs-5'>{$textCategory}</small><small class='col-xs-7 text-xs-right'>{$textPublishDate}</small></p>";
             $content = $this->getPostContent();
             //previous_post_link(); next_post_link();
-        } else {
-            if ($customTitle == '') {
-                $customTitle = get_the_title();
-            }
-            $content = $this->getPostContent();
         }
+
         $instance[Widget::CUSTOM_TITLE] = $customTitle;
         $args[WPSidebar::AFTER_TITLE_ADDITION] = $titleAddition;
         $args[WPSidebar::CONTENT] = $content;
