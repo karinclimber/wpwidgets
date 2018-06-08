@@ -119,8 +119,7 @@ final class WidgetPosts extends Widget
     function widget($args, $instance)
     {
         $content = '';
-        $customTitle = '';
-        $customTitle .= self::getInstanceValue($instance, self::CUSTOM_TITLE, $this);
+        $customTitle = self::getInstanceValue($instance, self::CUSTOM_TITLE, $this);
         $postType = self::getInstanceValue($instance, self::TYPE, $this);
         $sortCriteria = self::getInstanceValue($instance, self::SORT_CRITERIA, $this);
         $queryArgs = [
@@ -133,8 +132,12 @@ final class WidgetPosts extends Widget
         }
         $postsCount = intval(self::getInstanceValue($instance, QueryPost::PER_PAGE, $this));
         $changeContentByPage = intval(self::getInstanceValue($instance, self::CHANGE_CONTENT_BY_PAGE, $this));
-        if ($changeContentByPage && is_archive()) {
-            $customTitle = single_term_title('', false);
+        if ($changeContentByPage && (is_category() || is_tax() || is_home())) {
+            if ($customTitle == '') {
+                if (!is_home()) {
+                    $customTitle = single_term_title('', false);
+                }
+            }
             $postsCount = -1;
             /** @var $currentTax \WP_Term */
             $currentTax = get_queried_object();
@@ -145,7 +148,8 @@ final class WidgetPosts extends Widget
                         QueryTaxonomy::TERMS => $currentTax->term_id
                     ]];
             }
-        } else if ($customTitle == '') {
+        }
+        if ($customTitle == '') {
             $currentPostType = get_post_type_object($postType);
             $customTitle = $currentPostType->labels->name;
         }
