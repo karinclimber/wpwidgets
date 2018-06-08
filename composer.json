@@ -2,7 +2,10 @@
   "name": "lvis/wpwidgets",
   "type": "library",
   "description": "Wordpress: Widgets",
-  "keywords": [ "wordpress", "framework" ],
+  "keywords": [
+    "wordpress",
+    "framework"
+  ],
   "homepage": "https://github.com/lvis/wpwidgets",
   "license": "proprietary",
   "authors": [
@@ -13,13 +16,18 @@
     }
   ],
   "repositories": [
-    {"type": "git", "url": "https://github.com/lvis/wp"}
+    {
+      "type": "git",
+      "url": "https://github.com/lvis/wp"
+    }
   ],
   "require": {
     "php": ">=7",
-    "lvis/wp":"dev-master"
+    "lvis/wp": "dev-master"
   },
   "autoload": {
-    "psr-4": {"wp\\": "src/"}
+    "psr-4": {
+      "wp\\": "src/"
+    }
   }
 }
