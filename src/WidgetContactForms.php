@@ -165,7 +165,8 @@ final class WidgetContactForms extends WidgetDialogBase
                 uniqid("phone"),
                 __('Your Phone Number', 'wptheme'));
 
-            $fieldNonce = WPUtils::getNonceField(WidgetContactForms::NONCE_MESSAGE, WidgetContactForms::NONCE_MESSAGE, true, false);
+            $fieldNonce = WPUtils::getNonceField(WidgetContactForms::NONCE_MESSAGE,
+                WidgetContactForms::NONCE_MESSAGE, true, false);
 
             $contentHeader = "";
             $formType = self::getInstanceValue($instance, self::FORM_TYPE, $this);
