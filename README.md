@@ -1,2 +1,2 @@
-# wpwidgets
-WrodPress Custom Widgets
+# wpWidgets
+Wordpress: Widgets

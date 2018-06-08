@@ -1,20 +1,18 @@
 {
   "name": "lvis/wpwidgets",
-  "description": "WrodPress Custom Widgets",
   "type": "library",
-  "version": "1.0",
-  "keywords": [ "wordpress" ],
+  "description": "Wordpress: Widgets",
+  "keywords": [ "wordpress", "framework" ],
   "homepage": "https://github.com/lvis/wpwidgets",
-  "license": "GPL-3.0",
+  "license": "proprietary",
   "authors": [
     {
       "name": "Vitalii Lupu",
-      "email": "vitaliix@gmail.com"
+      "email": "vitaliix@gmail.com",
+      "homepage": "https://github.com/lvis"
     }
   ],
   "repositories": [
-    {"type": "git", "url": "https://github.com/Semantic-Org/UI-Dropdown"},
-    {"type": "git", "url": "https://github.com/Semantic-Org/UI-Transition"},
     {"type": "git", "url": "https://github.com/lvis/wp"}
   ],
   "require": {
