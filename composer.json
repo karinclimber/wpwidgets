@@ -21,6 +21,7 @@
       "url": "https://github.com/lvis/wp"
     }
   ],
+  "minimum-stability": "dev",
   "require": {
     "php": ">=7",
     "lvis/wp": "dev-master"

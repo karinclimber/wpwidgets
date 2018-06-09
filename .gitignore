@@ -2,7 +2,3 @@
 vendor/
 composer.phar
 composer.lock
-.DS_Store
-src/.DS_Store
-src/libs/.DS_Store
-src/libs/rslider/.DS_Store
