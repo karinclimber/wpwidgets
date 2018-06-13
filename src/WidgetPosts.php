@@ -142,11 +142,10 @@ final class WidgetPosts extends Widget
             /** @var $currentTax \WP_Term */
             $currentTax = get_queried_object();
             if ($currentTax->term_id > 0) {
-                $queryArgs[QueryTaxonomy::DEFINITION] = [QueryTaxonomy::RELATION => QueryRelations::_AND,
-                    [
-                        QueryTaxonomy::NAME => $currentTax->taxonomy,
-                        QueryTaxonomy::TERMS => $currentTax->term_id
-                    ]];
+                $queryArgs[QueryTaxonomy::DEFINITION] = [QueryTaxonomy::RELATION => QueryRelations::_AND, [
+                    QueryTaxonomy::NAME => $currentTax->taxonomy,
+                    QueryTaxonomy::TERMS => $currentTax->term_id
+                ]];
             }
         }
         if ($customTitle == '') {
