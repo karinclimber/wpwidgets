@@ -6,6 +6,12 @@
 do_action('woocommerce_shop_loop');
 /**@var $product WC_Product */
 global $product;
+$htmlProductSale = '';
+if ($product->is_on_sale()) {
+    $textProductSale = __('Sale!', 'woocommerce');
+    $htmlProductSale = "<span class='onsale'>{$textProductSale}</span>";
+    $htmlProductSale = apply_filters('woocommerce_sale_flash', $htmlProductSale, $post, $product);
+}
 $productLink = esc_url(apply_filters('woocommerce_loop_product_link', get_the_permalink(), $product));
 $getProductThumb = 'woocommerce_get_product_thumbnail';
 if (function_exists($getProductThumb)) {
@@ -32,9 +38,16 @@ if (function_exists($getProductAddToCart)) {
     $getProductAddToCart();
     $htmlAddToCart = ob_get_clean();
 }
+$htmlProductCategories = '';
+$productCategories = get_the_category(get_the_ID());
+foreach ($productCategories as $category) {
+    $categoryLink = get_term_link($category->cat_ID);
+    $htmlProductCategories .= "<a href='{$categoryLink}' class='text-info'>{$category->cat_name}</a>";
+}
 ?>
-<div class="col-md-4 col-sm-6 col-xs-12">
+<div class="col-lg-3 col-md-4 col-xs-6 woocommerce product">
     <div class="card card-product">
+        <?= $htmlProductSale; ?>
         <div class="card-image">
             <a href="<?= $productLink; ?>" class="d-xs-block">
                 <?= $productThumb; ?>
@@ -47,14 +60,7 @@ if (function_exists($getProductAddToCart)) {
                     <?= get_the_title(); ?>
                 </a>
             </h5>
-            <h6 class="category">
-                <?php
-                foreach ((get_the_category()) as $category): ?>
-                    <a href="<?= get_term_link($category->cat_ID); ?>" class="text-info">
-                        <?= $category->cat_name; ?>
-                    </a>
-                <?php endforeach; ?>
-            </h6>
+            <h6 class="category"><?= $htmlProductCategories; ?></h6>
             <div class='text-xs-center'><?= $htmlRating . $htmlPrice; ?><p><?= $htmlAddToCart; ?></p></div>
         </div>
     </div>

@@ -132,7 +132,7 @@ final class WidgetPosts extends Widget
         }
         $postsCount = intval(self::getInstanceValue($instance, QueryPost::PER_PAGE, $this));
         $changeContentByPage = intval(self::getInstanceValue($instance, self::CHANGE_CONTENT_BY_PAGE, $this));
-        if ($changeContentByPage && (is_category() || is_tax() || is_home())) {
+        if ($changeContentByPage && (is_category() || is_tax() || is_archive() || is_tag() || is_home())) {
             if ($customTitle == '') {
                 if (!is_home()) {
                     $customTitle = single_term_title('', false);
@@ -141,7 +141,7 @@ final class WidgetPosts extends Widget
             $postsCount = -1;
             /** @var $currentTax \WP_Term */
             $currentTax = get_queried_object();
-            if ($currentTax->term_id > 0) {
+            if (is_a($currentTax, 'WP_Term') && $currentTax->term_id > 0) {
                 $queryArgs[QueryTaxonomy::DEFINITION] = [QueryTaxonomy::RELATION => QueryRelations::_AND, [
                     QueryTaxonomy::NAME => $currentTax->taxonomy,
                     QueryTaxonomy::TERMS => $currentTax->term_id
