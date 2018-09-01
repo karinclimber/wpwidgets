@@ -151,7 +151,8 @@ final class WidgetPost extends Widget
             if ($textCategoryList) {
                 $textCategory = sprintf(__('Category: %s'), $textCategoryList);
             }
-            $titleAddition = "<p class='no-gap'><small class='col-xs-5'>{$textCategory}</small><small class='col-xs-7 text-xs-right'>{$textPublishDate}</small></p>";
+            $titleAddition = "<p class='no-gap'><small class='col-xs-5 text-xs-left'>{$textCategory}</small>
+            <small class='col-xs-7 text-xs-right'>{$textPublishDate}</small></p>";
             $content = $this->getPostContent();
             //previous_post_link(); next_post_link();
         }
