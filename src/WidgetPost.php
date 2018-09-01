@@ -147,12 +147,13 @@ final class WidgetPost extends Widget
             }
             $textPublishDate = WPUtils::getPostAuthorAndDate(false);
             $textCategoryList = get_the_category_list(', ');
+            $textCategoryList = "<span class='text-info'>{$textCategoryList}</span>";
             $textCategory = '';
             if ($textCategoryList) {
                 $textCategory = sprintf(__('Category: %s'), $textCategoryList);
             }
-            $titleAddition = "<p class='no-gap'><small class='col-xs-5 text-xs-left'>{$textCategory}</small>
-            <small class='col-xs-7 text-xs-right'>{$textPublishDate}</small></p>";
+            $titleAddition = "<div class='row no-gap'><small class='col-xs-5 text-xs-left'>{$textCategory}</small>
+            <small class='col-xs-6 text-xs-right text-muted'>{$textPublishDate}</small></div>";
             $content = $this->getPostContent();
             //previous_post_link(); next_post_link();
         }
