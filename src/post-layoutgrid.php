@@ -13,15 +13,14 @@
                     <?= get_the_title(); ?>
                 </a>
             </h5>
-            <h6 class="category">
+            <div class="card-description">
                 <?php
+                echo __('in').' ';
                 foreach ((get_the_category()) as $category): ?>
                     <a href="<?= get_term_link($category->cat_ID); ?>" class="text-info">
                         <?= $category->cat_name; ?>
                     </a>
                 <?php endforeach; ?>
-            </h6>
-            <div class="card-description">
                 <time datetime="<?= get_the_modified_time('c'); ?>">
                     <?= \wp\WPUtils::getPostAuthorAndDate(); ?>
                 </time>
