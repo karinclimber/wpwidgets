@@ -13,14 +13,15 @@
                     <?= get_the_title(); ?>
                 </a>
             </h5>
-            <div class="card-description">
+            <h6 class="category">
                 <?php
-                echo __('in').' ';
-                foreach ((get_the_category()) as $category): ?>
-                    <a href="<?= get_term_link($category->cat_ID); ?>" class="text-info">
-                        <?= $category->cat_name; ?>
-                    </a>
-                <?php endforeach; ?>
+                foreach ((get_the_category()) as $category) {
+                    $categoryName = apply_filters('translate_text', $category->name);
+                    $categoryLink = get_term_link($category->cat_ID);
+                    echo "<a href='{$categoryLink}' class='text-info'>{$categoryName}</a>";
+                } ?>
+            </h6>
+            <div class="card-description">
                 <time datetime="<?= get_the_modified_time('c'); ?>">
                     <?= \wp\WPUtils::getPostAuthorAndDate(); ?>
                 </time>

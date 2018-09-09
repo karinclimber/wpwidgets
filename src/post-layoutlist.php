@@ -12,11 +12,11 @@
         <?php //TODO Here If current category is same as post Show the Tags instead or Disable link  ?>
         <h6 class="category">
             <?php
-            foreach ((get_the_category()) as $category): ?>
-                <a href="<?= get_term_link($category->cat_ID); ?>" class="text-info">
-                    <?= $category->cat_name; ?>
-                </a>
-            <?php endforeach; ?>
+            foreach ((get_the_category()) as $category) {
+                $categoryName = apply_filters('translate_text', $category->name);
+                $categoryLink = get_term_link($category->cat_ID);
+                echo "<a href='{$categoryLink}' class='text-info'>{$categoryName}</a>";
+            } ?>
         </h6>
         <h5 class="card-title text-hide-overflow">
             <a href="<?= get_the_permalink(); ?>">
@@ -33,7 +33,7 @@
         </p>
         <p class="card-author">
             <time datetime="<?= get_the_modified_time('c'); ?>">
-                <?=\wp\WPUtils::getPostAuthorAndDate();?>
+                <?= \wp\WPUtils::getPostAuthorAndDate(); ?>
             </time>
         </p>
     </div>
