@@ -134,7 +134,15 @@ final class WidgetPosts extends Widget
         $changeContentByPage = intval(self::getInstanceValue($instance, self::CHANGE_CONTENT_BY_PAGE, $this));
         if ($changeContentByPage && (is_category() || is_tax() || is_archive() || is_tag() || is_home())) {
             if ($customTitle == '') {
-                if (!is_home()) {
+                if (is_home() && !is_front_page()) {
+                    $customTitle = get_the_title( get_option('page_for_posts', true) );
+                } else {
+                    $titlePrefix = get_term_parents_list(get_queried_object()->term_id, 'category',
+                        [
+                            'inclusive' => false,
+                            'separator' => ' / '
+                        ]);
+                    $args[WPSidebar::BEFORE_TITLE_ADDITION] = $titlePrefix;
                     $customTitle = single_term_title('', false);
                 }
             }

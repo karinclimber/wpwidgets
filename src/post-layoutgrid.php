@@ -15,11 +15,14 @@
             </h5>
             <h6 class="category">
                 <?php
-                foreach ((get_the_category()) as $category) {
-                    $categoryName = apply_filters('translate_text', $category->name);
-                    $categoryLink = get_term_link($category->cat_ID);
-                    echo "<a href='{$categoryLink}' class='text-info'>{$categoryName}</a>";
-                } ?>
+                if (!is_category()) {
+                    foreach ((get_the_category()) as $category) {
+                        $categoryName = apply_filters('translate_text', $category->name);
+                        $categoryLink = get_term_link($category->cat_ID);
+                        echo "<a href='{$categoryLink}' class='text-info'>{$categoryName}</a>";
+                    }
+                }
+                ?>
             </h6>
             <div class="card-description">
                 <time datetime="<?= get_the_modified_time('c'); ?>">

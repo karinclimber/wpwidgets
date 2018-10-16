@@ -2091,8 +2091,8 @@
 
         // http://help.dimsemenov.com/kb/royalslider-jquery-plugin-faq/how-to-change-image-scaling#note-that-image-scaling-options-don-39-t-change-size-of-slider-viewport
         autoScaleSlider: false,
-        autoScaleSliderWidth: 800,
-        autoScaleSliderHeight: 400,
+        autoScaleSliderWidth: 1140,
+        autoScaleSliderHeight: 640,
         autoScaleHeight: true,
 
         arrowsNavHideOnTouch: false,

@@ -8,6 +8,8 @@
 namespace wp;
 final class WidgetPost extends Widget
 {
+    const HIDE_TITLE = 'widgetPostHideTitle';
+
     function __construct()
     {
         parent::__construct(__('Post'));
@@ -15,6 +17,8 @@ final class WidgetPost extends Widget
 
     function initFields()
     {
+        $this->addField(new WidgetField(WidgetField::CHECKBOX, self::HIDE_TITLE,
+            __('Hide Title'), [], false));
         parent::initFields();
     }
 
@@ -81,7 +85,7 @@ final class WidgetPost extends Widget
         if (post_password_required()) {
             $textPasswordProtected = __('This post is password protected. Enter the password to view comments.');
             $content .= "<p class='nopassword'>{$textPasswordProtected}</p>";
-        } else if(comments_open()) {
+        } else if (comments_open()) {
             $htmlCommentsClosed = '';
             if (comments_open() == false && get_comments_number() != '0' &&
                 post_type_supports(get_post_type(), 'comments')) {
@@ -95,7 +99,7 @@ final class WidgetPost extends Widget
             }
             //\WP_Comment_Query::__construct()
             $comments = get_comments(['post_id' => get_the_ID()]);
-            $htmlCommentsList = wp_list_comments(['avatar_size'=> 64, 'echo' => false], $comments);
+            $htmlCommentsList = wp_list_comments(['avatar_size' => 64, 'echo' => false], $comments);
             //$htmlCommentsList = wp_list_comments(['callback' => [$this, 'renderCommentTemplate'], 'echo' => false],$comments);
             $textCommentsNumber = get_comments_number_text();
             $content .= "<h3 id='comments-title' class='title text-xs-center'><i class='fa fa-comments'></i> 
@@ -157,8 +161,10 @@ final class WidgetPost extends Widget
             $content = $this->getPostContent();
             //previous_post_link(); next_post_link();
         }
-
-        $instance[Widget::CUSTOM_TITLE] = $customTitle;
+        $hideTitle = intval(self::getInstanceValue($instance, self::HIDE_TITLE, $this));
+        if (!$hideTitle){
+            $instance[Widget::CUSTOM_TITLE] = $customTitle;
+        }
         $args[WPSidebar::AFTER_TITLE_ADDITION] = $titleAddition;
         $args[WPSidebar::CONTENT] = $content;
         parent::widget($args, $instance);
