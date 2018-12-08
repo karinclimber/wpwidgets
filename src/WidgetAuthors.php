@@ -19,7 +19,7 @@ final class WidgetAuthors extends Widget
 
     function __construct()
     {
-        parent::__construct(__('Our Agents', 'wptheme'));
+        parent::__construct(__('Authors'));
     }
 
     //Назначенный агент, Assigned agent
@@ -118,7 +118,7 @@ final class WidgetAuthors extends Widget
         /** Avatar */
         $avatarImageId = get_the_author_meta('profile_image_id', $authorId);
         $avatarImageUrl = wp_get_attachment_url($avatarImageId);
-        $content = sprintf('<div class="col-sm-%10$s clearfix"><article class="media media-author">
+        /*$content = sprintf('<div class="col-sm-%10$s clearfix"><article class="media media-author">
 		         <div class="media-left text-center">
 		         	<a href="%1$s"><img src="%2$s" class="avatar-72 img-circle" title="%4$s" alt="%4$s" width="72" height="72"></a>
 		         	<aside>%3$s</aside>
@@ -137,9 +137,15 @@ final class WidgetAuthors extends Widget
             $contactForm,
             $contactFormInline,
             $columns
-        );
+        );*/
 
-        return $content;
+        return "<div class='col-12 col-sm-6 col-lg-4 col-xl-3 text-xs-center clearfix'>
+        <a href='$authorPageUrl'>
+            <img src='$avatarImageUrl' title='$authorName' alt='$authorName' class='img-responsive'>
+            <h5>$authorName</h5>
+        </a>
+        $authorSocials $authorMobile $skypeUser $authorEmail $contactForm $contactFormInline
+        </div>";
     }
 
     function widget($args, $instance)

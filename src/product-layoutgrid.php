@@ -4,7 +4,7 @@
  * @hooked WC_Structured_Data::generate_product_data() - 10
  */
 do_action('woocommerce_shop_loop');
-/**@var $product WC_Product */
+/**@var $product WC_Product_Variable */
 global $product;
 $htmlProductSale = '';
 if ($product->is_on_sale()) {

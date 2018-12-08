@@ -133,11 +133,21 @@ final class WidgetPosts extends Widget
         $postsCount = intval(self::getInstanceValue($instance, QueryPost::PER_PAGE, $this));
         $changeContentByPage = intval(self::getInstanceValue($instance, self::CHANGE_CONTENT_BY_PAGE, $this));
         if ($changeContentByPage && (is_category() || is_tax() || is_archive() || is_tag() || is_home())) {
+            $postsCount = -1;
+            /** @var $currentTax \WP_Term */
+            $currentTax = get_queried_object();
+            $currentTaxIsTerm = is_a($currentTax, 'WP_Term');
+            if ($currentTaxIsTerm && $currentTax->term_id > 0) {
+                $queryArgs[QueryTaxonomy::DEFINITION] = [QueryTaxonomy::RELATION => QueryRelations::_AND, [
+                    QueryTaxonomy::NAME => $currentTax->taxonomy,
+                    QueryTaxonomy::TERMS => $currentTax->term_id
+                ]];
+            }
             if ($customTitle == '') {
                 if (is_home() && !is_front_page()) {
                     $customTitle = get_the_title( get_option('page_for_posts', true) );
-                } else {
-                    $titlePrefix = get_term_parents_list(get_queried_object()->term_id, 'category',
+                } else if ($currentTaxIsTerm){
+                    $titlePrefix = get_term_parents_list($currentTax->term_id, 'category',
                         [
                             'inclusive' => false,
                             'separator' => ' / '
@@ -146,19 +156,13 @@ final class WidgetPosts extends Widget
                     $customTitle = single_term_title('', false);
                 }
             }
-            $postsCount = -1;
-            /** @var $currentTax \WP_Term */
-            $currentTax = get_queried_object();
-            if (is_a($currentTax, 'WP_Term') && $currentTax->term_id > 0) {
-                $queryArgs[QueryTaxonomy::DEFINITION] = [QueryTaxonomy::RELATION => QueryRelations::_AND, [
-                    QueryTaxonomy::NAME => $currentTax->taxonomy,
-                    QueryTaxonomy::TERMS => $currentTax->term_id
-                ]];
-            }
+
         }
         if ($customTitle == '') {
             $currentPostType = get_post_type_object($postType);
-            $customTitle = $currentPostType->labels->name;
+            if ($currentPostType){
+                $customTitle = $currentPostType->labels->name;
+            }
         }
         $queryArgs[QueryPost::PER_PAGE] = $postsCount;
         $layoutType = self::getInstanceValue($instance, self::LAYOUT, $this);
