@@ -13,9 +13,8 @@
         <h6 class="category">
             <?php
             foreach ((get_the_category()) as $category) {
-                $categoryName = apply_filters('translate_text', $category->name);
                 $categoryLink = get_term_link($category->cat_ID);
-                echo "<a href='{$categoryLink}' class='text-info'>{$categoryName}</a>";
+                echo "<a href='{$categoryLink}' class='text-info'>{$category->name}</a>";
             } ?>
         </h6>
         <h5 class="card-title text-hide-overflow">

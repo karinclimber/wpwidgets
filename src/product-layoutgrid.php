@@ -43,13 +43,12 @@ $productCategories = get_the_terms( get_the_ID(), 'product_cat' );
 if ( is_array( $productCategories ) ) {
     /**@var $category WP_Term*/
     foreach ($productCategories as $category) {
-        $categoryLink = esc_url( get_term_link( $category->term_id, 'product_cat' ) );
-        $categoryName = apply_filters('translate_text',$category->name);
-        $htmlProductCategories .= "<a href='{$categoryLink}' class='text-info'>{$categoryName}</a>";
+        $categoryLink = get_term_link( $category->term_id, 'product_cat' );
+        $htmlProductCategories .= "<a href='{$categoryLink}' class='text-info'>{$category->name}</a>";
     }
 }
 ?>
-<div class="col-lg-3 col-md-4 col-xs-6 woocommerce product">
+<div class="col-xl-3 col-md-4 col-sm-6 col-xs-12 woocommerce product">
     <div class="card card-product">
         <?= $htmlProductSale; ?>
         <div class="card-image">
